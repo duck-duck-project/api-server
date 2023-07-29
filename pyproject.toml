@@ -9,6 +9,7 @@ packages = [{include = "duck_duck"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "^4.2.3"
+django-environ = "^0.10.0"
 
 
 [build-system]
