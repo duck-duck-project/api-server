@@ -10,6 +10,7 @@ packages = [{include = "duck_duck"}]
 python = "^3.11"
 django = "^4.2.3"
 django-environ = "^0.10.0"
+djangorestframework = "^3.14.0"
 
 
 [build-system]
