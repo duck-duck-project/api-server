@@ -1,8 +1,8 @@
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from users.views import UserApi
+from users.views import UserRetrieveApi, UserCreateUpdateApi
 
-router = DefaultRouter()
-router.register('', UserApi, basename='user')
-
-urlpatterns = router.urls
+urlpatterns = [
+    path(r'<int:user_id>/', UserRetrieveApi.as_view()),
+    path(r'', UserCreateUpdateApi.as_view()),
+]
