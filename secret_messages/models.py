@@ -26,6 +26,7 @@ class Contact(models.Model):
 
 
 class SecretMessage(models.Model):
+    id = models.UUIDField(primary_key=True)
     contact = models.ForeignKey(
         to=Contact,
         on_delete=models.SET_NULL,
