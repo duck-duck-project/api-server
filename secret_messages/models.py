@@ -21,6 +21,9 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_hidden = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('of_user', 'to_user')
+
 
 class SecretMessage(models.Model):
     contact = models.ForeignKey(
