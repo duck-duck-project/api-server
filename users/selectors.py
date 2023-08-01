@@ -19,4 +19,4 @@ def get_user_by_id(user_id: int) -> User:
     try:
         return User.objects.get(id=user_id)
     except User.DoesNotExist:
-        raise UserDoesNotExistsError
+        raise UserDoesNotExistsError(user_id=user_id)

@@ -1,2 +1,6 @@
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True, slots=True)
 class UserDoesNotExistsError(Exception):
-    pass
+    user_id: int

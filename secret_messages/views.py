@@ -1,51 +1,136 @@
-from django.db.models import QuerySet
-from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import serializers, status
+from rest_framework.exceptions import NotFound, APIException
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from secret_messages.models import Contact, SecretMessage
+from secret_messages.exceptions import (
+    ContactDoesNotExistError,
+    ContactAlreadyExistsError,
+)
+from secret_messages.models import SecretMessage
+from secret_messages.selectors import get_contact_by_id, get_contacts_by_user_id
+from secret_messages.services import create_contact, update_contact
+from users.exceptions import UserDoesNotExistsError
+from users.selectors import get_user_by_id
 
 __all__ = (
-    'ContactApi',
+    'UserContactListApi',
+    'ContactCreateApi',
+    'ContactRetrieveUpdateDeleteApi',
     'SecretMessageCreateApi',
     'SecretMessageRetrieveApi',
 )
 
 
-class UserContactListApi(ListAPIView):
+class ContactSerializer(serializers.Serializer):
+    class UserSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        fullname = serializers.CharField()
+        username = serializers.CharField(allow_null=True)
+        is_premium = serializers.BooleanField()
 
-    class Serializer(serializers.ModelSerializer):
-        class Meta:
-            model = Contact
-            fields = '__all__'
-            depth = 1
-
-    serializer_class = Serializer
-    queryset = Contact.objects.all()
-    lookup_field = 'of_user_id'
-    lookup_url_kwarg = 'user_id'
-
-    def filter_queryset(self, queryset: QuerySet[Contact]):
-        return queryset.filter(of_user_id=self.kwargs['user_id'])
+    id = serializers.IntegerField()
+    of_user = UserSerializer()
+    to_user = UserSerializer()
+    private_name = serializers.CharField()
+    public_name = serializers.CharField()
+    created_at = serializers.DateTimeField()
+    is_hidden = serializers.BooleanField()
 
 
-class ContactApi(ModelViewSet):
+class UserContactListApi(APIView):
 
-    class Serializer(serializers.ModelSerializer):
+    def get(self, request: Request, user_id: int):
+        contacts = get_contacts_by_user_id(user_id)
+        serializer = ContactSerializer(contacts, many=True)
+        return Response(serializer.data)
 
-        class Meta:
-            model = Contact
-            fields = '__all__'
 
-    serializer_class = Serializer
-    queryset = Contact.objects.all()
+class ContactCreateApi(APIView):
 
-    def perform_create(self, serializer: Serializer):
-        serialized_data = serializer.validated_data
-        if serialized_data['of_user'] == serialized_data['to_user']:
-            raise ValidationError('User can not be contact for itself')
-        super().perform_create(serializer)
+    class InputSerializer(serializers.Serializer):
+        of_user_id = serializers.IntegerField()
+        to_user_id = serializers.IntegerField()
+        private_name = serializers.CharField(max_length=64)
+        public_name = serializers.CharField(max_length=64)
+
+    def post(self, request: Request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        of_user_id: int = serialized_data['of_user_id']
+        to_user_id: int = serialized_data['to_user_id']
+        private_name: str = serialized_data['private_name']
+        public_name: str = serialized_data['public_name']
+
+        try:
+            of_user = get_user_by_id(of_user_id)
+            to_user = get_user_by_id(to_user_id)
+        except UserDoesNotExistsError as error:
+            raise NotFound(f'User by ID "{error.user_id}" does not exist')
+
+        try:
+            contact = create_contact(
+                of_user=of_user,
+                to_user=to_user,
+                private_name=private_name,
+                public_name=public_name,
+            )
+        except ContactAlreadyExistsError:
+            error = APIException('Contact already exists')
+            error.status_code = status.HTTP_409_CONFLICT
+            raise error
+
+        serializer = ContactSerializer(contact)
+        return Response(serializer.data)
+
+
+class ContactRetrieveUpdateDeleteApi(APIView):
+
+    class InputSerializer(serializers.Serializer):
+        private_name = serializers.CharField(max_length=64)
+        public_name = serializers.CharField(max_length=64)
+
+    def get(self, request: Request, contact_id: int):
+        try:
+            contact = get_contact_by_id(contact_id)
+        except ContactDoesNotExistError:
+            raise NotFound('Contact does not exist')
+
+        serializer = ContactSerializer(contact)
+        return Response(serializer.data)
+
+    def put(self, request: Request, contact_id: int):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        private_name: str = serialized_data['private_name']
+        public_name: str = serialized_data['public_name']
+
+        try:
+            update_contact(
+                contact_id=contact_id,
+                private_name=private_name,
+                public_name=public_name,
+            )
+        except ContactDoesNotExistError:
+            raise NotFound('Contact does not exist')
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request: Request, contact_id: int):
+        try:
+            contact = get_contact_by_id(contact_id)
+        except ContactDoesNotExistError:
+            raise NotFound('Contact does not exist')
+
+        contact.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SecretMessageCreateApi(CreateAPIView):
