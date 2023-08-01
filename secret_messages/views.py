@@ -1,6 +1,8 @@
+from uuid import UUID
+
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, APIException
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,9 +11,14 @@ from secret_messages.exceptions import (
     ContactDoesNotExistError,
     ContactAlreadyExistsError,
 )
-from secret_messages.models import SecretMessage
-from secret_messages.selectors import get_contact_by_id, get_contacts_by_user_id
-from secret_messages.services import create_contact, update_contact
+from secret_messages.selectors import (
+    get_contact_by_id,
+    get_contacts_by_user_id, get_secret_message_by_id
+)
+from secret_messages.services import (
+    create_contact, update_contact,
+    create_secret_message
+)
 from users.exceptions import UserDoesNotExistsError
 from users.selectors import get_user_by_id
 
@@ -133,24 +140,41 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class SecretMessageCreateApi(CreateAPIView):
+class SecretMessageCreateApi(APIView):
 
-    class Serializer(serializers.ModelSerializer):
-        class Meta:
-            model = SecretMessage
-            fields = '__all__'
+    class InputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+        contact_id = serializers.IntegerField()
+        text = serializers.CharField(max_length=200)
 
-    serializer_class = Serializer
-    queryset = SecretMessage.objects.all()
+    def post(self, request: Request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        secret_message_id: UUID = serialized_data['id']
+        contact_id: int = serialized_data['contact_id']
+        text: str = serialized_data['text']
+
+        contact = get_contact_by_id(contact_id)
+
+        create_secret_message(
+            secret_message_id=secret_message_id,
+            contact=contact,
+            text=text,
+        )
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
-class SecretMessageRetrieveApi(RetrieveAPIView):
+class SecretMessageRetrieveApi(APIView):
 
-    class Serializer(serializers.ModelSerializer):
-        class Meta:
-            model = SecretMessage
-            fields = '__all__'
-            depth = 2
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+        contact = ContactSerializer()
+        text = serializers.CharField()
 
-    serializer_class = Serializer
-    queryset = SecretMessage.objects.all()
+    def get(self, request: Request, secret_message_id: UUID):
+        secret_message = get_secret_message_by_id(secret_message_id)
+        serializer = self.OutputSerializer(secret_message)
+        return Response(serializer.data)

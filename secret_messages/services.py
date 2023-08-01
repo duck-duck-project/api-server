@@ -1,16 +1,18 @@
+from uuid import UUID
+
 from django.db import IntegrityError
 
 from secret_messages.exceptions import (
     ContactAlreadyExistsError,
-    ContactDoesNotExistError
+    ContactDoesNotExistError,
 )
-from secret_messages.models import Contact
-from secret_messages.selectors import get_contact_by_id
+from secret_messages.models import Contact, SecretMessage
 from users.models import User
 
 __all__ = (
     'create_contact',
     'update_contact',
+    'create_secret_message',
 )
 
 
@@ -47,3 +49,16 @@ def update_contact(
     )
     if not updated_rows_count:
         raise ContactDoesNotExistError(contact_id=contact_id)
+
+
+def create_secret_message(
+        *,
+        secret_message_id: UUID,
+        contact: Contact,
+        text: str,
+) -> SecretMessage:
+    return SecretMessage.objects.create(
+        id=secret_message_id,
+        contact=contact,
+        text=text,
+    )

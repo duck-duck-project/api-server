@@ -16,5 +16,8 @@ urlpatterns = [
     path(r'contacts/', ContactCreateApi.as_view()),
     path(r'contacts/users/<int:user_id>/', UserContactListApi.as_view()),
     path('secret-messages/', SecretMessageCreateApi.as_view()),
-    path('secret-messages/<int:pk>/', SecretMessageRetrieveApi.as_view()),
+    path(
+        'secret-messages/<uuid:secret_message_id>/',
+        SecretMessageRetrieveApi.as_view(),
+    ),
 ]

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 __all__ = (
     'ContactDoesNotExistError',
     'ContactAlreadyExistsError',
+    'SecretMessageDoesNotExistError',
 )
 
 
@@ -13,3 +15,8 @@ class ContactDoesNotExistError(Exception):
 
 class ContactAlreadyExistsError(Exception):
     pass
+
+
+@dataclass(frozen=True, slots=True)
+class SecretMessageDoesNotExistError(Exception):
+    secret_message_id: UUID
