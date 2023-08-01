@@ -10,25 +10,27 @@ from secret_messages.models import Contact, SecretMessage
 from users.models import User
 
 __all__ = (
-    'create_contact',
+    'upsert_contact',
     'update_contact',
     'create_secret_message',
 )
 
 
-def create_contact(
+def upsert_contact(
         *,
         of_user: User,
         to_user: User,
         private_name: str,
         public_name: str,
-) -> Contact:
+) -> tuple[Contact, bool]:
     try:
-        return Contact.objects.create(
+        return Contact.objects.update_or_create(
             of_user=of_user,
             to_user=to_user,
-            private_name=private_name,
-            public_name=public_name,
+            defaults={
+                'private_name': private_name,
+                'public_name': public_name,
+            },
         )
     except IntegrityError as error:
         if 'UNIQUE constraint failed' in str(error):
@@ -54,11 +56,9 @@ def update_contact(
 def create_secret_message(
         *,
         secret_message_id: UUID,
-        contact: Contact,
         text: str,
 ) -> SecretMessage:
     return SecretMessage.objects.create(
         id=secret_message_id,
-        contact=contact,
         text=text,
     )

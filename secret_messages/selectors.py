@@ -36,11 +36,7 @@ def get_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
 
 def get_secret_message_by_id(secret_message_id: UUID) -> SecretMessage:
     try:
-        return (
-            SecretMessage.objects
-            .select_related('contact', 'contact__of_user', 'contact__to_user')
-            .get(id=secret_message_id)
-        )
+        return SecretMessage.objects.get(id=secret_message_id)
     except SecretMessage.DoesNotExist:
         raise SecretMessageDoesNotExistError(
             secret_message_id=secret_message_id,

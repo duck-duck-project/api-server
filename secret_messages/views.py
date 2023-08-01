@@ -2,21 +2,20 @@ from uuid import UUID
 
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, APIException
-from rest_framework.generics import RetrieveAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from secret_messages.exceptions import (
     ContactDoesNotExistError,
-    ContactAlreadyExistsError,
+    ContactAlreadyExistsError, SecretMessageDoesNotExistError,
 )
 from secret_messages.selectors import (
     get_contact_by_id,
     get_contacts_by_user_id, get_secret_message_by_id
 )
 from secret_messages.services import (
-    create_contact, update_contact,
+    upsert_contact, update_contact,
     create_secret_message
 )
 from users.exceptions import UserDoesNotExistsError
@@ -24,7 +23,7 @@ from users.selectors import get_user_by_id
 
 __all__ = (
     'UserContactListApi',
-    'ContactCreateApi',
+    'ContactCreateUpdateApi',
     'ContactRetrieveUpdateDeleteApi',
     'SecretMessageCreateApi',
     'SecretMessageRetrieveApi',
@@ -55,7 +54,7 @@ class UserContactListApi(APIView):
         return Response(serializer.data)
 
 
-class ContactCreateApi(APIView):
+class ContactCreateUpdateApi(APIView):
 
     class InputSerializer(serializers.Serializer):
         of_user_id = serializers.IntegerField()
@@ -79,20 +78,20 @@ class ContactCreateApi(APIView):
         except UserDoesNotExistsError as error:
             raise NotFound(f'User by ID "{error.user_id}" does not exist')
 
-        try:
-            contact = create_contact(
+        contact, is_created = upsert_contact(
                 of_user=of_user,
                 to_user=to_user,
                 private_name=private_name,
                 public_name=public_name,
-            )
-        except ContactAlreadyExistsError:
-            error = APIException('Contact already exists')
-            error.status_code = status.HTTP_409_CONFLICT
-            raise error
+        )
 
         serializer = ContactSerializer(contact)
-        return Response(serializer.data)
+
+        status_code = (
+            status.HTTP_201_CREATED
+            if is_created else status.HTTP_204_NO_CONTENT
+        )
+        return Response(serializer.data, status=status_code)
 
 
 class ContactRetrieveUpdateDeleteApi(APIView):
@@ -144,7 +143,6 @@ class SecretMessageCreateApi(APIView):
 
     class InputSerializer(serializers.Serializer):
         id = serializers.UUIDField()
-        contact_id = serializers.IntegerField()
         text = serializers.CharField(max_length=200)
 
     def post(self, request: Request):
@@ -153,14 +151,10 @@ class SecretMessageCreateApi(APIView):
         serialized_data = serializer.data
 
         secret_message_id: UUID = serialized_data['id']
-        contact_id: int = serialized_data['contact_id']
         text: str = serialized_data['text']
-
-        contact = get_contact_by_id(contact_id)
 
         create_secret_message(
             secret_message_id=secret_message_id,
-            contact=contact,
             text=text,
         )
 
@@ -171,10 +165,12 @@ class SecretMessageRetrieveApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField()
-        contact = ContactSerializer()
         text = serializers.CharField()
 
     def get(self, request: Request, secret_message_id: UUID):
-        secret_message = get_secret_message_by_id(secret_message_id)
+        try:
+            secret_message = get_secret_message_by_id(secret_message_id)
+        except SecretMessageDoesNotExistError:
+            raise NotFound('Secret message does not exist')
         serializer = self.OutputSerializer(secret_message)
         return Response(serializer.data)
