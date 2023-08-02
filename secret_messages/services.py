@@ -5,14 +5,16 @@ from django.db import IntegrityError
 from secret_messages.exceptions import (
     ContactAlreadyExistsError,
     ContactDoesNotExistError,
+    SecretMediaAlreadyExistsError,
 )
-from secret_messages.models import Contact, SecretMessage
+from secret_messages.models import Contact, SecretMessage, SecretMedia
 from users.models import User
 
 __all__ = (
     'upsert_contact',
     'update_contact',
     'create_secret_message',
+    'create_secret_media',
 )
 
 
@@ -62,3 +64,35 @@ def create_secret_message(
         id=secret_message_id,
         text=text,
     )
+
+
+def create_secret_media(
+        *,
+        file_id: str,
+        name: str | None,
+        contact: Contact,
+        media_type: int,
+) -> SecretMedia:
+    """Create secret media.
+
+    Args:
+        file_id: ID of the file in Telegram.
+        name: Name of the file.
+        contact: Contact object.
+        media_type: Media type.
+
+    Returns:
+        Created SecretMedia object.
+
+    Raises:
+        SecretMediaAlreadyExistsError: If secret media with the same file_id.
+    """
+    try:
+        return SecretMedia.objects.create(
+            file_id=file_id,
+            name=name,
+            contact=contact,
+            media_type=media_type,
+        )
+    except IntegrityError as error:
+        raise SecretMediaAlreadyExistsError

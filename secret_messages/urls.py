@@ -1,11 +1,13 @@
 from django.urls import path
 
+from secret_messages.models import SecretMedia
 from secret_messages.views import (
     ContactCreateUpdateApi,
     ContactRetrieveUpdateDeleteApi,
     SecretMessageRetrieveApi,
     SecretMessageCreateApi,
-    UserContactListApi,
+    UserContactListApi, UserSecretMediaListApi, SecretMediaRetrieveApi,
+    SecretMediaCreateApi,
 )
 
 urlpatterns = [
@@ -20,4 +22,13 @@ urlpatterns = [
         'secret-messages/<uuid:secret_message_id>/',
         SecretMessageRetrieveApi.as_view(),
     ),
+    path(
+        r'secret-medias/users/<int:user_id>/',
+        UserSecretMediaListApi.as_view(),
+    ),
+    path(
+        r'secret-medias/<uuid:secret_media_id>/',
+        SecretMediaRetrieveApi.as_view(),
+    ),
+    path(r'secret-medias/', SecretMediaCreateApi.as_view()),
 ]
