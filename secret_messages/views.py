@@ -40,6 +40,7 @@ class ContactSerializer(serializers.Serializer):
         fullname = serializers.CharField()
         username = serializers.CharField(allow_null=True)
         is_premium = serializers.BooleanField()
+        can_be_added_to_contacts = serializers.BooleanField()
 
     id = serializers.IntegerField()
     of_user = UserSerializer()
