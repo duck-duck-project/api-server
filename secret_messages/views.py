@@ -241,7 +241,7 @@ class SecretMediaCreateApi(APIView):
         id = serializers.UUIDField()
         file_id = serializers.CharField()
         name = serializers.CharField(allow_null=True)
-        contact_id = serializers.IntegerField()
+        contact = ContactSerializer()
         media_type = serializers.IntegerField()
 
     def post(self, request: Request):
