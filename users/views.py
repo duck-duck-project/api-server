@@ -18,6 +18,7 @@ class UserRetrieveApi(APIView):
         fullname = serializers.CharField()
         username = serializers.CharField(allow_null=True)
         is_premium = serializers.BooleanField()
+        can_be_added_to_contacts = serializers.BooleanField()
 
     def get(self, request: Request, user_id: int):
         try:
@@ -34,6 +35,7 @@ class UserCreateUpdateApi(APIView):
         id = serializers.IntegerField()
         fullname = serializers.CharField(max_length=64)
         username = serializers.CharField(max_length=64, allow_null=True)
+        can_be_added_to_contacts = serializers.BooleanField(default=True)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
@@ -43,11 +45,15 @@ class UserCreateUpdateApi(APIView):
         user_id: int = serialized_data['id']
         fullname: str = serialized_data['fullname']
         username: str | None = serialized_data['username']
+        can_be_added_to_contacts: bool = (
+            serialized_data['can_be_added_to_contacts']
+        )
 
         _, is_created = upsert_user(
             user_id=user_id,
             fullname=fullname,
             username=username,
+            can_be_added_to_contacts=can_be_added_to_contacts,
         )
 
         status_code = (
