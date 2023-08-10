@@ -7,25 +7,26 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from secret_messages.exceptions import (
-    ContactDoesNotExistError,
     SecretMessageDoesNotExistError,
     SecretMediaAlreadyExistsError,
 )
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.selectors import (
-    get_contact_by_id,
-    get_contacts_by_user_id,
     get_secret_message_by_id,
     get_secret_media_by_id, get_secret_medias_created_by_user_id,
     get_secret_message_description_templates,
     get_secret_message_button_templates,
 )
 from secret_messages.services import (
-    upsert_contact, update_contact,
-    create_secret_message, create_secret_media
+    create_secret_message,
+    create_secret_media,
 )
-from users.exceptions import UserDoesNotExistsError
-from users.selectors import get_user_by_id
+from users.exceptions import UserDoesNotExistsError, ContactDoesNotExistError
+from users.selectors import (
+    get_user_by_id, get_contacts_by_user_id,
+    get_contact_by_id
+)
+from users.services import upsert_contact, update_contact
 
 __all__ = (
     'UserContactListApi',
@@ -33,6 +34,11 @@ __all__ = (
     'ContactRetrieveUpdateDeleteApi',
     'SecretMessageCreateApi',
     'SecretMessageRetrieveApi',
+    'UserSecretMediaListApi',
+    'SecretMessageButtonTemplateListApi',
+    'SecretMediaCreateApi',
+    'SecretMessageDescriptionTemplateListApi',
+    'SecretMediaRetrieveApi',
 )
 
 

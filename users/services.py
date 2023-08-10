@@ -1,6 +1,13 @@
-from users.models import User
+from django.db import IntegrityError
 
-__all__ = ('upsert_user',)
+from users.exceptions import ContactAlreadyExistsError, ContactDoesNotExistError
+from users.models import User, Contact
+
+__all__ = (
+    'upsert_user',
+    'upsert_contact',
+    'update_contact',
+)
 
 
 def upsert_user(
@@ -30,3 +37,44 @@ def upsert_user(
             'can_be_added_to_contacts': can_be_added_to_contacts,
         },
     )
+
+
+def upsert_contact(
+        *,
+        of_user: User,
+        to_user: User,
+        private_name: str,
+        public_name: str,
+        is_hidden: bool,
+) -> tuple[Contact, bool]:
+    try:
+        return Contact.objects.update_or_create(
+            of_user=of_user,
+            to_user=to_user,
+            defaults={
+                'private_name': private_name,
+                'public_name': public_name,
+                'is_hidden': is_hidden,
+            },
+        )
+    except IntegrityError as error:
+        if 'UNIQUE constraint failed' in str(error):
+            raise ContactAlreadyExistsError
+        raise
+
+
+def update_contact(
+        *,
+        contact_id: int,
+        private_name: str,
+        public_name: str,
+        is_hidden: bool,
+) -> None:
+    contacts_to_update = Contact.objects.filter(id=contact_id)
+    updated_rows_count = contacts_to_update.update(
+        private_name=private_name,
+        public_name=public_name,
+        is_hidden=is_hidden,
+    )
+    if not updated_rows_count:
+        raise ContactDoesNotExistError(contact_id=contact_id)

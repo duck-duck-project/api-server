@@ -3,10 +3,8 @@ from uuid import UUID
 from django.db.models import QuerySet
 
 from secret_messages.exceptions import (
-    ContactDoesNotExistError,
     SecretMessageDoesNotExistError,
 )
-from secret_messages.models.contacts import Contact
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.models.secret_message_templates import (
     SecretMessageDescriptionTemplate,
@@ -15,33 +13,12 @@ from secret_messages.models.secret_message_templates import (
 from secret_messages.models.secret_messages import SecretMessage
 
 __all__ = (
-    'get_contact_by_id',
-    'get_contacts_by_user_id',
     'get_secret_message_by_id',
     'get_secret_medias_created_by_user_id',
     'get_secret_media_by_id',
     'get_secret_message_button_templates',
     'get_secret_message_description_templates',
 )
-
-
-def get_contact_by_id(contact_id: int) -> Contact:
-    try:
-        return (
-            Contact.objects
-            .select_related('of_user', 'to_user')
-            .get(id=contact_id)
-        )
-    except Contact.DoesNotExist:
-        raise ContactDoesNotExistError(contact_id=contact_id)
-
-
-def get_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
-    return (
-        Contact.objects
-        .select_related('of_user', 'to_user')
-        .filter(of_user_id=user_id)
-    )
 
 
 def get_secret_message_by_id(secret_message_id: UUID) -> SecretMessage:

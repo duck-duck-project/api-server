@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from secret_messages.models.contacts import Contact
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.models.secret_message_templates import (
     SecretMessageDescriptionTemplate,
@@ -21,11 +20,6 @@ class SecretMessageButtonTemplateAdmin(admin.ModelAdmin):
 
 @admin.register(SecretMessage)
 class SecretMessageAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Contact)
-class ContactAdmin(admin.ModelAdmin):
     pass
 
 

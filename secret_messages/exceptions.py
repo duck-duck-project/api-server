@@ -2,21 +2,10 @@ from dataclasses import dataclass
 from uuid import UUID
 
 __all__ = (
-    'ContactDoesNotExistError',
-    'ContactAlreadyExistsError',
     'SecretMessageDoesNotExistError',
     'SecretMediaAlreadyExistsError',
     'SecretMediaDoesNotExistError',
 )
-
-
-@dataclass(frozen=True, slots=True)
-class ContactDoesNotExistError(Exception):
-    contact_id: int
-
-
-class ContactAlreadyExistsError(Exception):
-    pass
 
 
 @dataclass(frozen=True, slots=True)

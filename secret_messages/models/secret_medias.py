@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.db import models
 
-from secret_messages.models.contacts import Contact
+from users.models import Contact
 
 __all__ = ('SecretMedia',)
 
