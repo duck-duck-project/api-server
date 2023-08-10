@@ -66,6 +66,7 @@ class ContactCreateUpdateApi(APIView):
         to_user_id = serializers.IntegerField()
         private_name = serializers.CharField(max_length=64)
         public_name = serializers.CharField(max_length=64)
+        is_hidden = serializers.BooleanField(default=False)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
@@ -76,6 +77,7 @@ class ContactCreateUpdateApi(APIView):
         to_user_id: int = serialized_data['to_user_id']
         private_name: str = serialized_data['private_name']
         public_name: str = serialized_data['public_name']
+        is_hidden: bool = serialized_data['is_hidden']
 
         try:
             of_user = get_user_by_id(of_user_id)
@@ -88,6 +90,7 @@ class ContactCreateUpdateApi(APIView):
             to_user=to_user,
             private_name=private_name,
             public_name=public_name,
+            is_hidden=is_hidden,
         )
 
         serializer = ContactSerializer(contact)

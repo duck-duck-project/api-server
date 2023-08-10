@@ -24,6 +24,7 @@ def upsert_contact(
         to_user: User,
         private_name: str,
         public_name: str,
+        is_hidden: bool,
 ) -> tuple[Contact, bool]:
     try:
         return Contact.objects.update_or_create(
@@ -32,6 +33,7 @@ def upsert_contact(
             defaults={
                 'private_name': private_name,
                 'public_name': public_name,
+                'is_hidden': is_hidden,
             },
         )
     except IntegrityError as error:
