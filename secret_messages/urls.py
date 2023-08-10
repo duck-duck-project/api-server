@@ -1,12 +1,13 @@
 from django.urls import path
 
-from secret_messages.models import SecretMedia
 from secret_messages.views import (
     ContactCreateUpdateApi,
     ContactRetrieveUpdateDeleteApi,
     SecretMessageRetrieveApi,
     SecretMessageCreateApi,
-    UserContactListApi, UserSecretMediaListApi, SecretMediaRetrieveApi,
+    UserContactListApi,
+    UserSecretMediaListApi,
+    SecretMediaRetrieveApi,
     SecretMediaCreateApi,
 )
 

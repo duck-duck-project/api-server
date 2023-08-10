@@ -6,7 +6,9 @@ from secret_messages.exceptions import (
     ContactDoesNotExistError,
     SecretMessageDoesNotExistError,
 )
-from secret_messages.models import Contact, SecretMessage, SecretMedia
+from secret_messages.models.contacts import Contact
+from secret_messages.models.secret_medias import SecretMedia
+from secret_messages.models.secret_messages import SecretMessage
 
 __all__ = (
     'get_contact_by_id',

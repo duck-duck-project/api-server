@@ -7,7 +7,9 @@ from secret_messages.exceptions import (
     ContactDoesNotExistError,
     SecretMediaAlreadyExistsError,
 )
-from secret_messages.models import Contact, SecretMessage, SecretMedia
+from secret_messages.models.contacts import Contact
+from secret_messages.models.secret_medias import SecretMedia
+from secret_messages.models.secret_messages import SecretMessage
 from users.models import User
 
 __all__ = (

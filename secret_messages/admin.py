@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from secret_messages.models import SecretMessage, Contact, SecretMedia
+from secret_messages.models.contacts import Contact
+from secret_messages.models.secret_medias import SecretMedia
+from secret_messages.models.secret_messages import SecretMessage
 
 
 @admin.register(SecretMessage)

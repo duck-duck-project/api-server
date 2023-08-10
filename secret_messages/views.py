@@ -11,7 +11,7 @@ from secret_messages.exceptions import (
     SecretMessageDoesNotExistError,
     SecretMediaAlreadyExistsError,
 )
-from secret_messages.models import SecretMedia
+from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.selectors import (
     get_contact_by_id,
     get_contacts_by_user_id,
