@@ -9,6 +9,7 @@ __all__ = ('User', 'Preferences', 'Contact')
 
 
 class User(models.Model):
+    """User model."""
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=64, null=True, blank=True)
     is_premium = models.BooleanField(default=False)
@@ -17,6 +18,7 @@ class User(models.Model):
 
 
 class Contact(models.Model):
+    """User contacts."""
     of_user = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,
@@ -37,6 +39,7 @@ class Contact(models.Model):
 
 
 class Preferences(models.Model):
+    """User preferences."""
     user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE,

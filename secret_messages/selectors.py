@@ -2,9 +2,7 @@ from uuid import UUID
 
 from django.db.models import QuerySet
 
-from secret_messages.exceptions import (
-    SecretMessageDoesNotExistError,
-)
+from secret_messages.exceptions import SecretMessageDoesNotExistError
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.models.secret_message_templates import (
     SecretMessageDescriptionTemplate,
@@ -22,6 +20,17 @@ __all__ = (
 
 
 def get_secret_message_by_id(secret_message_id: UUID) -> SecretMessage:
+    """Get secret message by ID.
+
+    Args:
+        secret_message_id: ID of the secret message.
+
+    Returns:
+        SecretMessage object.
+
+    Raises:
+        SecretMessageDoesNotExistError: If secret message with the given ID
+    """
     try:
         return SecretMessage.objects.get(id=secret_message_id)
     except SecretMessage.DoesNotExist:
@@ -81,10 +90,12 @@ def get_secret_media_by_id(secret_media_id: UUID) -> SecretMedia:
 def get_secret_message_description_templates() -> (
         QuerySet[SecretMessageDescriptionTemplate]
 ):
+    """Get all secret message description templates."""
     return SecretMessageDescriptionTemplate.objects.all()
 
 
 def get_secret_message_button_templates() -> (
         QuerySet[SecretMessageButtonTemplate]
 ):
+    """Get all secret message button templates."""
     return SecretMessageButtonTemplate.objects.all()

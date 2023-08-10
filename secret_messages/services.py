@@ -18,6 +18,15 @@ def create_secret_message(
         secret_message_id: UUID,
         text: str,
 ) -> SecretMessage:
+    """Create secret message.
+
+    Args:
+        secret_message_id: ID of the secret message.
+        text: Text of the secret message.
+
+    Returns:
+        Created SecretMessage object.
+    """
     return SecretMessage.objects.create(
         id=secret_message_id,
         text=text,

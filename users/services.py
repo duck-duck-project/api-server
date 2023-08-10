@@ -47,6 +47,18 @@ def upsert_contact(
         public_name: str,
         is_hidden: bool,
 ) -> tuple[Contact, bool]:
+    """Create contact or update contact if already exists.
+
+    Args:
+        of_user: user who adds contact.
+        to_user: user who is added to contacts.
+        private_name: name of contact that is visible only to user.
+        public_name: name of contact that is visible to all users.
+        is_hidden: whether contact is hidden from user.
+
+    Returns:
+        Contact instance and boolean that indicates
+    """
     try:
         return Contact.objects.update_or_create(
             of_user=of_user,
@@ -70,6 +82,17 @@ def update_contact(
         public_name: str,
         is_hidden: bool,
 ) -> None:
+    """Update contact.
+
+    Args:
+        contact_id: ID of contact.
+        private_name: name of contact that is visible only to user.
+        public_name: name of contact that is visible to all users.
+        is_hidden: whether contact is hidden from user.
+
+    Raises:
+        ContactDoesNotExistError: If contact does not exist.
+    """
     contacts_to_update = Contact.objects.filter(id=contact_id)
     updated_rows_count = contacts_to_update.update(
         private_name=private_name,
