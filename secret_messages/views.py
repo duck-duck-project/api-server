@@ -107,6 +107,7 @@ class ContactRetrieveUpdateDeleteApi(APIView):
     class InputSerializer(serializers.Serializer):
         private_name = serializers.CharField(max_length=64)
         public_name = serializers.CharField(max_length=64)
+        is_hidden = serializers.BooleanField(default=False)
 
     def get(self, request: Request, contact_id: int):
         try:
@@ -124,12 +125,14 @@ class ContactRetrieveUpdateDeleteApi(APIView):
 
         private_name: str = serialized_data['private_name']
         public_name: str = serialized_data['public_name']
+        is_hidden: bool = serialized_data['is_hidden']
 
         try:
             update_contact(
                 contact_id=contact_id,
                 private_name=private_name,
                 public_name=public_name,
+                is_hidden=is_hidden,
             )
         except ContactDoesNotExistError:
             raise NotFound('Contact does not exist')

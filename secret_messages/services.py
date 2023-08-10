@@ -47,11 +47,13 @@ def update_contact(
         contact_id: int,
         private_name: str,
         public_name: str,
+        is_hidden: bool,
 ) -> None:
     contacts_to_update = Contact.objects.filter(id=contact_id)
     updated_rows_count = contacts_to_update.update(
         private_name=private_name,
         public_name=public_name,
+        is_hidden=is_hidden,
     )
     if not updated_rows_count:
         raise ContactDoesNotExistError(contact_id=contact_id)
