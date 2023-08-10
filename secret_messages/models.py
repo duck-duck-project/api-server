@@ -30,6 +30,7 @@ class Contact(models.Model):
 class SecretMessage(models.Model):
     id = models.UUIDField(primary_key=True)
     text = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class SecretMedia(models.Model):
@@ -53,3 +54,4 @@ class SecretMedia(models.Model):
     )
     file_id = models.CharField(max_length=255, unique=True)
     media_type = models.PositiveSmallIntegerField(choices=MediaType.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
