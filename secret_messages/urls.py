@@ -9,6 +9,8 @@ from secret_messages.views import (
     UserSecretMediaListApi,
     SecretMediaRetrieveApi,
     SecretMediaCreateApi,
+    SecretMessageDescriptionTemplateListApi,
+    SecretMessageButtonTemplateListApi,
 )
 
 urlpatterns = [
@@ -18,6 +20,15 @@ urlpatterns = [
     ),
     path(r'contacts/', ContactCreateUpdateApi.as_view()),
     path(r'contacts/users/<int:user_id>/', UserContactListApi.as_view()),
+    path(
+        r'secret-messages-description-templates/',
+        SecretMessageDescriptionTemplateListApi.as_view(),
+        name='secret-messages-description-templates',
+    ),
+    path(
+        r'secret-messages-button-templates/',
+        SecretMessageButtonTemplateListApi.as_view(),
+    ),
     path('secret-messages/', SecretMessageCreateApi.as_view()),
     path(
         'secret-messages/<uuid:secret_message_id>/',

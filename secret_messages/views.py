@@ -17,6 +17,8 @@ from secret_messages.selectors import (
     get_contacts_by_user_id,
     get_secret_message_by_id,
     get_secret_media_by_id, get_secret_medias_created_by_user_id,
+    get_secret_message_description_templates,
+    get_secret_message_button_templates,
 )
 from secret_messages.services import (
     upsert_contact, update_contact,
@@ -284,3 +286,29 @@ class SecretMediaCreateApi(APIView):
         response_data = serializer.data
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class SecretMessageDescriptionTemplateListApi(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        text = serializers.CharField()
+        created_at = serializers.DateTimeField()
+
+    def get(self, request: Request):
+        templates = get_secret_message_description_templates()
+        serializer = self.OutputSerializer(templates, many=True)
+        return Response(serializer.data)
+
+
+class SecretMessageButtonTemplateListApi(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        text = serializers.CharField()
+        created_at = serializers.DateTimeField()
+
+    def get(self, request: Request):
+        templates = get_secret_message_button_templates()
+        serializer = self.OutputSerializer(templates, many=True)
+        return Response(serializer.data)

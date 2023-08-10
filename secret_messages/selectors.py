@@ -8,6 +8,10 @@ from secret_messages.exceptions import (
 )
 from secret_messages.models.contacts import Contact
 from secret_messages.models.secret_medias import SecretMedia
+from secret_messages.models.secret_message_templates import (
+    SecretMessageDescriptionTemplate,
+    SecretMessageButtonTemplate,
+)
 from secret_messages.models.secret_messages import SecretMessage
 
 __all__ = (
@@ -16,6 +20,8 @@ __all__ = (
     'get_secret_message_by_id',
     'get_secret_medias_created_by_user_id',
     'get_secret_media_by_id',
+    'get_secret_message_button_templates',
+    'get_secret_message_description_templates',
 )
 
 
@@ -93,3 +99,15 @@ def get_secret_media_by_id(secret_media_id: UUID) -> SecretMedia:
         raise SecretMessageDoesNotExistError(
             secret_message_id=secret_media_id,
         )
+
+
+def get_secret_message_description_templates() -> (
+        QuerySet[SecretMessageDescriptionTemplate]
+):
+    return SecretMessageDescriptionTemplate.objects.all()
+
+
+def get_secret_message_button_templates() -> (
+        QuerySet[SecretMessageButtonTemplate]
+):
+    return SecretMessageButtonTemplate.objects.all()
