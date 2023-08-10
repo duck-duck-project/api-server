@@ -1,16 +1,17 @@
 from django.urls import path
 
 from secret_messages.views import (
-    ContactCreateUpdateApi,
-    ContactRetrieveUpdateDeleteApi,
     SecretMessageRetrieveApi,
     SecretMessageCreateApi,
-    UserContactListApi,
     UserSecretMediaListApi,
     SecretMediaRetrieveApi,
     SecretMediaCreateApi,
     SecretMessageDescriptionTemplateListApi,
     SecretMessageButtonTemplateListApi,
+)
+from users.views.contacts import (
+    UserContactListApi, ContactCreateUpdateApi,
+    ContactRetrieveUpdateDeleteApi
 )
 
 urlpatterns = [

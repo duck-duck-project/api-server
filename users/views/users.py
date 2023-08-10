@@ -8,7 +8,10 @@ from users.exceptions import UserDoesNotExistsError
 from users.selectors import get_user_by_id
 from users.services import upsert_user
 
-__all__ = ('UserRetrieveApi', 'UserCreateUpdateApi')
+__all__ = (
+    'UserRetrieveApi',
+    'UserCreateUpdateApi',
+)
 
 
 class UserRetrieveApi(APIView):
