@@ -1,11 +1,10 @@
 from django.contrib import admin
 
-from users.models import User, Contact, Preferences
+from users.models import User, Contact
 
 __all__ = (
     'UserAdmin',
     'ContactAdmin',
-    'PreferencesAdmin',
 )
 
 
@@ -16,9 +15,4 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Preferences)
-class PreferencesAdmin(admin.ModelAdmin):
     pass

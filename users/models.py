@@ -1,11 +1,8 @@
 from django.db import models
 
-from secret_messages.models.secret_message_templates import (
-    SecretMessageButtonTemplate,
-    SecretMessageDescriptionTemplate,
-)
+from secret_messages.models.secret_message_themes import SecretMessageTheme
 
-__all__ = ('User', 'Preferences', 'Contact')
+__all__ = ('User', 'Contact')
 
 
 class User(models.Model):
@@ -14,6 +11,12 @@ class User(models.Model):
     username = models.CharField(max_length=64, null=True, blank=True)
     is_premium = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    secret_message_theme = models.ForeignKey(
+        to=SecretMessageTheme,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    can_be_added_to_contacts = models.BooleanField(default=True)
 
 
 class Contact(models.Model):
@@ -35,31 +38,3 @@ class Contact(models.Model):
 
     class Meta:
         unique_together = ('of_user', 'to_user')
-
-
-class Preferences(models.Model):
-    """User preferences."""
-    user = models.OneToOneField(
-        to=User,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
-    secret_message_description_template = models.ForeignKey(
-        to=SecretMessageDescriptionTemplate,
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-    secret_message_description_emoji = models.CharField(
-        max_length=16,
-        default='📩',
-    )
-    secret_message_button_template = models.ForeignKey(
-        to=SecretMessageButtonTemplate,
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-    secret_message_button_emoji = models.CharField(
-        max_length=16,
-        default='👀',
-    )
-    can_be_added_to_contacts = models.BooleanField(default=True)
