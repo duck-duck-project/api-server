@@ -1,0 +1,10 @@
+[telegram_bot]
+token = ""
+
+[server_api]
+base_url = ""
+
+[redis]
+host = ""
+port = 0
+db = 0

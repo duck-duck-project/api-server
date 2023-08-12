@@ -1,0 +1,2 @@
+class JokeAlreadyExists(Exception):
+    pass
