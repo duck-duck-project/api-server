@@ -1,35 +1,36 @@
 from rest_framework import serializers, status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, APIException
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.exceptions import UserDoesNotExistsError, ContactDoesNotExistError
+from users.exceptions import (
+    UserDoesNotExistsError, ContactDoesNotExistError,
+    ContactAlreadyExistsError
+)
 from users.selectors.contacts import (
     get_contacts_by_user_id,
     get_contact_by_id,
 )
 from users.selectors.users import get_user_by_id
-from users.services.contacts import update_contact, create_contact
+from users.services.contacts import (
+    update_contact, create_contact,
+    delete_contact_by_id
+)
+from users.views.users import UserOutputSerializer
 
 __all__ = (
     'UserContactListApi',
-    'ContactCreateUpdateApi',
+    'ContactCreateApi',
     'ContactRetrieveUpdateDeleteApi',
 )
 
 
 class ContactSerializer(serializers.Serializer):
-    class UserSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        fullname = serializers.CharField()
-        username = serializers.CharField(allow_null=True)
-        is_premium = serializers.BooleanField()
-        can_be_added_to_contacts = serializers.BooleanField()
 
     id = serializers.IntegerField()
-    of_user = UserSerializer()
-    to_user = UserSerializer()
+    of_user = UserOutputSerializer()
+    to_user = UserOutputSerializer()
     private_name = serializers.CharField()
     public_name = serializers.CharField()
     created_at = serializers.DateTimeField()
@@ -44,14 +45,13 @@ class UserContactListApi(APIView):
         return Response(serializer.data)
 
 
-class ContactCreateUpdateApi(APIView):
+class ContactCreateApi(APIView):
 
     class InputSerializer(serializers.Serializer):
         of_user_id = serializers.IntegerField()
         to_user_id = serializers.IntegerField()
         private_name = serializers.CharField(max_length=64)
         public_name = serializers.CharField(max_length=64)
-        is_hidden = serializers.BooleanField(default=False)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
@@ -62,7 +62,6 @@ class ContactCreateUpdateApi(APIView):
         to_user_id: int = serialized_data['to_user_id']
         private_name: str = serialized_data['private_name']
         public_name: str = serialized_data['public_name']
-        is_hidden: bool = serialized_data['is_hidden']
 
         try:
             of_user = get_user_by_id(of_user_id)
@@ -70,21 +69,21 @@ class ContactCreateUpdateApi(APIView):
         except UserDoesNotExistsError as error:
             raise NotFound(f'User by ID "{error.user_id}" does not exist')
 
-        contact, is_created = upsert_contact(
+        try:
+            contact = create_contact(
             of_user=of_user,
             to_user=to_user,
             private_name=private_name,
             public_name=public_name,
-            is_hidden=is_hidden,
-        )
+
+            )
+        except ContactAlreadyExistsError:
+            error = APIException('Contact already exists')
+            error.status_code = status.HTTP_409_CONFLICT
+            raise error
 
         serializer = ContactSerializer(contact)
-
-        status_code = (
-            status.HTTP_201_CREATED
-            if is_created else status.HTTP_204_NO_CONTENT
-        )
-        return Response(serializer.data, status=status_code)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ContactRetrieveUpdateDeleteApi(APIView):
@@ -112,17 +111,17 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         public_name: str = serialized_data['public_name']
         is_hidden: bool = serialized_data['is_hidden']
 
-        try:
-            update_contact(
+        is_updated = update_contact(
                 contact_id=contact_id,
                 private_name=private_name,
                 public_name=public_name,
                 is_hidden=is_hidden,
             )
-        except ContactDoesNotExistError:
-            raise NotFound('Contact does not exist')
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        response_status_code = (
+            status.HTTP_204_NO_CONTENT
+            if is_updated else status.HTTP_404_NOT_FOUND
+        )
+        return Response(status=response_status_code)
 
     def delete(self, request: Request, contact_id: int):
         try:
@@ -130,6 +129,10 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         except ContactDoesNotExistError:
             raise NotFound('Contact does not exist')
 
-        contact.delete()
+        is_deleted = delete_contact_by_id(contact.id)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        response_status_code = (
+            status.HTTP_204_NO_CONTENT if is_deleted
+            else status.HTTP_404_NOT_FOUND
+        )
+        return Response(status=response_status_code)

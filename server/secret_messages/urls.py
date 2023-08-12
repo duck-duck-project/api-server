@@ -7,18 +7,8 @@ from secret_messages.views import (
     SecretMediaRetrieveApi,
     SecretMediaCreateApi,
 )
-from users.views.contacts import (
-    UserContactListApi, ContactCreateUpdateApi,
-    ContactRetrieveUpdateDeleteApi
-)
 
 urlpatterns = [
-    path(
-        r'contacts/<int:contact_id>/',
-        ContactRetrieveUpdateDeleteApi.as_view(),
-    ),
-    path(r'contacts/', ContactCreateUpdateApi.as_view()),
-    path(r'contacts/users/<int:user_id>/', UserContactListApi.as_view()),
     path('secret-messages/', SecretMessageCreateApi.as_view()),
     path(
         'secret-messages/<uuid:secret_message_id>/',
