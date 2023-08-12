@@ -5,7 +5,7 @@ from users.models import User
 from users.services.users import create_user, update_user
 
 
-class TestUserCreateServices(TestCase):
+class UserCreateServicesTests(TestCase):
 
     def test_create_user(self) -> None:
         user = create_user(
@@ -29,7 +29,7 @@ class TestUserCreateServices(TestCase):
             )
 
 
-class TestUserUpdateServices(TestCase):
+class UserUpdateServicesTests(TestCase):
 
     def setUp(self) -> None:
         self.user = User.objects.create(

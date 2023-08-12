@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from users.models import User
 
 
-class TestUserUpdateApi(APITestCase):
+class UserUpdateApiTests(APITestCase):
 
     def setUp(self) -> None:
         self.user = User.objects.create(
@@ -47,7 +47,7 @@ class TestUserUpdateApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class TestUserRetrieveApi(APITestCase):
+class UserRetrieveApiTests(APITestCase):
 
     def setUp(self) -> None:
         self.user = User.objects.create(
@@ -78,7 +78,7 @@ class TestUserRetrieveApi(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class TestUserCreateApi(APITestCase):
+class UserCreateApiTests(APITestCase):
 
     def test_create_user(self) -> None:
         data = {

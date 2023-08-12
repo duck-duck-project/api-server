@@ -5,7 +5,7 @@ from users.models import User
 from users.selectors.users import get_user_by_id
 
 
-class TestUserSelectors(TestCase):
+class UserSelectorsTests(TestCase):
 
     def setUp(self) -> None:
         self.user = User.objects.create(

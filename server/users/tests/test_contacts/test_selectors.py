@@ -5,7 +5,7 @@ from users.models import Contact, User
 from users.selectors.contacts import get_contact_by_id, get_contacts_by_user_id
 
 
-class ContactSelectorsTestCase(TestCase):
+class ContactSelectorsTests(TestCase):
 
     def setUp(self) -> None:
         self.eldos = User.objects.create(
