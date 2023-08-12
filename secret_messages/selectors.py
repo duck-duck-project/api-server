@@ -4,10 +4,7 @@ from django.db.models import QuerySet
 
 from secret_messages.exceptions import SecretMessageDoesNotExistError
 from secret_messages.models.secret_medias import SecretMedia
-from secret_messages.models.secret_message_templates import (
-    SecretMessageDescriptionTemplate,
-    SecretMessageButtonTemplate,
-)
+from secret_messages.models.secret_message_themes import SecretMessageTheme
 from secret_messages.models.secret_messages import SecretMessage
 
 __all__ = (
@@ -87,15 +84,5 @@ def get_secret_media_by_id(secret_media_id: UUID) -> SecretMedia:
         )
 
 
-def get_secret_message_description_templates() -> (
-        QuerySet[SecretMessageDescriptionTemplate]
-):
-    """Get all secret message description templates."""
-    return SecretMessageDescriptionTemplate.objects.all()
-
-
-def get_secret_message_button_templates() -> (
-        QuerySet[SecretMessageButtonTemplate]
-):
-    """Get all secret message button templates."""
-    return SecretMessageButtonTemplate.objects.all()
+def get_secret_message_themes() -> QuerySet[SecretMessageTheme]:
+    return SecretMessageTheme.objects.all()

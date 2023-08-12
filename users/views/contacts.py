@@ -5,12 +5,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.exceptions import UserDoesNotExistsError, ContactDoesNotExistError
-from users.selectors import (
+from users.selectors.contacts import (
     get_contacts_by_user_id,
-    get_user_by_id,
     get_contact_by_id,
 )
-from users.services import upsert_contact, update_contact
+from users.selectors.users import get_user_by_id
+from users.services.contacts import update_contact, create_contact
 
 __all__ = (
     'UserContactListApi',

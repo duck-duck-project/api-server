@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.exceptions import UserDoesNotExistsError
-from users.selectors import get_user_by_id
-from users.services import upsert_user
+from users.selectors.users import get_user_by_id
+from users.services.users import create_user, update_user
 
 __all__ = (
     'UserRetrieveApi',

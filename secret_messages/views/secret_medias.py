@@ -17,7 +17,7 @@ from secret_messages.selectors import (
 )
 from secret_messages.services import create_secret_media
 from users.exceptions import ContactDoesNotExistError
-from users.selectors import get_contact_by_id
+from users.selectors.contacts import get_contact_by_id
 from users.views.contacts import ContactSerializer
 
 
