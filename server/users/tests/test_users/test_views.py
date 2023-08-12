@@ -30,9 +30,9 @@ class TestUserUpdateApi(APITestCase):
 
         self.assertEqual(self.user.username, 'pushkin')
         self.assertEqual(self.user.fullname, 'Alexander Pushkin')
-        self.assertEqual(self.user.is_premium, True)
-        self.assertEqual(self.user.can_be_added_to_contacts, False)
-        self.assertEqual(self.user.secret_message_theme_id, None)
+        self.assertTrue(self.user.is_premium)
+        self.assertFalse(self.user.can_be_added_to_contacts, False)
+        self.assertIsNone(self.user.secret_message_theme_id)
 
     def test_update_user_not_found(self) -> None:
         url = reverse('users:retrieve-update', args=(12345,))
