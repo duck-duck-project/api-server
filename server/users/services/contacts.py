@@ -6,6 +6,7 @@ from users.models import User, Contact
 __all__ = (
     'create_contact',
     'update_contact',
+    'delete_contact_by_id',
 )
 
 
@@ -61,3 +62,16 @@ def update_contact(
         is_hidden=is_hidden,
     )
     return bool(updated_count)
+
+
+def delete_contact_by_id(contact_id: int) -> bool:
+    """Delete contact by id.
+
+    Keyword Args:
+        contact_id: id of contact to delete.
+
+    Returns:
+        True if contact was deleted, False otherwise.
+    """
+    deleted_count = Contact.objects.filter(id=contact_id).delete()
+    return bool(deleted_count)
