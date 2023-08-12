@@ -9,14 +9,14 @@ from aiohttp import ClientTimeout
 
 import anonymous_messaging.handlers
 import common.handlers
-import whisper.handlers
+import secret_messaging.handlers
 from common.middlewares import DependencyInjectMiddleware
 from config import load_config_from_file_path
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
     common.handlers.register_handlers(dispatcher)
-    whisper.handlers.register_handlers(dispatcher)
+    secret_messaging.handlers.register_handlers(dispatcher)
 
     # it's important to register anonymous_messaging.handlers after all handlers
     anonymous_messaging.handlers.register_handlers(dispatcher)
