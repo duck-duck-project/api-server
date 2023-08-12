@@ -7,7 +7,7 @@ __all__ = (
 
 
 def get_user_by_id(user_id: int) -> User:
-    """Retrieve user instance by ID.
+    """Retrieve user instance by ID. Also select related secret message theme.
 
     Args:
         user_id: Telegram ID of user.
@@ -19,6 +19,11 @@ def get_user_by_id(user_id: int) -> User:
         UserDoesNotExistsError: If user does not exist.
     """
     try:
-        return User.objects.get(id=user_id)
+        return (
+            User
+            .objects
+            .select_related('secret_message_theme')
+            .get(id=user_id)
+        )
     except User.DoesNotExist:
         raise UserDoesNotExistsError(user_id=user_id)
