@@ -28,6 +28,7 @@ ContainsNamePlaceholder = Annotated[
 
 
 class SecretMessageTheme(BaseModel):
+    id: int
     description_template_text: ContainsNamePlaceholder
     button_text: str
     created_at: datetime
@@ -39,6 +40,7 @@ class User(BaseModel):
     username: str | None
     is_premium: bool
     can_be_added_to_contacts: bool
+    secret_message_theme: SecretMessageTheme | None
 
 
 class Contact(BaseModel):
