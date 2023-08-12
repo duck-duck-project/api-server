@@ -15,7 +15,6 @@ def create_contact(
         to_user: User,
         private_name: str,
         public_name: str,
-        is_hidden: bool,
 ) -> Contact:
     """Create contact.
 
@@ -24,7 +23,6 @@ def create_contact(
         to_user: user who is added to contacts.
         private_name: name of contact that is visible only to user.
         public_name: name of contact that is visible to all users.
-        is_hidden: whether contact is hidden from user.
 
     Returns:
         Contact instance.
@@ -35,7 +33,6 @@ def create_contact(
             to_user=to_user,
             private_name=private_name,
             public_name=public_name,
-            is_hidden=is_hidden,
         )
     except IntegrityError as error:
         if 'UNIQUE constraint failed' in str(error):
