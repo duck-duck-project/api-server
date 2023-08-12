@@ -1,2 +1,0 @@
-class JokeAlreadyExists(Exception):
-    pass
