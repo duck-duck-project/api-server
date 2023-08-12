@@ -35,7 +35,7 @@ def create_contact(
             public_name=public_name,
         )
     except IntegrityError as error:
-        if 'UNIQUE constraint failed' in str(error):
+        if 'duplicate key value violates unique constraint' in str(error):
             raise ContactAlreadyExistsError
         raise
 
