@@ -1,9 +1,10 @@
 import enum
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, AfterValidator
 
 __all__ = (
     'User',
@@ -12,7 +13,24 @@ __all__ = (
     'Draft',
     'SecretMedia',
     'SecretMediaType',
+    'SecretMessageTheme',
 )
+
+
+def contains_name_placeholder(text: str) -> bool:
+    return '{name}' in text
+
+
+ContainsNamePlaceholder = Annotated[
+    str,
+    AfterValidator(contains_name_placeholder)
+]
+
+
+class SecretMessageTheme(BaseModel):
+    description_template_text: ContainsNamePlaceholder
+    button_text: str
+    created_at: datetime
 
 
 class User(BaseModel):
