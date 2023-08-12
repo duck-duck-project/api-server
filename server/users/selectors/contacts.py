@@ -24,7 +24,12 @@ def get_contact_by_id(contact_id: int) -> Contact:
     try:
         return (
             Contact.objects
-            .select_related('of_user', 'to_user')
+            .select_related(
+                'of_user',
+                'to_user',
+                'of_user__secret_message_theme',
+                'to_user__secret_message_theme',
+            )
             .get(id=contact_id)
         )
     except Contact.DoesNotExist:
@@ -42,6 +47,11 @@ def get_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
     """
     return (
         Contact.objects
-        .select_related('of_user', 'to_user')
+        .select_related(
+            'of_user',
+            'to_user',
+            'of_user__secret_message_theme',
+            'to_user__secret_message_theme',
+        )
         .filter(of_user_id=user_id)
     )
