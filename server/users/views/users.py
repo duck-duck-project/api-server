@@ -17,6 +17,7 @@ __all__ = (
 class UserOutputSerializer(serializers.Serializer):
 
     class SecretMessageThemeSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
         description_template_text = serializers.CharField()
         button_text = serializers.CharField()
 
