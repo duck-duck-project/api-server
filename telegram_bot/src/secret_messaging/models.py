@@ -17,8 +17,9 @@ __all__ = (
 )
 
 
-def contains_name_placeholder(text: str) -> bool:
-    return '{name}' in text
+def contains_name_placeholder(text: str) -> str:
+    assert '{name}' in text
+    return text
 
 
 ContainsNamePlaceholder = Annotated[
@@ -31,7 +32,6 @@ class SecretMessageTheme(BaseModel):
     id: int
     description_template_text: ContainsNamePlaceholder
     button_text: str
-    created_at: datetime
 
 
 class User(BaseModel):
