@@ -97,7 +97,7 @@ class UserRepository(APIRepository):
             'username': username,
             'can_be_added_to_contacts': can_be_added_to_contacts,
             'is_premium': is_premium,
-            'secret_messages_theme_id': secret_messages_theme_id,
+            'secret_message_theme_id': secret_messages_theme_id,
         }
         url = f'/users/{user_id}/'
         async with self._http_client.put(url, json=request_data) as response:
