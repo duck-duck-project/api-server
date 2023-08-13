@@ -1,6 +1,6 @@
 from common.repositories import APIRepository
-from whisper import models
-from whisper.exceptions import UserDoesNotExistError
+from secret_messaging import models
+from secret_messaging.exceptions import UserDoesNotExistError
 
 __all__ = ('UserRepository',)
 

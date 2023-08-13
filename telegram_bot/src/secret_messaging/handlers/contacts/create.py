@@ -3,8 +3,8 @@ from aiogram.dispatcher.filters import Command, IsReplyFilter
 from aiogram.types import Message
 
 from common.repositories import HTTPClientFactory
-from whisper.exceptions import UserDoesNotExistError
-from whisper.repositories import ContactRepository, UserRepository
+from secret_messaging.exceptions import UserDoesNotExistError
+from secret_messaging.repositories import ContactRepository, UserRepository
 
 __all__ = ('register_handlers',)
 

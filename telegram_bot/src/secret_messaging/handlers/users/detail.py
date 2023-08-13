@@ -6,9 +6,12 @@ from aiogram.types import Message, ChatType, CallbackQuery
 from anonymous_messaging.services import is_anonymous_messaging_enabled
 from common.repositories import HTTPClientFactory
 from common.views import answer_view, edit_message_by_view
-from whisper.exceptions import UserDoesNotExistError
-from whisper.repositories import UserRepository
-from whisper.views import UserSettingsCalledInGroupChatView, UserSettingsView
+from secret_messaging.exceptions import UserDoesNotExistError
+from secret_messaging.repositories import UserRepository
+from secret_messaging.views import (
+    UserSettingsCalledInGroupChatView,
+    UserSettingsView,
+)
 
 __all__ = ('register_handlers',)
 

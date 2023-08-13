@@ -1,8 +1,8 @@
 from uuid import UUID
 
 from common.repositories import APIRepository
-from whisper import models
-from whisper.exceptions import SecretMessageDoesNotExistError
+from secret_messaging import models
+from secret_messaging.exceptions import SecretMessageDoesNotExistError
 
 __all__ = ('SecretMessageRepository',)
 

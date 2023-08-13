@@ -1,7 +1,7 @@
 from pydantic import TypeAdapter
 
-from src.common.repositories import APIRepository
-from src.secret_messaging.models import SecretMessageTheme
+from common.repositories import APIRepository
+from secret_messaging.models import SecretMessageTheme
 
 __all__ = ('SecretMessageThemeRepository',)
 

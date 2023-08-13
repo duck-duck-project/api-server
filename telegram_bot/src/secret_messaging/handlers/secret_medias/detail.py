@@ -6,13 +6,14 @@ from aiogram.types import Message, ChatType
 from aiogram.utils.exceptions import TelegramAPIError
 
 from common.repositories import HTTPClientFactory
-from whisper.models import SecretMediaType
-from whisper.repositories import SecretMediaRepository
-from whisper.services import (
-    can_see_secret, extract_secret_media_id,
-    get_message_method_by_media_type
+from secret_messaging.models import SecretMediaType
+from secret_messaging.repositories import SecretMediaRepository
+from secret_messaging.services import (
+    can_see_secret,
+    extract_secret_media_id,
+    get_message_method_by_media_type,
 )
-from whisper.views import SecretMediaDetailView
+from secret_messaging.views import SecretMediaDetailView
 
 __all__ = ('register_handlers',)
 

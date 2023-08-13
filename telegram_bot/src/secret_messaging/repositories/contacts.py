@@ -1,7 +1,7 @@
 from pydantic import TypeAdapter
 
 from common.repositories import APIRepository
-from whisper import models
+from secret_messaging import models
 
 __all__ = ('ContactRepository',)
 

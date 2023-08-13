@@ -5,8 +5,8 @@ from uuid import UUID
 from aiogram.types import Message
 
 from anonymous_messaging.services import HasFileID
-from whisper.exceptions import InvalidSecretMediaDeeplinkError
-from whisper.models import Contact, SecretMediaType
+from secret_messaging.exceptions import InvalidSecretMediaDeeplinkError
+from secret_messaging.models import Contact, SecretMediaType
 
 __all__ = (
     'can_see_secret',

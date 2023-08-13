@@ -4,16 +4,18 @@ from aiogram import Dispatcher
 from aiogram.types import CallbackQuery, Update
 
 from common.repositories import HTTPClientFactory
-from whisper.callback_data import (
+from secret_messaging.callback_data import (
     SecretMessageDetailCallbackData,
     InvertedSecretMessageDetailCallbackData
 )
-from whisper.exceptions import SecretMessageDoesNotExistError
-from whisper.repositories import ContactRepository, SecretMessageRepository
+from secret_messaging.exceptions import SecretMessageDoesNotExistError
+from secret_messaging.repositories import (
+    ContactRepository,
+    SecretMessageRepository,
+)
+from secret_messaging.services import can_see_secret
 
 __all__ = ('register_handlers',)
-
-from whisper.services import can_see_secret
 
 
 async def on_secret_message_does_not_exist_error(

@@ -3,9 +3,9 @@ from aiogram.types import CallbackQuery, ChatType
 
 from common.repositories import HTTPClientFactory
 from common.views import edit_message_by_view
-from whisper.callback_data import ContactUpdateCallbackData
-from whisper.repositories import ContactRepository
-from whisper.views import ContactDetailView
+from secret_messaging.callback_data import ContactUpdateCallbackData
+from secret_messaging.repositories import ContactRepository
+from secret_messaging.views import ContactDetailView
 
 __all__ = ('register_handlers',)
 

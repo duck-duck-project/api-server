@@ -5,14 +5,17 @@ from uuid import UUID
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from common.views import View, InlineQueryView
-from whisper.callback_data import (
+from secret_messaging.callback_data import (
     ContactDetailCallbackData,
     ContactUpdateCallbackData,
     ContactDeleteCallbackData,
     SecretMessageDetailCallbackData,
     InvertedSecretMessageDetailCallbackData,
 )
-from whisper.models import Contact, SecretMediaType, SecretMedia, User
+from secret_messaging.models import (
+    Contact, SecretMediaType, SecretMedia, User,
+    SecretMessageTheme
+)
 
 __all__ = (
     'ContactListView',
@@ -185,10 +188,12 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
             query_id: UUID,
             contact: Contact,
             secret_message_id: UUID,
+            secret_message_theme: SecretMessageTheme | None,
     ):
         self.__query_id = query_id
         self.__contact = contact
         self.__secret_message_id = secret_message_id
+        self.__secret_message_theme = secret_message_theme
 
     def get_id(self) -> str:
         return self.__query_id.hex
@@ -197,14 +202,27 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
         return f'Контакт: {self.__contact.private_name}'
 
     def get_text(self) -> str:
-        return f'📩 Секретное сообщение для <b>{self.__contact.public_name}</b>'
+        if self.__secret_message_theme is None:
+            return (
+                f'📩 Секретное сообщение для'
+                f' <b>{self.__contact.public_name}</b>'
+            )
+        return (
+            self.__secret_message_theme
+            .description_template_text
+            .format(name=self.__contact.public_name)
+        )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
+        if self.__secret_message_theme is None:
+            text = '👀 Прочитать'
+        else:
+            text = self.__secret_message_theme.button_text
         return InlineKeyboardMarkup(
             inline_keyboard=[
                 [
                     InlineKeyboardButton(
-                        text='👀 Прочитать',
+                        text=text,
                         callback_data=SecretMessageDetailCallbackData().new(
                             contact_id=self.__contact.id,
                             secret_message_id=self.__secret_message_id.hex,

@@ -10,12 +10,12 @@ from aiogram.types import (
 )
 
 from common.repositories import HTTPClientFactory
-from whisper.repositories import (
+from secret_messaging.repositories import (
     ContactRepository,
     SecretMessageRepository,
     UserRepository,
 )
-from whisper.views import (
+from secret_messaging.views import (
     SecretMessageDetailInlineQueryView,
     InvertedSecretMessageDetailInlineQueryView,
     EmptySecretMessageTextInlineQueryView,
@@ -108,6 +108,7 @@ async def on_whisper_message(
             query_id=query_id,
             contact=contact,
             secret_message_id=draft_secret_message_id,
+            secret_message_theme=user.secret_message_theme,
         ).get_inline_query_result_article()
         for contact, query_id in contacts_and_query_ids
     ]

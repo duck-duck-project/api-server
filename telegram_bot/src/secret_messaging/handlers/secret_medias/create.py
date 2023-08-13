@@ -11,16 +11,20 @@ from aiogram.types import (
 
 from common.repositories import HTTPClientFactory
 from common.views import answer_view
-from whisper.models import SecretMediaType
-from whisper.repositories import ContactRepository, SecretMediaRepository
-from whisper.services import (
+from secret_messaging.models import SecretMediaType
+from secret_messaging.repositories import (
+    ContactRepository,
+    SecretMediaRepository,
+)
+from secret_messaging.services import (
     determine_media_file,
     get_message_method_by_media_type,
 )
-from whisper.states import SecretMediaCreateStates
-from whisper.views import (
+from secret_messaging.states import SecretMediaCreateStates
+from secret_messaging.views import (
     SecretMediaCreateContactListView,
-    SecretMediaCreateConfirmView, SecretMediaForShareView,
+    SecretMediaCreateConfirmView,
+    SecretMediaForShareView,
     SecretMediaCalledInGroupChatView,
 )
 

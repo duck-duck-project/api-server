@@ -3,8 +3,8 @@ from uuid import UUID
 from pydantic import TypeAdapter
 
 from common.repositories import APIRepository
-from whisper import models
-from whisper.exceptions import (
+from secret_messaging import models
+from secret_messaging.exceptions import (
     SecretMediaAlreadyExistsError,
     SecretMediaDoesNotExistError,
 )
