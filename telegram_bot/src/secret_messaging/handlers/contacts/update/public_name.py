@@ -41,6 +41,7 @@ async def on_contact_new_public_name_input(
             contact_id=contact_id,
             private_name=contact.private_name,
             public_name=message.text,
+            is_hidden=contact.is_hidden,
         )
         contact = await contact_repository.get_by_id(contact_id)
 

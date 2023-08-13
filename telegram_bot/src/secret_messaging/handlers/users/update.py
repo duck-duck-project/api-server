@@ -20,11 +20,18 @@ async def on_toggle_can_be_added_to_contacts(
     async with closing_http_client_factory() as http_client:
         user_repository = UserRepository(http_client)
         user = await user_repository.get_by_id(callback_query.from_user.id)
-        await user_repository.upsert(
+
+        secret_message_theme_id = (
+            None if user.secret_message_theme is None
+            else user.secret_message_theme.id
+        )
+        await user_repository.update(
             user_id=callback_query.from_user.id,
             fullname=callback_query.from_user.full_name,
             username=callback_query.from_user.username,
             can_be_added_to_contacts=not user.can_be_added_to_contacts,
+            is_premium=user.is_premium,
+            secret_messages_theme_id=secret_message_theme_id,
         )
         user = await user_repository.get_by_id(callback_query.from_user.id)
     state_name = await state.get_state()

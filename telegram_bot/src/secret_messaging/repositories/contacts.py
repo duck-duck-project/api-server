@@ -2,13 +2,19 @@ from pydantic import TypeAdapter
 
 from common.repositories import APIRepository
 from secret_messaging import models
+from secret_messaging.exceptions import (
+    UserDoesNotExistError,
+    ContactAlreadyExistsError,
+    ServerAPIError,
+    ContactDoesNotExistError,
+)
 
 __all__ = ('ContactRepository',)
 
 
 class ContactRepository(APIRepository):
 
-    async def upsert(
+    async def create(
             self,
             *,
             of_user_id: int,
@@ -25,7 +31,11 @@ class ContactRepository(APIRepository):
         url = '/contacts/'
         async with self._http_client.post(url, json=request_data) as response:
             if response.status == 404:
-                raise
+                raise UserDoesNotExistError(user_id=of_user_id)
+            if response.status == 409:
+                raise ContactAlreadyExistsError
+            if response.status != 201:
+                raise ServerAPIError
             response_data = await response.json()
         return models.Contact.model_validate(response_data)
 
@@ -33,8 +43,10 @@ class ContactRepository(APIRepository):
             self,
             user_id: int,
     ) -> list[models.Contact]:
-        url = f'/contacts/users/{user_id}/'
+        url = f'/users/{user_id}/contacts/'
         async with self._http_client.get(url) as response:
+            if response.status != 200:
+                raise ServerAPIError
             response_data = await response.json()
         type_adapter = TypeAdapter(list[models.Contact])
         return type_adapter.validate_python(response_data)
@@ -42,6 +54,8 @@ class ContactRepository(APIRepository):
     async def get_by_id(self, contact_id: int) -> models.Contact:
         url = f'/contacts/{contact_id}/'
         async with self._http_client.get(url) as response:
+            if response.status == 404:
+                raise ContactDoesNotExistError(contact_id=contact_id)
             response_data = await response.json()
         return models.Contact.model_validate(response_data)
 
@@ -51,19 +65,24 @@ class ContactRepository(APIRepository):
             contact_id: int,
             private_name: str,
             public_name: str,
-            is_hidden: bool | None = None,
+            is_hidden: bool,
     ) -> None:
         url = f'/contacts/{contact_id}/'
         request_data = {
             'private_name': private_name,
             'public_name': public_name,
+            'is_hidden': is_hidden,
         }
-        if is_hidden is not None:
-            request_data['is_hidden'] = is_hidden
-        async with self._http_client.put(url, json=request_data):
-            pass
+        async with self._http_client.put(url, json=request_data) as response:
+            if response.status == 404:
+                raise ContactDoesNotExistError(contact_id=contact_id)
+            if response.status != 204:
+                raise ServerAPIError
 
     async def delete_by_id(self, contact_id: int) -> None:
         url = f'/contacts/{contact_id}/'
-        async with self._http_client.delete(url):
-            pass
+        async with self._http_client.delete(url) as response:
+            if response.status == 404:
+                raise ContactDoesNotExistError(contact_id=contact_id)
+            if response.status != 204:
+                raise ServerAPIError
