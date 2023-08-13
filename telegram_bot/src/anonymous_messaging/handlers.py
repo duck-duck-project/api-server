@@ -96,6 +96,11 @@ async def on_toggle_anonymous_messaging_mode(
         callback_query: CallbackQuery,
         state: FSMContext,
 ) -> None:
+    await callback_query.answer(
+        text='Анонимные сообщения временно отключены',
+        show_alert=True,
+    )
+    return
     state_name = await state.get_state()
 
     if is_anonymous_messaging_enabled(state_name):
