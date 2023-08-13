@@ -19,7 +19,7 @@ class User(models.Model):
     can_be_added_to_contacts = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.username or self.username
+        return self.username or self.fullname
 
 
 class Contact(models.Model):
