@@ -11,6 +11,7 @@ __all__ = (
     'get_secret_message_by_id',
     'get_secret_medias_created_by_user_id',
     'get_secret_media_by_id',
+    'get_secret_message_themes',
 )
 
 
