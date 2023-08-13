@@ -36,12 +36,11 @@ async def on_show_settings(
         try:
             user = await user_repository.get_by_id(from_user.id)
         except UserDoesNotExistError:
-            await user_repository.upsert(
+            user = await user_repository.create(
                 user_id=from_user.id,
                 fullname=from_user.full_name,
                 username=from_user.username,
             )
-            user = await user_repository.get_by_id(from_user.id)
 
     state_name = await state.get_state()
     view = UserSettingsView(

@@ -39,13 +39,16 @@ class UserRepository(APIRepository):
             user_id: int,
             fullname: str,
             username: str | None,
-    ) -> None:
+    ) -> models.User:
         """Create user on the server.
 
         Keyword Args:
             user_id: User's Telegram ID.
             fullname: User's full name.
             username: User's username.
+
+        Returns:
+            User model.
 
         Raises:
             UserAlreadyExistsError: If user with given ID already exists.
@@ -62,6 +65,8 @@ class UserRepository(APIRepository):
                 raise UserAlreadyExistsError
             if response.status != 201:
                 raise ServerAPIError
+            response_data = await response.json()
+        return models.User.model_validate(response_data)
 
     async def update(
             self,
