@@ -10,6 +10,7 @@ from secret_messaging.exceptions import (
     UserDoesNotExistError
 )
 from secret_messaging.models import Contact, SecretMediaType, User
+from secret_messaging.repositories import UserRepository
 
 __all__ = (
     'can_see_secret',
@@ -17,9 +18,8 @@ __all__ = (
     'determine_media_file',
     'get_message_method_by_media_type',
     'can_create_new_contact',
+    'get_or_create_user',
 )
-
-from secret_messaging.repositories import UserRepository
 
 
 def can_see_secret(
