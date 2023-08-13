@@ -5,15 +5,21 @@ from uuid import UUID
 from aiogram.types import Message
 
 from anonymous_messaging.services import HasFileID
-from secret_messaging.exceptions import InvalidSecretMediaDeeplinkError
-from secret_messaging.models import Contact, SecretMediaType
+from secret_messaging.exceptions import (
+    InvalidSecretMediaDeeplinkError,
+    UserDoesNotExistError
+)
+from secret_messaging.models import Contact, SecretMediaType, User
 
 __all__ = (
     'can_see_secret',
     'extract_secret_media_id',
     'determine_media_file',
     'get_message_method_by_media_type',
+    'can_create_new_contact',
 )
+
+from secret_messaging.repositories import UserRepository
 
 
 def can_see_secret(
@@ -73,3 +79,28 @@ def get_message_method_by_media_type(
         return media_type_to_method[media_type]
     except KeyError:
         raise ValueError('Unsupported media type')
+
+
+async def get_or_create_user(
+        *,
+        user_id: int,
+        fullname: str,
+        username: str | None,
+        user_repository: UserRepository,
+) -> tuple[User, bool]:
+    try:
+        return await user_repository.get_by_id(user_id=user_id), False
+    except UserDoesNotExistError:
+        return await user_repository.create(
+            user_id=user_id,
+            fullname=fullname,
+            username=username,
+        ), True
+
+
+def can_create_new_contact(
+        *,
+        contacts_count: int,
+        is_premium: bool,
+) -> bool:
+    return contacts_count < 5 or is_premium
