@@ -1,29 +1,39 @@
 from dataclasses import dataclass
 
 
-class SecretMessageDoesNotExistError(Exception):
+class ServerAPIError(Exception):
+    pass
+
+
+class SecretMessageDoesNotExistError(ServerAPIError):
     pass
 
 
 @dataclass(frozen=True, slots=True)
-class UserDoesNotExistError(Exception):
+class UserDoesNotExistError(ServerAPIError):
     user_id: int
+
+    def __str__(self):
+        return f'User with Telegram ID {self.user_id} does not exist'
 
 
 @dataclass(frozen=True, slots=True)
-class UserAlreadyExistsError(Exception):
+class UserAlreadyExistsError(ServerAPIError):
     user_id: int
 
+    def __str__(self):
+        return f'User with Telegram ID {self.user_id} already exists'
 
-class ContactAlreadyExistsError(Exception):
+
+class ContactAlreadyExistsError(ServerAPIError):
     pass
 
 
-class SecretMediaAlreadyExistsError(Exception):
+class SecretMediaAlreadyExistsError(ServerAPIError):
     pass
 
 
-class SecretMediaDoesNotExistError(Exception):
+class SecretMediaDoesNotExistError(ServerAPIError):
     pass
 
 
