@@ -7,19 +7,13 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
 from aiohttp import ClientTimeout
 
-import anonymous_messaging.handlers
-import common.handlers
-import secret_messaging.handlers
-from common.middlewares import DependencyInjectMiddleware
+import handlers
 from config import load_config_from_file_path
+from middlewares import DependencyInjectMiddleware
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
-    common.handlers.register_handlers(dispatcher)
-    secret_messaging.handlers.register_handlers(dispatcher)
-
-    # it's important to register anonymous_messaging.handlers after all handlers
-    anonymous_messaging.handlers.register_handlers(dispatcher)
+    handlers.register_handlers(dispatcher)
 
 
 def main() -> None:

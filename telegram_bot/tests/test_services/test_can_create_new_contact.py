@@ -1,4 +1,4 @@
-from secret_messaging.services import can_create_new_contact
+from services import can_create_new_contact
 
 
 def test_can_create_new_contact_basic():
