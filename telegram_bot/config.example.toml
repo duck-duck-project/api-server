@@ -1,3 +1,5 @@
+main_chat_id = 0
+
 [telegram_bot]
 token = ""
 
@@ -8,3 +10,7 @@ base_url = ""
 host = ""
 port = 0
 db = 0
+
+[sentry]
+dsn = ""
+traces_sample_rate = 1.0  # 100% of traces to be sent to Sentry
