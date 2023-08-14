@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "secret_messages_consumer"}]
 
 [tool.poetry.dependencies]
-python = "3.11"
+python = "^3.11"
 
 
 [build-system]
