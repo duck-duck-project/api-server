@@ -17,7 +17,9 @@ async def on_contact_command_is_not_replied_to_user(
         message: Message,
 ) -> None:
     await message.reply(
-        'Вы должны <b><u>ответить</u></b> на сообщение другого пользователя'
+        'Вы должны <b><u>ответить</u></b> на сообщение другого пользователя\n'
+        'Подробная инструкция: <a href="https://graph.org/Kak-dobavit'
+        '-polzovatelya-v-kontakty-08-14">*ссылка*</a>'
     )
 
 

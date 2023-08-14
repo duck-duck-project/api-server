@@ -254,7 +254,9 @@ def register_handlers(dispatcher: Dispatcher) -> None:
     )
     dispatcher.register_message_handler(
         on_secret_media_command,
-        Command('secret_media') | CommandStart(deep_link='secret_media'),
+        (Command('secret_media')
+         | CommandStart(deep_link='secret_media')
+         | Text('🖼️ Отправить секретное медиа')),
         chat_type=ChatType.PRIVATE,
         state='*',
     )

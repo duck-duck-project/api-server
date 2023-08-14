@@ -15,7 +15,6 @@ from models import (
     Contact,
     SecretMediaType,
     SecretMedia,
-    User,
     SecretMessageTheme,
 )
 from views import View, InlineQueryView
@@ -35,7 +34,6 @@ __all__ = (
     'SecretMediaForShareView',
     'SecretMediaCalledInGroupChatView',
     'UserSettingsCalledInGroupChatView',
-    'UserSettingsView',
 )
 
 
@@ -130,20 +128,17 @@ class ContactListView(View):
     def get_reply_markup(self) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
         for contact in self.__contacts:
+            text = contact.private_name
+            if contact.is_hidden:
+                text = f'🙈 {text}'
             markup.row(
                 InlineKeyboardButton(
-                    text=contact.private_name,
+                    text=text,
                     callback_data=ContactDetailCallbackData().new(
                         contact_id=contact.id,
                     ),
                 ),
             )
-        markup.row(
-            InlineKeyboardButton(
-                text='🔙 Назад',
-                callback_data='show-user-settings',
-            ),
-        )
         return markup
 
 
@@ -238,7 +233,11 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
 
 class EmptySecretMessageTextInlineQueryView(InlineQueryView):
     title = 'Введите любой текст, который хотите отправить секретно'
-    text = 'Я чайник 🫖'
+    text = (
+        'Я чайник 🫖\n'
+        'Пойду изучать <a href="https://graph.org/Kak-otpravit'
+        '-sekretnoe-soobshchenie-08-14">инструкцию</a>'
+    )
 
 
 class NotPremiumUserInlineQueryView(InlineQueryView):
@@ -409,59 +408,6 @@ class UserSettingsCalledInGroupChatView(View):
                     InlineKeyboardButton(
                         text='⚙️ Настройки профиля',
                         url=url,
-                    ),
-                ],
-            ],
-        )
-
-
-class UserSettingsView(View):
-
-    def __init__(self, user: User, is_anonymous_messaging_enabled: bool):
-        self.__user = user
-        self.__is_anonymous_messaging_enabled = is_anonymous_messaging_enabled
-
-    def get_text(self) -> str:
-        is_premium_emoji = '✅' if self.__user.is_premium else '❌'
-        can_be_added_to_contacts_emoji = (
-            '✅' if self.__user.can_be_added_to_contacts else '❌'
-        )
-        is_anonymous_messaging_enabled_emoji = (
-            '✅' if self.__is_anonymous_messaging_enabled else '❌'
-        )
-        return (
-            f'🙎🏿‍♂️ Имя: {self.__user.fullname}\n'
-            f'✨ Премиум: {is_premium_emoji}\n'
-            '📲 Могут ли пользователи добавлять меня в контакты:'
-            f' {can_be_added_to_contacts_emoji}\n'
-            '🔒 Режим анонимных сообщений:'
-            f' {is_anonymous_messaging_enabled_emoji}\n'
-        )
-
-    def get_reply_markup(self) -> InlineKeyboardMarkup:
-        can_be_added_to_contacts_toggle_button_text = (
-            '❌ Запретить добавление в контакты'
-            if self.__user.can_be_added_to_contacts
-            else '✅ Разрешить добавление в контакты'
-        )
-        return InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text=can_be_added_to_contacts_toggle_button_text,
-                        callback_data='toggle_can_be_added_to_contacts',
-                    ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        text='🔒 Анонимные сообщения',
-                        callback_data='toggle-anonymous-messaging-mode',
-                    ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        text='👥 Мои контакты',
-                        callback_data='show-contacts-list',
                     ),
                 ],
             ],
