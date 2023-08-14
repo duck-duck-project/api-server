@@ -25,8 +25,18 @@ class ContactResource(resources.ModelResource):
 @admin.register(User)
 class UserAdmin(ImportExportModelAdmin):
     resource_class = UserResource
+    search_fields = ('username', 'fullname', 'id')
+    list_filter = ('is_premium', 'can_be_added_to_contacts')
 
 
 @admin.register(Contact)
 class ContactAdmin(ImportExportModelAdmin):
     resource_class = ContactResource
+    search_fields = (
+        'of_user__username',
+        'of_user__fullname',
+        'to_user__username',
+        'to_user__fullname',
+    )
+    list_filter = ('of_user',)
+    list_select_related = ('of_user', 'to_user')
