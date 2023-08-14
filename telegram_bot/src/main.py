@@ -2,6 +2,7 @@ import pathlib
 from functools import partial
 
 import aiohttp
+import sentry_sdk
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
@@ -43,6 +44,11 @@ def main() -> None:
         chat_id_for_retranslation=config.main_chat_id,
     )
     dispatcher.setup_middleware(dependency_inject_middleware)
+
+    sentry_sdk.init(
+        dsn=config.sentry.dsn,
+        traces_sample_rate=config.sentry.traces_sample_rate,
+    )
 
     executor.start_polling(
         dispatcher=dispatcher,
