@@ -34,6 +34,7 @@ __all__ = (
     'SecretMediaForShareView',
     'SecretMediaCalledInGroupChatView',
     'UserSettingsCalledInGroupChatView',
+    'SecretMessagePromptView',
 )
 
 
@@ -412,3 +413,20 @@ class UserSettingsCalledInGroupChatView(View):
                 ],
             ],
         )
+
+
+class SecretMessagePromptView(View):
+    text = (
+        '<a href="https://graph.org/Kak-otpravit-sekretnoe-soobshchenie-'
+        '08-14">Инструкция</a> по отправке секретного сообщения'
+    )
+    reply_markup = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='🚀 Отправить',
+                    switch_inline_query_current_chat='',
+                )
+            ],
+        ],
+    )

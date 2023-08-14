@@ -3,10 +3,11 @@ from uuid import uuid4, UUID
 
 from aiogram import Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Command
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
-    ChosenInlineResult,
+    ChosenInlineResult, Message,
 )
 
 from repositories import (
@@ -22,9 +23,15 @@ from views import (
     NotPremiumUserInlineQueryView,
     TooLongSecretMessageTextInlineQueryView,
     NoUserContactsInlineQueryView,
+    answer_view,
+    SecretMessagePromptView,
 )
 
 __all__ = ('register_handlers',)
+
+
+async def on_show_inline_query_prompt(message: Message) -> None:
+    await answer_view(message=message, view=SecretMessagePromptView())
 
 
 async def on_whisper_message(
@@ -157,6 +164,11 @@ async def on_message_created(
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
+    dispatcher.register_message_handler(
+        on_show_inline_query_prompt,
+        Command('secret_message'),
+        state='*',
+    )
     dispatcher.register_inline_handler(
         on_whisper_message,
         state='*',
