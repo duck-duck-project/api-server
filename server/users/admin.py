@@ -41,3 +41,4 @@ class ContactAdmin(ImportExportModelAdmin):
     list_filter = ('of_user', 'is_hidden')
     list_select_related = ('of_user', 'to_user')
     list_display = ('of_user', 'to_user', 'private_name', 'public_name')
+    list_display_links = ('of_user', 'to_user')
