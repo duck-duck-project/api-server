@@ -60,10 +60,12 @@ async def answer_view(
         *,
         message: Message,
         view: View,
+        disable_web_page_preview: bool = False,
 ) -> Message:
     return await message.answer(
         text=view.get_text(),
         reply_markup=view.get_reply_markup(),
+        disable_web_page_preview=disable_web_page_preview,
     )
 
 
