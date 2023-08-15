@@ -86,7 +86,7 @@ async def on_whisper_message(
         view_class = InvertedSecretMessageDetailInlineQueryView
 
     text_length = len(text)
-    message_length_limit = 200 if user.is_premium else 90
+    message_length_limit = 200 if user.is_premium else 60
     if text_length > message_length_limit:
         items = [
             (
