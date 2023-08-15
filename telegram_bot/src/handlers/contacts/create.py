@@ -2,7 +2,6 @@ from aiogram import Dispatcher
 from aiogram.dispatcher.filters import Command, IsReplyFilter
 from aiogram.types import Message
 
-from exceptions import ContactAlreadyExistsError
 from repositories import ContactRepository, UserRepository
 from repositories import HTTPClientFactory
 from services import (
@@ -74,19 +73,13 @@ async def on_add_contact(
             )
             return
 
-        try:
-            await contact_repository.create(
-                of_user_id=of_user.id,
-                to_user_id=to_user.id,
-                private_name=name,
-                public_name=name,
-            )
-        except ContactAlreadyExistsError:
-            await message.reply(
-                '😶 Этот пользователь уже есть в ваших контактах',
-            )
-        else:
-            await message.reply('✅ Контакт успешно добавлен')
+        await contact_repository.create(
+            of_user_id=of_user.id,
+            to_user_id=to_user.id,
+            private_name=name,
+            public_name=name,
+        )
+        await message.reply('✅ Контакт успешно добавлен')
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
