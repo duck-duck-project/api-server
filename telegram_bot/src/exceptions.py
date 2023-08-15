@@ -47,3 +47,7 @@ class ContactDoesNotExistError(ServerAPIError):
 
     def __str__(self) -> str:
         return f'Contact with ID {self.contact_id} does not exist'
+
+
+class UserHasNoPremiumSubscriptionError(Exception):
+    pass

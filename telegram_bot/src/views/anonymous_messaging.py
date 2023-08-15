@@ -1,4 +1,7 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    InlineKeyboardMarkup, InlineKeyboardButton,
+    ReplyKeyboardMarkup, KeyboardButton
+)
 
 from views.base import View
 
@@ -6,6 +9,7 @@ __all__ = (
     'AnonymousMessagingToggledInGroupChatView',
     'AnonymousMessagingEnabledView',
     'AnonymousMessagingDisabledView',
+    'AnonymousMessageSentView',
 )
 
 
@@ -35,19 +39,11 @@ class AnonymousMessagingEnabledView(View):
         '\n❗️ Всё что вы будете отправлять сюда, <b><u>будет'
         ' перенаправляться</u></b> в чат Манаса '
     )
-    reply_markup = InlineKeyboardMarkup(
-        inline_keyboard=[
+    reply_markup = ReplyKeyboardMarkup(
+        resize_keyboard=True,
+        keyboard=[
             [
-                InlineKeyboardButton(
-                    text='❗️ Выключить',
-                    callback_data='toggle-anonymous-messaging-mode',
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text='🔙 Назад',
-                    callback_data='show-user-settings',
-                )
+                KeyboardButton('🔙 Отключить режим анонимных сообщений'),
             ],
         ],
     )
@@ -70,6 +66,20 @@ class AnonymousMessagingDisabledView(View):
             [
                 InlineKeyboardButton(
                     text='🔙 Назад',
+                    callback_data='show-user-settings',
+                )
+            ],
+        ],
+    )
+
+
+class AnonymousMessageSentView(View):
+    text = '✅ Сообщение отправлено'
+    reply_markup = ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(
+                    text='🔙 Отключить режим анонимных сообщений',
                     callback_data='show-user-settings',
                 )
             ],

@@ -1,9 +1,11 @@
 from aiogram import Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
-from aiogram.types import Message, ChatType, CallbackQuery, ContentType
+from aiogram.types import Message, ChatType, ContentType
 from aiogram.utils.exceptions import TelegramAPIError
 
+from exceptions import UserHasNoPremiumSubscriptionError
+from repositories import HTTPClientFactory, UserRepository
 from services import (
     is_anonymous_messaging_enabled,
     determine_media_file_id_and_answer_method,
@@ -13,8 +15,9 @@ from views import (
     AnonymousMessagingToggledInGroupChatView,
     AnonymousMessagingDisabledView,
     AnonymousMessagingEnabledView,
+    AnonymousMessageSentView,
 )
-from views import answer_view, edit_message_by_view
+from views import answer_view
 
 __all__ = ('register_handlers',)
 
@@ -35,7 +38,7 @@ async def on_video_note_or_sticker_for_retranslation(
         await message.reply(text)
     else:
         await sent_message.reply('<b>💌 Анонимное сообщение</b>')
-        await message.reply('✅ Отправлено')
+        await answer_view(message=message, view=AnonymousMessageSentView())
 
 
 async def on_media_for_retranslation(
@@ -62,7 +65,7 @@ async def on_media_for_retranslation(
         text = f'❌ Не получилось отправить\n\nОшибка: {error!s}'
         await message.reply(text)
     else:
-        await message.reply('✅ Отправлено')
+        await answer_view(message=message, view=AnonymousMessageSentView())
 
 
 async def on_message_for_retranslation(
@@ -80,7 +83,7 @@ async def on_message_for_retranslation(
         text = f'❌ Не получилось отправить\n\nОшибка: {error!s}'
         await message.reply(text)
     else:
-        await message.reply('✅ Отправлено')
+        await answer_view(message=message, view=AnonymousMessageSentView())
 
 
 async def on_toggle_anonymous_messaging_mode_in_group_chat(
@@ -93,14 +96,19 @@ async def on_toggle_anonymous_messaging_mode_in_group_chat(
 
 
 async def on_toggle_anonymous_messaging_mode(
-        callback_query: CallbackQuery,
+        message: Message,
         state: FSMContext,
+        closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    await callback_query.answer(
-        text='Анонимные сообщения временно отключены',
-        show_alert=True,
-    )
-    return
+    async with closing_http_client_factory() as http_client:
+        user_repository = UserRepository(http_client)
+        user = await user_repository.get_by_id(message.from_user.id)
+
+    if not user.is_premium:
+        raise UserHasNoPremiumSubscriptionError(
+            '🌟 Анонимные сообщения только для премиум пользователей'
+        )
+
     state_name = await state.get_state()
 
     if is_anonymous_messaging_enabled(state_name):
@@ -110,10 +118,7 @@ async def on_toggle_anonymous_messaging_mode(
         await AnonymousMessagingStates.enabled.set()
         view = AnonymousMessagingEnabledView()
 
-    await edit_message_by_view(
-        message=callback_query.message,
-        view=view,
-    )
+    await answer_view(message=message, view=view)
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
@@ -123,9 +128,10 @@ def register_handlers(dispatcher: Dispatcher) -> None:
         chat_type=(ChatType.GROUP, ChatType.SUPERGROUP),
         state='*',
     )
-    dispatcher.register_callback_query_handler(
+    dispatcher.register_message_handler(
         on_toggle_anonymous_messaging_mode,
-        Text('toggle-anonymous-messaging-mode'),
+        Command('anonymous_messaging')
+        | Text('🔐 Включить анонимные сообщения'),
         chat_type=ChatType.PRIVATE,
         state='*',
     )

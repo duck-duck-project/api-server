@@ -30,6 +30,7 @@ async def on_show_settings(
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
 ) -> None:
+    await state.finish()
     from_user = message_or_callback_query.from_user
     async with closing_http_client_factory() as http_client:
         user_repository = UserRepository(http_client)
@@ -75,7 +76,8 @@ def register_handlers(dispatcher: Dispatcher) -> None:
         on_show_settings,
         CommandStart()
         | Command('settings')
-        | CommandStart(deep_link='settings'),
+        | CommandStart(deep_link='settings')
+        | Text('🔙 Отключить режим анонимных сообщений'),
         chat_type=ChatType.PRIVATE,
         state='*',
     )
