@@ -1,5 +1,4 @@
 from aiogram import Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
 from aiogram.types import Message, ChatType, ContentType
 from aiogram.utils.exceptions import TelegramAPIError
@@ -7,13 +6,11 @@ from aiogram.utils.exceptions import TelegramAPIError
 from exceptions import UserHasNoPremiumSubscriptionError
 from repositories import HTTPClientFactory, UserRepository
 from services import (
-    is_anonymous_messaging_enabled,
     determine_media_file_id_and_answer_method,
 )
 from states import AnonymousMessagingStates
 from views import (
     AnonymousMessagingToggledInGroupChatView,
-    AnonymousMessagingDisabledView,
     AnonymousMessagingEnabledView,
     AnonymousMessageSentView,
 )
@@ -97,7 +94,6 @@ async def on_toggle_anonymous_messaging_mode_in_group_chat(
 
 async def on_toggle_anonymous_messaging_mode(
         message: Message,
-        state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     async with closing_http_client_factory() as http_client:
@@ -108,16 +104,8 @@ async def on_toggle_anonymous_messaging_mode(
         raise UserHasNoPremiumSubscriptionError(
             '🌟 Анонимные сообщения только для премиум пользователей'
         )
-
-    state_name = await state.get_state()
-
-    if is_anonymous_messaging_enabled(state_name):
-        await state.finish()
-        view = AnonymousMessagingDisabledView()
-    else:
-        await AnonymousMessagingStates.enabled.set()
-        view = AnonymousMessagingEnabledView()
-
+    await AnonymousMessagingStates.enabled.set()
+    view = AnonymousMessagingEnabledView()
     await answer_view(message=message, view=view)
 
 
