@@ -20,8 +20,11 @@ class UserSettingsView(View):
         is_anonymous_messaging_enabled_emoji = (
             '✅' if self.__is_anonymous_messaging_enabled else '❌'
         )
+        name = self.__user.fullname
+        if self.__user.profile_photo_url is not None:
+            name = f'<a href="{self.__user.profile_photo_url}">{name}</a>'
         return (
-            f'🙎🏿‍♂️ Имя: {self.__user.fullname}\n'
+            f'🙎🏿‍♂️ Имя: {name}\n'
             f'✨ Премиум: {is_premium_emoji}\n'
             '📲 Могут ли пользователи добавлять меня в контакты:'
             f' {can_be_added_to_contacts_emoji}\n'
