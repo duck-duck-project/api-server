@@ -200,6 +200,9 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
     def get_id(self) -> str:
         return self.__query_id.hex
 
+    def get_description(self) -> str:
+        return self.__contact.public_name
+
     def get_thumbnail_url(self) -> str | None:
         if self.__contact.to_user.profile_photo_url is None:
             return

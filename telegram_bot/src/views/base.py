@@ -40,6 +40,7 @@ class View:
 
 class InlineQueryView(View):
     title: str
+    description: str | None = None
     thumbnail_url: str | None = None
     thumbnail_width: int | None = None
     thumbnail_height: int | None = None
@@ -49,6 +50,9 @@ class InlineQueryView(View):
 
     def get_title(self) -> str:
         return self.title
+
+    def get_description(self) -> str | None:
+        return self.description
 
     def get_thumbnail_url(self) -> str | None:
         return self.thumbnail_url
@@ -63,6 +67,7 @@ class InlineQueryView(View):
         return InlineQueryResultArticle(
             id=self.get_id(),
             title=self.get_title(),
+            description=self.get_description(),
             input_message_content=InputTextMessageContent(self.get_text()),
             reply_markup=self.get_reply_markup(),
             thumb_url=self.get_thumbnail_url(),
