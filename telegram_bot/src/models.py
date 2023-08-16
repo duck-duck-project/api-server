@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, HttpUrl
 
 __all__ = (
     'User',
@@ -41,6 +41,7 @@ class User(BaseModel):
     is_premium: bool
     can_be_added_to_contacts: bool
     secret_message_theme: SecretMessageTheme | None
+    profile_photo_url: HttpUrl | None
 
 
 class Contact(BaseModel):
