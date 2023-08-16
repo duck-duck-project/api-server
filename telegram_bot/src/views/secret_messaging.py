@@ -35,6 +35,7 @@ __all__ = (
     'SecretMediaCalledInGroupChatView',
     'UserSettingsCalledInGroupChatView',
     'SecretMessagePromptView',
+    'SecretMessageNotificationView',
 )
 
 
@@ -181,6 +182,8 @@ class InvertedSecretMessageDetailInlineQueryView(InlineQueryView):
 
 
 class SecretMessageDetailInlineQueryView(InlineQueryView):
+    thumbnail_width = 100
+    thumbnail_height = 100
 
     def __init__(
             self,
@@ -196,6 +199,11 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
 
     def get_id(self) -> str:
         return self.__query_id.hex
+
+    def get_thumbnail_url(self) -> str | None:
+        if self.__contact.to_user.profile_photo_url is None:
+            return
+        return str(self.__contact.to_user.profile_photo_url)
 
     def get_title(self) -> str:
         return f'Контакт: {self.__contact.private_name}'
@@ -430,3 +438,29 @@ class SecretMessagePromptView(View):
             ],
         ],
     )
+
+
+class SecretMessageNotificationView(View):
+
+    def __init__(
+            self,
+            *,
+            secret_message_id: UUID,
+            contact: Contact,
+            secret_message_theme: SecretMessageTheme,
+    ):
+        self.__secret_message_id = secret_message_id
+        self.__contact = contact
+        self.__secret_message_theme = secret_message_theme
+
+    def get_text(self) -> str:
+        if self.__secret_message_theme is None:
+            return (
+                f'📩 Секретное сообщение для'
+                f' <b>{self.__contact.public_name}</b>'
+            )
+        return (
+            self.__secret_message_theme
+            .description_template_text
+            .format(name=self.__contact.public_name)
+        )

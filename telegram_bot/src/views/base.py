@@ -40,6 +40,9 @@ class View:
 
 class InlineQueryView(View):
     title: str
+    thumbnail_url: str | None = None
+    thumbnail_width: int | None = None
+    thumbnail_height: int | None = None
 
     def get_id(self) -> str:
         return uuid4().hex
@@ -47,12 +50,24 @@ class InlineQueryView(View):
     def get_title(self) -> str:
         return self.title
 
+    def get_thumbnail_url(self) -> str | None:
+        return self.thumbnail_url
+
+    def get_thumbnail_width(self) -> int | None:
+        return self.thumbnail_width
+
+    def get_thumbnail_height(self) -> int | None:
+        return self.thumbnail_height
+
     def get_inline_query_result_article(self) -> InlineQueryResultArticle:
         return InlineQueryResultArticle(
             id=self.get_id(),
             title=self.get_title(),
             input_message_content=InputTextMessageContent(self.get_text()),
             reply_markup=self.get_reply_markup(),
+            thumb_url=self.get_thumbnail_url(),
+            thumb_width=self.get_thumbnail_width(),
+            thumb_height=self.get_thumbnail_height(),
         )
 
 
