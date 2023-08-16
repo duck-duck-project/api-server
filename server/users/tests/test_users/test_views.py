@@ -69,6 +69,7 @@ class UserRetrieveApiTests(APITestCase):
                 'is_premium': False,
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
+                'profile_photo_url': None,
             },
         )
 
@@ -98,6 +99,7 @@ class UserCreateApiTests(APITestCase):
                 'is_premium': False,
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
+                'profile_photo_url': None,
             },
         )
 
@@ -119,6 +121,7 @@ class UserCreateApiTests(APITestCase):
                 'is_premium': False,
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
+                'profile_photo_url': None,
             },
         )
 
