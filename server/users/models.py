@@ -38,6 +38,7 @@ class Contact(models.Model):
     public_name = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     is_hidden = models.BooleanField(default=False)
+    profile_photo_url = models.URLField(null=True, blank=True)
 
     class Meta:
         unique_together = ('of_user', 'to_user')
