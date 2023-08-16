@@ -17,6 +17,7 @@ class User(models.Model):
         null=True,
     )
     can_be_added_to_contacts = models.BooleanField(default=True)
+    profile_photo_url = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname
@@ -38,7 +39,6 @@ class Contact(models.Model):
     public_name = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     is_hidden = models.BooleanField(default=False)
-    profile_photo_url = models.URLField(null=True, blank=True)
 
     class Meta:
         unique_together = ('of_user', 'to_user')
