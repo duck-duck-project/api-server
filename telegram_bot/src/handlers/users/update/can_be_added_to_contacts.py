@@ -6,7 +6,7 @@ from aiogram.types import ChatType, Message
 from repositories import HTTPClientFactory
 from repositories import UserRepository
 from services import is_anonymous_messaging_enabled
-from views import UserSettingsView, answer_view
+from views import UserMenuView, answer_view
 
 __all__ = ('register_handlers',)
 
@@ -34,7 +34,7 @@ async def on_toggle_can_be_added_to_contacts(
         )
         user = await user_repository.get_by_id(message.from_user.id)
     state_name = await state.get_state()
-    view = UserSettingsView(
+    view = UserMenuView(
         user=user,
         is_anonymous_messaging_enabled=is_anonymous_messaging_enabled(
             state_name=state_name,
