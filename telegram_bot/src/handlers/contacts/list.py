@@ -4,7 +4,7 @@ from aiogram.types import Message, ChatType
 
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
-from views import ContactListView
+from views.contacts import ContactListView
 from views import answer_view
 
 __all__ = ('register_handlers',)
