@@ -9,7 +9,7 @@ from repositories import UserRepository
 from services import is_anonymous_messaging_enabled
 from views import (
     UserSettingsCalledInGroupChatView,
-    UserSettingsView,
+    UserMenuView,
 )
 from views import answer_view, edit_message_by_view
 
@@ -44,7 +44,7 @@ async def on_show_settings(
             )
 
     state_name = await state.get_state()
-    view = UserSettingsView(
+    view = UserMenuView(
         user=user,
         is_anonymous_messaging_enabled=is_anonymous_messaging_enabled(
             state_name=state_name,

@@ -3,10 +3,10 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from models import User
 from views import View
 
-__all__ = ('UserSettingsView',)
+__all__ = ('UserMenuView',)
 
 
-class UserSettingsView(View):
+class UserMenuView(View):
 
     def __init__(self, user: User, is_anonymous_messaging_enabled: bool):
         self.__user = user
