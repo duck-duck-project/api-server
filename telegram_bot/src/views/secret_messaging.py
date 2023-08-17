@@ -139,6 +139,9 @@ class EmptySecretMessageTextInlineQueryView(InlineQueryView):
         'Пойду изучать <a href="https://graph.org/Kak-otpravit'
         '-sekretnoe-soobshchenie-08-14">инструкцию</a>'
     )
+    thumbnail_url = 'https://i.imgur.com/e48C5cw.jpg'
+    thumbnail_width = 100
+    thumbnail_height = 100
 
 
 class NotPremiumUserInlineQueryView(InlineQueryView):
@@ -146,19 +149,28 @@ class NotPremiumUserInlineQueryView(InlineQueryView):
     text = (
         'Чтобы отправить инвертированное сообщение,'
         ' вы можете приобрести премиум подписку.'
-        ' Стоит она всего лишь 30 сомов в месяц.'
+        ' Стоит она всего лишь 50 сомов в месяц.'
         ' Для покупки, напишите @usbtypec'
     )
+    thumbnail_url = 'https://i.imgur.com/x9ruCcZ.jpg'
+    thumbnail_width = 100
+    thumbnail_height = 100
 
 
 class TooLongSecretMessageTextInlineQueryView(InlineQueryView):
     title = '❌ Слишком длинное сообщение'
     text = 'Я ввёл слишком длинное сообщение 😔'
+    thumbnail_url = 'https://i.imgur.com/gMh8VXO.jpg'
+    thumbnail_height = 100
+    thumbnail_width = 100
 
 
 class NoUserContactsInlineQueryView(InlineQueryView):
     title = 'У вас пока нет контактов 😔'
     text = 'У меня пока нет контактов 😔'
+    thumbnail_url = 'https://i.imgur.com/SfqYvom.jpeg'
+    thumbnail_height = 100
+    thumbnail_width = 100
 
 
 class SecretMediaCreateContactListView(View):
