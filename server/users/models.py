@@ -18,6 +18,7 @@ class User(models.Model):
     )
     can_be_added_to_contacts = models.BooleanField(default=True)
     profile_photo_url = models.URLField(null=True, blank=True)
+    is_banned = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username or self.fullname
