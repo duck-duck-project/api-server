@@ -1,4 +1,3 @@
-import asyncio
 from uuid import uuid4, UUID
 
 from aiogram import Dispatcher
@@ -17,6 +16,7 @@ from repositories import (
     UserRepository,
 )
 from repositories.base import HTTPClientFactory
+from services import filter_not_hidden
 from views import (
     SecretMessageDetailInlineQueryView,
     InvertedSecretMessageDetailInlineQueryView,
@@ -26,7 +26,7 @@ from views import (
     NoUserContactsInlineQueryView,
     answer_view,
     SecretMessagePromptView,
-    SecretMessageNotificationView,
+    SecretMessageNotificationView, NoVisibleContactsInlineQueryView,
 )
 
 __all__ = ('register_handlers',)
@@ -71,6 +71,15 @@ async def on_secret_message_typing(
         await inline_query.answer(items, cache_time=1, is_personal=True)
         return
 
+    visible_contacts = filter_not_hidden(contacts)
+
+    if not visible_contacts:
+        items = [
+            NoVisibleContactsInlineQueryView().get_inline_query_result_article()
+        ]
+        await inline_query.answer(items, cache_time=1, is_personal=True)
+        return
+
     message_length_limit = 200 if user.is_premium else 60
     if len(text) > message_length_limit:
         items = [
@@ -84,9 +93,7 @@ async def on_secret_message_typing(
     await state.update_data(secret_message_id=draft_secret_message_id.hex)
 
     contacts_and_query_ids = [
-        (contact, uuid4())
-        for contact in contacts
-        if not contact.is_hidden
+        (contact, uuid4()) for contact in visible_contacts
     ]
 
     items: list[InlineQueryResultArticle] = [
