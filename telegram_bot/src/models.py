@@ -42,6 +42,7 @@ class User(BaseModel):
     can_be_added_to_contacts: bool
     secret_message_theme: SecretMessageTheme | None
     profile_photo_url: HttpUrl | None
+    is_banned: bool
 
 
 class Contact(BaseModel):
