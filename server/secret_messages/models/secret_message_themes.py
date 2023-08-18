@@ -8,6 +8,7 @@ class SecretMessageTheme(models.Model):
     description_template_text = models.CharField(max_length=200)
     button_text = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         constraints = (
