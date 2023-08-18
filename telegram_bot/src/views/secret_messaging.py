@@ -30,6 +30,7 @@ __all__ = (
     'UserSettingsCalledInGroupChatView',
     'SecretMessagePromptView',
     'SecretMessageNotificationView',
+    'NoVisibleContactsInlineQueryView',
 )
 
 
@@ -368,3 +369,14 @@ class SecretMessageNotificationView(View):
             .description_template_text
             .format(name=self.__contact.public_name)
         )
+
+
+class NoVisibleContactsInlineQueryView(InlineQueryView):
+    title = '❌ Все контакты скрыты'
+    description = (
+        'Перейдите в настройки бота и сделайте видимыми хотя бы один контакт'
+    )
+    text = 'Я скрыл все мои контакты и не могу отправить секретное сообщение 🙀'
+    thumbnail_url = 'https://i.imgur.com/zAHey9P.jpg'
+    thumbnail_height = 100
+    thumbnail_width = 100
