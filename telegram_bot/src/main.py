@@ -10,7 +10,11 @@ from aiohttp import ClientTimeout
 
 import handlers
 from config import load_config_from_file_path
-from middlewares import DependencyInjectMiddleware, UserMiddleware
+from middlewares import (
+    DependencyInjectMiddleware,
+    UserMiddleware,
+    BannedUsersFilterMiddleware,
+)
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
@@ -45,6 +49,7 @@ def main() -> None:
     )
     dispatcher.setup_middleware(dependency_inject_middleware)
     dispatcher.setup_middleware(UserMiddleware())
+    dispatcher.setup_middleware(BannedUsersFilterMiddleware())
 
     sentry_sdk.init(
         dsn=config.sentry.dsn,
