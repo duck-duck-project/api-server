@@ -1,9 +1,12 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 from models import User
-from views import View
+from views import View, InlineQueryView
 
-__all__ = ('UserMenuView',)
+__all__ = (
+    'UserMenuView',
+    'UserBannedInlineQueryView',
+)
 
 
 class UserMenuView(View):
@@ -57,3 +60,9 @@ class UserMenuView(View):
                 ],
             ],
         )
+
+
+class UserBannedInlineQueryView(InlineQueryView):
+    title = 'Вы заблокированы в боте 😔'
+    description = 'Обратитесь к @usbtypec для разблокировки'
+    text = 'Я заблокирован в боте и не могу его использовать 😔'
