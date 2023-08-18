@@ -17,7 +17,7 @@ from views import View, InlineQueryView
 
 __all__ = (
     'SecretMessageDetailInlineQueryView',
-    'EmptySecretMessageTextInlineQueryView',
+    'SecretMessageTextMissingInlineQueryView',
     'InvertedSecretMessageDetailInlineQueryView',
     'NotPremiumUserInlineQueryView',
     'TooLongSecretMessageTextInlineQueryView',
@@ -132,7 +132,7 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
         )
 
 
-class EmptySecretMessageTextInlineQueryView(InlineQueryView):
+class SecretMessageTextMissingInlineQueryView(InlineQueryView):
     title = 'Введите любой текст, который хотите отправить секретно'
     text = (
         'Я чайник 🫖\n'
