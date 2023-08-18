@@ -11,7 +11,7 @@ __all__ = (
     'get_secret_message_by_id',
     'get_secret_medias_created_by_user_id',
     'get_secret_media_by_id',
-    'get_secret_message_themes',
+    'get_visible_themes',
 )
 
 
@@ -83,5 +83,5 @@ def get_secret_media_by_id(secret_media_id: UUID) -> SecretMedia:
         )
 
 
-def get_secret_message_themes() -> QuerySet[SecretMessageTheme]:
-    return SecretMessageTheme.objects.all()
+def get_visible_themes() -> QuerySet[SecretMessageTheme]:
+    return SecretMessageTheme.objects.exclude(is_hidden=True)
