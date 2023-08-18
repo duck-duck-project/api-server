@@ -1,13 +1,13 @@
-from collections.abc import Awaitable
-from collections.abc import Coroutine, Callable
-from typing import Any
-from typing import Protocol, TypeAlias
+from collections.abc import Coroutine, Callable, Awaitable, Iterable
+from typing import Protocol, TypeAlias, TypeVar, Any
 from uuid import UUID
 
 from aiogram.types import Message
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
-from models import Contact, SecretMediaType, User
+from models import User
+from models.contacts import Contact
+from models.secret_media_types import SecretMediaType
 from repositories import UserRepository
 
 __all__ = (
@@ -23,8 +23,15 @@ __all__ = (
     'get_message_method_by_media_type',
     'can_create_new_contact',
     'get_or_create_user',
+    'filter_not_hidden',
 )
 
+
+class HasIsHidden(Protocol):
+    is_hidden: bool
+
+
+HasIsHiddenT = TypeVar('HasIsHiddenT', bound=HasIsHidden)
 ReturnsMessage: TypeAlias = Callable[..., Awaitable[Message]]
 
 
@@ -196,3 +203,7 @@ def can_create_new_contact(
         is_premium: bool,
 ) -> bool:
     return contacts_count < 5 or is_premium
+
+
+def filter_not_hidden(items: Iterable[HasIsHiddenT]) -> list[HasIsHiddenT]:
+    return [item for item in items if not item.is_hidden]
