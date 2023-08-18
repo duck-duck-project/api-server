@@ -6,7 +6,7 @@ from callback_data import ContactUpdateCallbackData
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
 from states import ContactUpdateStates
-from views import ContactDetailView
+from views.contacts import ContactDetailView
 from views import answer_view
 
 __all__ = ('register_handlers',)
