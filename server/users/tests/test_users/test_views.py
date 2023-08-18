@@ -70,6 +70,7 @@ class UserRetrieveApiTests(APITestCase):
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
                 'profile_photo_url': None,
+                'is_banned': False,
             },
         )
 
@@ -100,6 +101,7 @@ class UserCreateApiTests(APITestCase):
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
                 'profile_photo_url': None,
+                'is_banned': False,
             },
         )
 
@@ -122,6 +124,7 @@ class UserCreateApiTests(APITestCase):
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
                 'profile_photo_url': None,
+                'is_banned': False,
             },
         )
 
