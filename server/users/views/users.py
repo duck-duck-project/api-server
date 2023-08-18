@@ -28,6 +28,7 @@ class UserOutputSerializer(serializers.Serializer):
     can_be_added_to_contacts = serializers.BooleanField()
     secret_message_theme = SecretMessageThemeSerializer()
     profile_photo_url = serializers.URLField(allow_null=True)
+    is_banned = serializers.BooleanField()
 
 
 class UserRetrieveUpdateApi(APIView):
