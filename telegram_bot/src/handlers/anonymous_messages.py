@@ -4,10 +4,8 @@ from aiogram.types import Message, ChatType, ContentType
 from aiogram.utils.exceptions import TelegramAPIError
 
 from exceptions import UserHasNoPremiumSubscriptionError
-from repositories import HTTPClientFactory, UserRepository
-from services import (
-    determine_media_file_id_and_answer_method,
-)
+from models import User
+from services import determine_media_file_id_and_answer_method
 from states import AnonymousMessagingStates
 from views import (
     AnonymousMessagingToggledInGroupChatView,
@@ -94,12 +92,8 @@ async def on_toggle_anonymous_messaging_mode_in_group_chat(
 
 async def on_toggle_anonymous_messaging_mode(
         message: Message,
-        closing_http_client_factory: HTTPClientFactory,
+        user: User,
 ) -> None:
-    async with closing_http_client_factory() as http_client:
-        user_repository = UserRepository(http_client)
-        user = await user_repository.get_by_id(message.from_user.id)
-
     if not user.is_premium:
         raise UserHasNoPremiumSubscriptionError(
             '🌟 Анонимные сообщения только для премиум пользователей'

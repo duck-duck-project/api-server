@@ -3,8 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import ChatType, Message
 
-from repositories import HTTPClientFactory
-from repositories import UserRepository
+from models import User
+from repositories import HTTPClientFactory, UserRepository
 from services import is_anonymous_messaging_enabled
 from views import UserMenuView, answer_view
 
@@ -15,11 +15,10 @@ async def on_toggle_can_be_added_to_contacts(
         message: Message,
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
+        user: User,
 ) -> None:
     async with closing_http_client_factory() as http_client:
         user_repository = UserRepository(http_client)
-        user = await user_repository.get_by_id(message.from_user.id)
-
         secret_message_theme_id = (
             None if user.secret_message_theme is None
             else user.secret_message_theme.id

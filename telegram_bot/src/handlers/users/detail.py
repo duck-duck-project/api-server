@@ -3,9 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, CommandStart, Text
 from aiogram.types import Message, ChatType, CallbackQuery
 
-from exceptions import UserDoesNotExistError
-from repositories import HTTPClientFactory
-from repositories import UserRepository
+from models import User
 from services import is_anonymous_messaging_enabled
 from views import (
     UserSettingsCalledInGroupChatView,
@@ -27,22 +25,10 @@ async def on_settings_in_group_chat(
 
 async def on_show_settings(
         message_or_callback_query: Message | CallbackQuery,
-        closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
+        user: User,
 ) -> None:
     await state.finish()
-    from_user = message_or_callback_query.from_user
-    async with closing_http_client_factory() as http_client:
-        user_repository = UserRepository(http_client)
-        try:
-            user = await user_repository.get_by_id(from_user.id)
-        except UserDoesNotExistError:
-            user = await user_repository.create(
-                user_id=from_user.id,
-                fullname=from_user.full_name,
-                username=from_user.username,
-            )
-
     state_name = await state.get_state()
     view = UserMenuView(
         user=user,

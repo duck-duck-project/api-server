@@ -1,15 +1,16 @@
 import asyncio
 from uuid import uuid4, UUID
 
-from aiogram import Dispatcher, Bot
+from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
+from aiogram.dispatcher.filters import Command, Text
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
     ChosenInlineResult, Message,
 )
 
+from models import User
 from repositories import (
     ContactRepository,
     SecretMessageRepository,
@@ -19,12 +20,13 @@ from repositories.base import HTTPClientFactory
 from views import (
     SecretMessageDetailInlineQueryView,
     InvertedSecretMessageDetailInlineQueryView,
-    EmptySecretMessageTextInlineQueryView,
+    SecretMessageTextMissingInlineQueryView,
     NotPremiumUserInlineQueryView,
     TooLongSecretMessageTextInlineQueryView,
     NoUserContactsInlineQueryView,
     answer_view,
     SecretMessagePromptView,
+    SecretMessageNotificationView,
 )
 
 __all__ = ('register_handlers',)
@@ -34,37 +36,33 @@ async def on_show_inline_query_prompt(message: Message) -> None:
     await answer_view(message=message, view=SecretMessagePromptView())
 
 
-async def on_whisper_message(
+async def on_secret_message_text_missing(inline_query: InlineQuery) -> None:
+    items = [
+        SecretMessageTextMissingInlineQueryView()
+        .get_inline_query_result_article()
+    ]
+    await inline_query.answer(items, cache_time=1)
+
+
+async def on_inverted_secret_message_typing(
         inline_query: InlineQuery,
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
 ) -> None:
-    text = inline_query.query
+    text = inline_query.query.lstrip('!')
 
-    if not text:
-        items = [
-            (
-                EmptySecretMessageTextInlineQueryView()
-                .get_inline_query_result_article()
-            )
-        ]
-        await inline_query.answer(items, cache_time=1, is_personal=True)
-        return
+
+async def on_secret_message_typing(
+        inline_query: InlineQuery,
+        closing_http_client_factory: HTTPClientFactory,
+        state: FSMContext,
+        user: User,
+) -> None:
+    text = inline_query.query
 
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
-        user_repository = UserRepository(http_client)
-
-        async with asyncio.TaskGroup() as task_group:
-            user_task = task_group.create_task(
-                user_repository.get_by_id(inline_query.from_user.id)
-            )
-            contacts_task = task_group.create_task(
-                contact_repository.get_by_user_id(inline_query.from_user.id)
-            )
-
-        user = user_task.result()
-        contacts = contacts_task.result()
+        contacts = await contact_repository.get_by_user_id(user.id)
 
     if not contacts:
         items = [
@@ -73,36 +71,17 @@ async def on_whisper_message(
         await inline_query.answer(items, cache_time=1, is_personal=True)
         return
 
-    is_inverted = text.startswith('!')
-    if is_inverted:
-        items = [
-            NotPremiumUserInlineQueryView().get_inline_query_result_article()
-        ]
-        await inline_query.answer(items, cache_time=1, is_personal=True)
-        return
-
-    if is_inverted:
-        text = text.lstrip('!')
-        view_class = InvertedSecretMessageDetailInlineQueryView
-
-    text_length = len(text)
     message_length_limit = 200 if user.is_premium else 60
-    if text_length > message_length_limit:
+    if len(text) > message_length_limit:
         items = [
-            (
-                TooLongSecretMessageTextInlineQueryView()
-                .get_inline_query_result_article()
-            )
+            TooLongSecretMessageTextInlineQueryView()
+            .get_inline_query_result_article()
         ]
         await inline_query.answer(items, cache_time=1, is_personal=True)
         return
-
-    view_class = SecretMessageDetailInlineQueryView
 
     draft_secret_message_id = uuid4()
-    await state.update_data(
-        secret_message_id=draft_secret_message_id.hex,
-    )
+    await state.update_data(secret_message_id=draft_secret_message_id.hex)
 
     contacts_and_query_ids = [
         (contact, uuid4())
@@ -111,7 +90,7 @@ async def on_whisper_message(
     ]
 
     items: list[InlineQueryResultArticle] = [
-        view_class(
+        SecretMessageDetailInlineQueryView(
             query_id=query_id,
             contact=contact,
             secret_message_id=draft_secret_message_id,
@@ -120,11 +99,13 @@ async def on_whisper_message(
         for contact, query_id in contacts_and_query_ids
     ]
 
-    query_id_to_contact_to_user_id = '|'.join(
-        f'{query_id.hex}@{contact.to_user.id}'
+    query_ids_and_contact_ids = '|'.join(
+        f'{query_id.hex}@{contact.id}'
         for contact, query_id in contacts_and_query_ids
     )
-    await state.update_data(contacts=query_id_to_contact_to_user_id)
+    await state.update_data(
+        query_ids_and_contact_ids=query_ids_and_contact_ids,
+    )
 
     await inline_query.answer(items, cache_time=1, is_personal=True)
 
@@ -164,13 +145,26 @@ async def on_message_created(
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
+    dispatcher.register_inline_handler(
+        on_secret_message_text_missing,
+        Text(''),
+        state='*',
+    )
     dispatcher.register_message_handler(
         on_show_inline_query_prompt,
         Command('secret_message'),
         state='*',
     )
     dispatcher.register_inline_handler(
-        on_whisper_message,
+        on_inverted_secret_message_typing,
+        ~Text(''),
+        Text('!'),
+        state='*',
+    )
+    dispatcher.register_inline_handler(
+        on_secret_message_typing,
+        ~Text(''),
+        ~Text('!'),
         state='*',
     )
     dispatcher.register_chosen_inline_handler(

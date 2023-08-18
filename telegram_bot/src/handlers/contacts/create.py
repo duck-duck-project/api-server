@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.dispatcher.filters import Command, IsReplyFilter
 from aiogram.types import Message
 
+from models import User
 from repositories import ContactRepository, UserRepository
 from repositories import HTTPClientFactory
 from services import (
@@ -26,6 +27,7 @@ async def on_add_contact(
         message: Message,
         reply: Message,
         closing_http_client_factory: HTTPClientFactory,
+        user: User,
 ) -> None:
     if reply.from_user.is_bot:
         await message.reply('Вы не можете добавить бота в контакты')
@@ -54,17 +56,10 @@ async def on_add_contact(
             )
             return
 
-        of_user, is_of_user_created = await get_or_create_user(
-            user_repository=user_repository,
-            user_id=message.from_user.id,
-            fullname=message.from_user.full_name,
-            username=message.from_user.username,
-        )
-
         contacts = await contact_repository.get_by_user_id(message.from_user.id)
         if not can_create_new_contact(
                 contacts_count=len(contacts),
-                is_premium=of_user.is_premium,
+                is_premium=user.is_premium,
         ):
             await message.reply(
                 '🤭 Вы не можете иметь больше 5 контактов за раз.'
@@ -74,7 +69,7 @@ async def on_add_contact(
             return
 
         await contact_repository.create(
-            of_user_id=of_user.id,
+            of_user_id=user.id,
             to_user_id=to_user.id,
             private_name=name,
             public_name=name,
