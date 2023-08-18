@@ -12,6 +12,7 @@ aiogram = "^2.25.1"
 redis = "^4.6.0"
 pydantic = "^2.1.1"
 sentry-sdk = "^1.29.2"
+structlog = "^23.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
