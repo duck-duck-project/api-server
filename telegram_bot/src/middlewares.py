@@ -1,6 +1,6 @@
 from aiogram.dispatcher.handler import CancelHandler
 from aiogram.dispatcher.middlewares import LifetimeControllerMiddleware
-from aiogram.types import CallbackQuery, InlineQuery, Message
+from aiogram.types import CallbackQuery, InlineQuery, Message, ChatType
 
 from exceptions import UserDoesNotExistError
 from models import User
@@ -36,7 +36,7 @@ class UserMiddleware(LifetimeControllerMiddleware):
             *args,
     ):
         if isinstance(obj, Message):
-            if obj.get_command() is None:
+            if obj.get_command() is None and obj.chat.type != ChatType.PRIVATE:
                 return
 
         closing_http_client_factory: HTTPClientFactory = (
