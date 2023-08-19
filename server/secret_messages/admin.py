@@ -47,3 +47,6 @@ class SecretMessageAdmin(ImportExportModelAdmin):
 @admin.register(SecretMedia)
 class SecretMediaAdmin(ImportExportModelAdmin):
     resource_class = SecretMediaResource
+    list_filter = ('contact', 'media_type')
+    list_display = ('id', 'media_type', 'contact')
+    ordering = ('-created_at',)

@@ -26,7 +26,9 @@ class ContactResource(resources.ModelResource):
 class UserAdmin(ImportExportModelAdmin):
     resource_class = UserResource
     search_fields = ('username', 'fullname', 'id')
-    list_filter = ('is_premium', 'can_be_added_to_contacts')
+    list_filter = ('is_premium', 'can_be_added_to_contacts', 'is_banned')
+    list_display = ('username', 'fullname')
+    ordering = ('-created_at',)
 
 
 @admin.register(Contact)
@@ -38,7 +40,7 @@ class ContactAdmin(ImportExportModelAdmin):
         'to_user__username',
         'to_user__fullname',
     )
-    list_filter = ('of_user', 'is_hidden')
+    list_filter = ('of_user', 'to_user', 'is_hidden')
     list_select_related = ('of_user', 'to_user')
     list_display = ('of_user', 'to_user', 'private_name', 'public_name')
     list_display_links = ('of_user', 'to_user')
