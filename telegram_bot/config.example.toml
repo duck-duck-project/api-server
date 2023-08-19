@@ -1,5 +1,8 @@
 main_chat_id = 0
 
+[logging]
+level = "INFO"
+
 [telegram_bot]
 token = ""
 
