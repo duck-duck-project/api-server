@@ -34,6 +34,11 @@ class SecretMessageThemeAdmin(ImportExportModelAdmin):
 class SecretMessageAdmin(ImportExportModelAdmin):
     resource_class = SecretMessageResource
     ordering = ('-created_at',)
+    list_display = ('id', 'created_at', 'text')
+    sortable_by = ('created_at',)
+    search_fields = ('text',)
+    search_help_text = 'Search by text content'
+    date_hierarchy = 'created_at'
 
 
 @admin.register(SecretMedia)
