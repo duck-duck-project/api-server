@@ -77,7 +77,7 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
 
     def __init__(
             self,
-            query_id: UUID,
+            query_id: str,
             contact: Contact,
             secret_message_id: UUID,
             secret_message_theme: SecretMessageTheme | None,
@@ -88,7 +88,7 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
         self.__secret_message_theme = secret_message_theme
 
     def get_id(self) -> str:
-        return self.__query_id.hex
+        return self.__query_id
 
     def get_description(self) -> str:
         return self.__contact.public_name
