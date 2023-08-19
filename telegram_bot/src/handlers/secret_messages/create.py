@@ -13,20 +13,17 @@ from models import User
 from repositories import (
     ContactRepository,
     SecretMessageRepository,
-    UserRepository,
 )
 from repositories.base import HTTPClientFactory
 from services import filter_not_hidden
 from views import (
     SecretMessageDetailInlineQueryView,
-    InvertedSecretMessageDetailInlineQueryView,
     SecretMessageTextMissingInlineQueryView,
-    NotPremiumUserInlineQueryView,
     TooLongSecretMessageTextInlineQueryView,
     NoUserContactsInlineQueryView,
     answer_view,
     SecretMessagePromptView,
-    SecretMessageNotificationView, NoVisibleContactsInlineQueryView,
+    NoVisibleContactsInlineQueryView,
 )
 
 __all__ = ('register_handlers',)
@@ -93,7 +90,8 @@ async def on_secret_message_typing(
     await state.update_data(secret_message_id=draft_secret_message_id.hex)
 
     contacts_and_query_ids = [
-        (contact, uuid4()) for contact in visible_contacts
+        (contact, f'{uuid4().hex}@{contact.to_user.id}')
+        for contact in visible_contacts
     ]
 
     items: list[InlineQueryResultArticle] = [
@@ -105,15 +103,6 @@ async def on_secret_message_typing(
         ).get_inline_query_result_article()
         for contact, query_id in contacts_and_query_ids
     ]
-
-    query_ids_and_contact_ids = '|'.join(
-        f'{query_id.hex}@{contact.id}'
-        for contact, query_id in contacts_and_query_ids
-    )
-    await state.update_data(
-        query_ids_and_contact_ids=query_ids_and_contact_ids,
-    )
-
     await inline_query.answer(items, cache_time=1, is_personal=True)
 
 
@@ -121,19 +110,8 @@ async def on_message_created(
         chosen_inline_result: ChosenInlineResult,
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
-        bot: Bot,
 ):
     state_data = await state.get_data()
-    await state.finish()
-    contacts: str = state_data['contacts']
-    query_ids_and_to_user_ids = [
-        query_id_and_to_user_id.split('@')
-        for query_id_and_to_user_id in contacts.split('|')
-    ]
-    query_id_to_user_id = {
-        UUID(query_id): int(to_user_id)
-        for query_id, to_user_id in query_ids_and_to_user_ids
-    }
 
     secret_message_id = UUID(state_data['secret_message_id'])
     text: str = chosen_inline_result.query.lstrip('!')
@@ -147,8 +125,6 @@ async def on_message_created(
             secret_message_id=secret_message_id,
             text=text,
         )
-
-    to_user_id = query_id_to_user_id.get(UUID(chosen_inline_result.result_id))
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
