@@ -4,12 +4,18 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 
 __all__ = (
+    'LoggingConfig',
     'RedisConfig',
     'SentryConfig',
     'Config',
     'load_config_from_file_path',
     'parse_config',
 )
+
+
+@dataclass(frozen=True, slots=True)
+class LoggingConfig:
+    level: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,6 +33,7 @@ class SentryConfig:
 
 @dataclass(frozen=True, slots=True)
 class Config:
+    logging: LoggingConfig
     telegram_bot_token: str
     redis: RedisConfig
     sentry: SentryConfig
@@ -36,6 +43,9 @@ class Config:
 
 def parse_config(config: Mapping) -> Config:
     return Config(
+        logging=LoggingConfig(
+            level=config['logging']['level'],
+        ),
         telegram_bot_token=config['telegram_bot']['token'],
         redis=RedisConfig(
             host=config['redis']['host'],
