@@ -28,6 +28,9 @@ class SecretMediaResource(resources.ModelResource):
 @admin.register(SecretMessageTheme)
 class SecretMessageThemeAdmin(ImportExportModelAdmin):
     resource_class = SecretMessageThemeResource
+    list_filter = ('is_hidden',)
+    list_display = ('description_template_text', 'button_text')
+    ordering = ('-created_at',)
 
 
 @admin.register(SecretMessage)
