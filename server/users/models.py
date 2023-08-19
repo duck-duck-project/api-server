@@ -43,3 +43,6 @@ class Contact(models.Model):
 
     class Meta:
         unique_together = ('of_user', 'to_user')
+
+    def __str__(self):
+        return self.public_name
