@@ -33,6 +33,7 @@ class SecretMessageThemeAdmin(ImportExportModelAdmin):
 @admin.register(SecretMessage)
 class SecretMessageAdmin(ImportExportModelAdmin):
     resource_class = SecretMessageResource
+    ordering = ('-created_at',)
 
 
 @admin.register(SecretMedia)
