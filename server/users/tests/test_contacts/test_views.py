@@ -112,7 +112,7 @@ class ContactUpdateApiTests(APITestCase):
     def test_update_contact_not_found(self) -> None:
         url = reverse(
             'users:contacts-retrieve-update-delete',
-            args=(22,),
+            args=(123,),
         )
         data = {
             'private_name': 'Tom',
@@ -155,7 +155,7 @@ class ContactDeleteApiTests(APITestCase):
     def test_delete_contact_not_found(self) -> None:
         url = reverse(
             'users:contacts-retrieve-update-delete',
-            args=(22,),
+            args=(12321324,),
         )
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -198,7 +198,7 @@ class ContactRetrieveApiTests(APITestCase):
     def test_retrieve_user_does_not_exist(self) -> None:
         url = reverse(
             'users:contacts-retrieve-update-delete',
-            args=(22,),
+            args=(4312,),
         )
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
