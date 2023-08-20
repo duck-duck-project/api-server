@@ -3,23 +3,28 @@ from functools import partial
 
 import aiohttp
 import sentry_sdk
+import structlog
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
 from aiohttp import ClientTimeout
+from structlog.stdlib import BoundLogger
 
-from logger import setup_logging
 import handlers
 from config import load_config_from_file_path
+from logger import setup_logging
 from middlewares import (
     DependencyInjectMiddleware,
     UserMiddleware,
     BannedUsersFilterMiddleware,
 )
 
+logger: BoundLogger = structlog.get_logger('app')
+
 
 def register_handlers(dispatcher: Dispatcher) -> None:
     handlers.register_handlers(dispatcher)
+    logger.info('Handlers registered')
 
 
 def main() -> None:
@@ -54,10 +59,12 @@ def main() -> None:
     dispatcher.setup_middleware(UserMiddleware())
     dispatcher.setup_middleware(BannedUsersFilterMiddleware())
 
-    sentry_sdk.init(
-        dsn=config.sentry.dsn,
-        traces_sample_rate=config.sentry.traces_sample_rate,
-    )
+    if config.sentry.is_enabled:
+        sentry_sdk.init(
+            dsn=config.sentry.dsn,
+            traces_sample_rate=config.sentry.traces_sample_rate,
+        )
+        logger.info('Sentry enabled')
 
     executor.start_polling(
         dispatcher=dispatcher,

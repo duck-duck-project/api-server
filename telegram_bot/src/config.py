@@ -27,6 +27,7 @@ class RedisConfig:
 
 @dataclass(frozen=True, slots=True)
 class SentryConfig:
+    is_enabled: bool
     dsn: str
     traces_sample_rate: float
 
@@ -53,6 +54,7 @@ def parse_config(config: Mapping) -> Config:
             db=config['redis']['db'],
         ),
         sentry=SentryConfig(
+            is_enabled=config['sentry']['is_enabled'],
             dsn=config['sentry']['dsn'],
             traces_sample_rate=config['sentry']['traces_sample_rate'],
         ),

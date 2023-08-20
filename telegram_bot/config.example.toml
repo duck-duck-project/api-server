@@ -15,5 +15,6 @@ port = 0
 db = 0
 
 [sentry]
+is_enabled = false
 dsn = ""
 traces_sample_rate = 1.0  # 100% of traces to be sent to Sentry
