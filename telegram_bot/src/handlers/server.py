@@ -5,6 +5,10 @@ from aiogram.types import Update
 from structlog.stdlib import BoundLogger
 
 from exceptions import ServerAPIError
+from views import (
+    ClientConnectorErrorInlineQueryView,
+    ServerAPIErrorInlineQueryView
+)
 
 __all__ = ('register_handlers',)
 
@@ -20,6 +24,11 @@ async def on_client_connector_error(
         await update.message.answer(text)
     if update.callback_query is not None:
         await update.callback_query.answer(text, show_alert=True)
+    if update.inline_query is not None:
+        await update.inline_query.answer([
+            ClientConnectorErrorInlineQueryView()
+            .get_inline_query_result_article()
+        ], is_personal=True)
     await logger.acritical(
         'Can not connect to the API server',
         exc_info=exception,
@@ -36,6 +45,11 @@ async def on_server_api_error(
         await update.message.answer(text)
     if update.callback_query is not None:
         await update.callback_query.answer(text, show_alert=True)
+    if update.inline_query is not None:
+        await update.inline_query.answer([
+            ServerAPIErrorInlineQueryView()
+            .get_inline_query_result_article()
+        ])
     await logger.acritical(
         'Error on the API server side',
         exc_info=exception,
