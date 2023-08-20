@@ -29,6 +29,7 @@ class UserOutputSerializer(serializers.Serializer):
     secret_message_theme = SecretMessageThemeSerializer()
     profile_photo_url = serializers.URLField(allow_null=True)
     is_banned = serializers.BooleanField()
+    can_receive_notifications = serializers.BooleanField()
 
 
 class UserRetrieveUpdateApi(APIView):
@@ -36,9 +37,9 @@ class UserRetrieveUpdateApi(APIView):
     class InputSerializer(serializers.Serializer):
         fullname = serializers.CharField()
         username = serializers.CharField(allow_null=True)
-        is_premium = serializers.BooleanField()
         can_be_added_to_contacts = serializers.BooleanField()
         secret_message_theme_id = serializers.IntegerField(allow_null=True)
+        can_receive_notifications = serializers.BooleanField()
 
     def get(self, request: Request, user_id: int):
         try:
@@ -55,21 +56,23 @@ class UserRetrieveUpdateApi(APIView):
 
         fullname: str = serialized_data['fullname']
         username: str | None = serialized_data['username']
-        is_premium: bool = serialized_data['is_premium']
         can_be_added_to_contacts: bool = (
             serialized_data['can_be_added_to_contacts']
         )
         secret_message_theme_id: int | None = (
             serialized_data['secret_message_theme_id']
         )
+        can_receive_notifications: bool = (
+            serialized_data['can_receive_notifications']
+        )
 
         is_updated = update_user(
             user_id=user_id,
             fullname=fullname,
             username=username,
-            is_premium=is_premium,
             can_be_added_to_contacts=can_be_added_to_contacts,
             secret_message_theme_id=secret_message_theme_id,
+            can_receive_notifications=can_receive_notifications,
         )
 
         response_status_code = (

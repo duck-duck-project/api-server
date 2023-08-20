@@ -45,7 +45,7 @@ class UserUpdateServicesTests(TestCase):
             username=None,
             secret_message_theme_id=None,
             can_be_added_to_contacts=False,
-            is_premium=True,
+            can_receive_notifications=True,
         )
         self.assertTrue(is_updated)
 
@@ -55,7 +55,7 @@ class UserUpdateServicesTests(TestCase):
         self.assertIsNone(self.user.username)
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_be_added_to_contacts)
-        self.assertTrue(self.user.is_premium)
+        self.assertFalse(self.user.is_premium)
 
     def test_update_user_not_found(self) -> None:
         is_updated = update_user(
@@ -64,6 +64,6 @@ class UserUpdateServicesTests(TestCase):
             username=None,
             secret_message_theme_id=None,
             can_be_added_to_contacts=False,
-            is_premium=True,
+            can_receive_notifications=True,
         )
         self.assertFalse(is_updated)

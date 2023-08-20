@@ -19,9 +19,9 @@ class UserUpdateApiTests(APITestCase):
         data = {
             'username': 'pushkin',
             'fullname': 'Alexander Pushkin',
-            'is_premium': True,
             'can_be_added_to_contacts': False,
             'secret_message_theme_id': None,
+            'can_receive_notifications': False,
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -30,9 +30,10 @@ class UserUpdateApiTests(APITestCase):
 
         self.assertEqual(self.user.username, 'pushkin')
         self.assertEqual(self.user.fullname, 'Alexander Pushkin')
-        self.assertTrue(self.user.is_premium)
+        self.assertFalse(self.user.is_premium)
         self.assertFalse(self.user.can_be_added_to_contacts, False)
         self.assertIsNone(self.user.secret_message_theme_id)
+        self.assertFalse(self.user.can_receive_notifications)
 
     def test_update_user_not_found(self) -> None:
         url = reverse('users:retrieve-update', args=(12345,))
@@ -42,6 +43,7 @@ class UserUpdateApiTests(APITestCase):
             'is_premium': True,
             'can_be_added_to_contacts': False,
             'secret_message_theme_id': None,
+            'can_receive_notifications': False,
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -71,6 +73,7 @@ class UserRetrieveApiTests(APITestCase):
                 'secret_message_theme': None,
                 'profile_photo_url': None,
                 'is_banned': False,
+                'can_receive_notifications': True,
             },
         )
 
@@ -102,6 +105,7 @@ class UserCreateApiTests(APITestCase):
                 'secret_message_theme': None,
                 'profile_photo_url': None,
                 'is_banned': False,
+                'can_receive_notifications': True,
             },
         )
 
@@ -125,6 +129,7 @@ class UserCreateApiTests(APITestCase):
                 'secret_message_theme': None,
                 'profile_photo_url': None,
                 'is_banned': False,
+                'can_receive_notifications': True,
             },
         )
 

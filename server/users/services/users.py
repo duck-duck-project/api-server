@@ -45,7 +45,7 @@ def update_user(
         username: str | None,
         secret_message_theme_id: int | None,
         can_be_added_to_contacts: bool,
-        is_premium: bool,
+        can_receive_notifications: bool,
 ) -> bool:
     """Update user.
 
@@ -56,7 +56,8 @@ def update_user(
         secret_message_theme_id: ID of secret message theme.
         can_be_added_to_contacts: Boolean that indicates whether user can be
             added to contacts or not.
-        is_premium: Boolean that indicates whether user is premium or not.
+        can_receive_notifications: Boolean that indicates whether user can
+            receive notifications or not.
 
     Returns:
         Boolean that indicates whether user has been updated or not.
@@ -66,6 +67,6 @@ def update_user(
         username=username,
         secret_message_theme_id=secret_message_theme_id,
         can_be_added_to_contacts=can_be_added_to_contacts,
-        is_premium=is_premium,
+        can_receive_notifications=can_receive_notifications,
     )
     return bool(updated_count)
