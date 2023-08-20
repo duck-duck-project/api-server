@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 
 from . import (
     common,
+    server,
     contacts,
     secret_messages,
     secret_medias,
@@ -21,3 +22,4 @@ def register_handlers(dispatcher: Dispatcher) -> None:
     users.register_handlers(dispatcher)
     premium.register_handlers(dispatcher)
     anonymous_messages.register_handlers(dispatcher)
+    server.register_handlers(dispatcher)
