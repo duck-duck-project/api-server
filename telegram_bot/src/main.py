@@ -8,6 +8,7 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.types import ParseMode
 from aiohttp import ClientTimeout
 
+from logger import setup_logging
 import handlers
 from config import load_config_from_file_path
 from middlewares import (
@@ -24,6 +25,8 @@ def register_handlers(dispatcher: Dispatcher) -> None:
 def main() -> None:
     config_file_path = pathlib.Path(__file__).parent.parent / 'config.toml'
     config = load_config_from_file_path(config_file_path)
+
+    setup_logging(config.logging.level)
 
     bot = Bot(token=config.telegram_bot_token, parse_mode=ParseMode.HTML)
     dispatcher = Dispatcher(
