@@ -10,7 +10,7 @@ from views import edit_message_by_view, UserPersonalSettingsView
 __all__ = ('register_handlers',)
 
 
-async def on_toggle_can_be_added_to_contacts(
+async def on_toggle_can_receive_notifications(
         callback_query: CallbackQuery,
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
@@ -26,9 +26,9 @@ async def on_toggle_can_be_added_to_contacts(
             user_id=callback_query.from_user.id,
             fullname=callback_query.from_user.full_name,
             username=callback_query.from_user.username,
-            can_be_added_to_contacts=not user.can_be_added_to_contacts,
+            can_be_added_to_contacts=user.can_be_added_to_contacts,
             secret_messages_theme_id=secret_message_theme_id,
-            can_receive_notifications=user.can_receive_notifications,
+            can_receive_notifications=not user.can_receive_notifications,
         )
         user = await user_repository.get_by_id(user.id)
     state_name = await state.get_state()
@@ -38,8 +38,8 @@ async def on_toggle_can_be_added_to_contacts(
 
 def register_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.register_callback_query_handler(
-        on_toggle_can_be_added_to_contacts,
-        UserUpdateCallbackData().filter(field='can_be_added_to_contacts'),
+        on_toggle_can_receive_notifications,
+        UserUpdateCallbackData().filter(field='can_receive_notifications'),
         chat_type=ChatType.PRIVATE,
         state='*',
     )
