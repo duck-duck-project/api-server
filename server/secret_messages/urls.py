@@ -9,10 +9,15 @@ from secret_messages.views import (
 )
 
 urlpatterns = [
-    path('secret-messages/', SecretMessageCreateApi.as_view()),
+    path(
+        'secret-messages/',
+        SecretMessageCreateApi.as_view(),
+        name='secret-messages-create',
+    ),
     path(
         'secret-messages/<uuid:secret_message_id>/',
         SecretMessageRetrieveApi.as_view(),
+        name='secret-messages-retrieve',
     ),
     path(
         r'secret-medias/<uuid:secret_media_id>/',
