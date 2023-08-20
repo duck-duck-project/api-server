@@ -76,6 +76,7 @@ class AnonymousMessagingDisabledView(View):
 class AnonymousMessageSentView(View):
     text = '✅ Сообщение отправлено'
     reply_markup = ReplyKeyboardMarkup(
+        resize_keyboard=True,
         keyboard=[
             [
                 KeyboardButton(
