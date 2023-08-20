@@ -8,7 +8,7 @@ from aiogram.types import (
     ReplyKeyboardRemove,
     Message,
     InlineQueryResultArticle,
-    InputTextMessageContent,
+    InputTextMessageContent, CallbackQuery,
 )
 
 __all__ = (
@@ -17,6 +17,7 @@ __all__ = (
     'answer_view',
     'edit_message_by_view',
     'InlineQueryView',
+    'render_message_or_callback_query',
 )
 
 ReplyMarkup: TypeAlias = (
@@ -98,3 +99,23 @@ async def edit_message_by_view(
         text=view.get_text(),
         reply_markup=view.get_reply_markup(),
     )
+
+
+async def render_message_or_callback_query(
+        *,
+        message_or_callback_query: Message | CallbackQuery,
+        view: View,
+) -> Message:
+    match message_or_callback_query:
+        case Message():
+            return await answer_view(
+                message=message_or_callback_query,
+                view=view,
+            )
+        case CallbackQuery():
+            return await edit_message_by_view(
+                message=message_or_callback_query.message,
+                view=view,
+            )
+        case _:
+            raise ValueError('Unknown type')
