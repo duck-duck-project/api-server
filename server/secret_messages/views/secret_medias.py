@@ -12,42 +12,12 @@ from secret_messages.exceptions import (
 )
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.selectors import (
-    get_secret_medias_created_by_user_id,
     get_secret_media_by_id
 )
 from secret_messages.services import create_secret_media
 from users.exceptions import ContactDoesNotExistError
 from users.selectors.contacts import get_contact_by_id
 from users.views.contacts import ContactSerializer
-
-
-class UserSecretMediaListApi(APIView):
-
-    class InputSerializer(serializers.Serializer):
-        media_type = serializers.ChoiceField(
-            SecretMedia.MediaType.choices,
-            required=False,
-        )
-
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.UUIDField()
-        file_id = serializers.CharField()
-        name = serializers.CharField(allow_null=True)
-        contact = ContactSerializer()
-
-    def get(self, request: Request, user_id: int):
-        serializer = self.InputSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        serialized_data = serializer.data
-
-        media_type: int | None = serialized_data.get('media_type')
-
-        secret_photos = get_secret_medias_created_by_user_id(
-            user_id=user_id,
-            media_type=media_type,
-        )
-        serializer = self.OutputSerializer(secret_photos, many=True)
-        return Response(serializer.data)
 
 
 class SecretMediaRetrieveApi(APIView):
