@@ -352,22 +352,43 @@ class SecretMessageNotificationView(View):
             *,
             secret_message_id: UUID,
             contact: Contact,
-            secret_message_theme: SecretMessageTheme,
     ):
         self.__secret_message_id = secret_message_id
         self.__contact = contact
-        self.__secret_message_theme = secret_message_theme
 
     def get_text(self) -> str:
-        if self.__secret_message_theme is None:
+        theme = self.__contact.to_user.secret_message_theme
+        of_user = self.__contact.of_user
+        from_username = of_user.username or of_user.fullname
+        if theme is None:
             return (
                 f'📩 Секретное сообщение для'
                 f' <b>{self.__contact.public_name}</b>'
+                f' от <b>{from_username}</b>'
             )
-        return (
-            self.__secret_message_theme
+        text = (
+            theme
             .description_template_text
             .format(name=self.__contact.public_name)
+        )
+        text += f'\nОт <b>{from_username}</b>'
+        return text
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        theme = self.__contact.to_user.secret_message_theme
+        text = '👀 Прочитать' if theme is None else theme.button_text
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text=text,
+                        callback_data=SecretMessageDetailCallbackData().new(
+                            secret_message_id=self.__secret_message_id.hex,
+                            contact_id=self.__contact.id,
+                        ),
+                    ),
+                ],
+            ],
         )
 
 
