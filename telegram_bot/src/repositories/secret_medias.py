@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from pydantic import TypeAdapter
-
 import models
 from exceptions import (
     SecretMediaAlreadyExistsError,
@@ -41,17 +39,3 @@ class SecretMediaRepository(APIRepository):
                 raise SecretMediaDoesNotExistError
             response_data = await response.json()
         return models.SecretMedia.model_validate(response_data)
-
-    async def get_by_user_id(
-            self,
-            user_id: int,
-            media_type: int | None = None,
-    ) -> list[models.SecretMedia]:
-        url = f'/secret-medias/users/{user_id}/'
-        request_query_params = {}
-        if media_type is not None:
-            request_query_params['media_type'] = media_type
-        async with self._http_client.get(url) as response:
-            response_data = await response.json()
-        type_adapter = TypeAdapter(list[models.SecretMedia])
-        return type_adapter.validate_python(response_data)
