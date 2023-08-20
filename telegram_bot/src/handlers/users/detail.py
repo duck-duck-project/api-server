@@ -8,10 +8,22 @@ from services import is_anonymous_messaging_enabled
 from views import (
     UserSettingsCalledInGroupChatView,
     UserMenuView,
+    render_message_or_callback_query,
 )
-from views import answer_view, edit_message_by_view
+from views import answer_view, edit_message_by_view, UserPersonalSettingsView
 
 __all__ = ('register_handlers',)
+
+
+async def on_show_personal_settings(
+        message_or_callback_query: Message | CallbackQuery,
+        user: User,
+) -> None:
+    view = UserPersonalSettingsView(user)
+    await render_message_or_callback_query(
+        message_or_callback_query=message_or_callback_query,
+        view=view,
+    )
 
 
 async def on_settings_in_group_chat(
@@ -46,6 +58,12 @@ async def on_show_settings(
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
+    dispatcher.register_message_handler(
+        on_show_personal_settings,
+        Text('🎨 Персональные настройки'),
+        chat_type=ChatType.PRIVATE,
+        state='*',
+    )
     dispatcher.register_message_handler(
         on_settings_in_group_chat,
         Command('settings'),
