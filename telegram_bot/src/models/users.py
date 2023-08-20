@@ -14,3 +14,4 @@ class User(BaseModel):
     secret_message_theme: SecretMessageTheme | None
     profile_photo_url: HttpUrl | None
     is_banned: bool
+    can_receive_notifications: bool
