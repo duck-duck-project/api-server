@@ -33,7 +33,7 @@ class SecretMediaRetrieveApi(APIView):
         try:
             secret_photo = get_secret_media_by_id(secret_media_id)
         except SecretMessageDoesNotExistError:
-            raise NotFound('Secret photo does not exist')
+            raise NotFound('Secret media does not exist')
         serializer = self.OutputSerializer(secret_photo)
         return Response(serializer.data)
 
