@@ -17,7 +17,12 @@ urlpatterns = [
     path(
         r'secret-medias/<uuid:secret_media_id>/',
         SecretMediaRetrieveApi.as_view(),
+        name='secret-medias-retrieve',
     ),
-    path(r'secret-medias/', SecretMediaCreateApi.as_view()),
+    path(
+        r'secret-medias/',
+        SecretMediaCreateApi.as_view(),
+        name='secret-medias-create',
+    ),
     path(r'themes/', ThemeListApi.as_view(), name='themes'),
 ]
