@@ -8,7 +8,14 @@ __all__ = (
     'ContactDetailCallbackData',
     'ContactUpdateCallbackData',
     'ContactDeleteCallbackData',
+    'UserUpdateCallbackData',
 )
+
+
+class UserUpdateCallbackData(CallbackData):
+
+    def __init__(self):
+        super().__init__('user-update', 'field')
 
 
 class ParseContactIdMixin:
