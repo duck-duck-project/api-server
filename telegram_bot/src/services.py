@@ -266,3 +266,9 @@ async def send_secret_message_notification(
                 chat_id=contact.of_user.id,
                 text='❌ Не удалось отправить сообщение.',
             )
+    else:
+        await bot.send_message(
+            chat_id=contact.of_user.id,
+            text='✅ Секретное сообщение отправлено',
+            disable_notification=True,
+        )
