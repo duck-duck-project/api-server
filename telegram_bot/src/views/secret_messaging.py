@@ -375,7 +375,7 @@ class SecretMessageNotificationView(View):
         return text
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        theme = self.__contact.to_user.secret_message_theme
+        theme = self.__contact.of_user.secret_message_theme
         text = '👀 Прочитать' if theme is None else theme.button_text
         return InlineKeyboardMarkup(
             inline_keyboard=[
