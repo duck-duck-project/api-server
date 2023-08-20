@@ -75,8 +75,8 @@ class UserRepository(APIRepository):
             fullname: str,
             username: str | None,
             can_be_added_to_contacts: bool,
-            is_premium: bool,
             secret_messages_theme_id: int | None,
+            can_receive_notifications: bool,
     ) -> None:
         """Update user's data on the server.
 
@@ -85,8 +85,8 @@ class UserRepository(APIRepository):
             fullname: User's full name.
             username: User's username.
             can_be_added_to_contacts: Whether user can be added to contacts.
-            is_premium: Whether user is premium.
             secret_messages_theme_id: User's secret messages theme ID.
+            can_receive_notifications: Whether user can receive notifications.
 
         Raises:
             UserDoesNotExistError: If user with given ID does not exist.
@@ -96,8 +96,8 @@ class UserRepository(APIRepository):
             'fullname': fullname,
             'username': username,
             'can_be_added_to_contacts': can_be_added_to_contacts,
-            'is_premium': is_premium,
             'secret_message_theme_id': secret_messages_theme_id,
+            'can_receive_notifications': can_receive_notifications,
         }
         url = f'/users/{user_id}/'
         async with self._http_client.put(url, json=request_data) as response:
