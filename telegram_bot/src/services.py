@@ -1,14 +1,18 @@
+import contextlib
 from collections.abc import Coroutine, Callable, Awaitable, Iterable
 from typing import Protocol, TypeAlias, TypeVar, Any
 from uuid import UUID
 
+from aiogram import Bot
 from aiogram.types import Message
+from aiogram.utils.exceptions import TelegramAPIError
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
 from models import User
 from models.contacts import Contact
 from models.secret_media_types import SecretMediaType
 from repositories import UserRepository
+from views import SecretMessageNotificationView
 
 __all__ = (
     'is_anonymous_messaging_enabled',
@@ -24,6 +28,7 @@ __all__ = (
     'can_create_new_contact',
     'get_or_create_user',
     'filter_not_hidden',
+    'send_secret_message_notification',
 )
 
 
@@ -207,3 +212,21 @@ def can_create_new_contact(
 
 def filter_not_hidden(items: Iterable[HasIsHiddenT]) -> list[HasIsHiddenT]:
     return [item for item in items if not item.is_hidden]
+
+
+async def send_secret_message_notification(
+        *,
+        bot: Bot,
+        secret_message_id: UUID,
+        contact: Contact,
+) -> None:
+    view = SecretMessageNotificationView(
+        secret_message_id=secret_message_id,
+        contact=contact,
+    )
+    with contextlib.suppress(TelegramAPIError):
+        await bot.send_message(
+            contact.to_user.id,
+            text=view.get_text(),
+            reply_markup=view.get_reply_markup(),
+        )
