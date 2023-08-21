@@ -87,6 +87,14 @@ async def on_secret_media_create_confirm(
     sent_message = await answer_view(message=callback_query.message, view=view)
     await sent_message.reply('Вы можете переслать это сообщение получателю')
 
+    if contact.to_user.can_receive_notifications:
+        await send_view_to_user(
+            bot=bot,
+            view=view,
+            to_chat_id=contact.to_user.id,
+            from_chat_id=contact.of_user.id,
+        )
+
 
 async def on_media_description_skip(
         callback_query: CallbackQuery,
@@ -118,14 +126,6 @@ async def on_media_description_skip(
     )
     await message_method(file_id)
     await answer_view(message=callback_query.message, view=view)
-
-    if contact.to_user.can_receive_notifications:
-        await send_view_to_user(
-            bot=bot,
-            view=view,
-            to_chat_id=contact.to_user.id,
-            from_chat_id=contact.of_user.id,
-        )
 
 
 async def on_media_description(
