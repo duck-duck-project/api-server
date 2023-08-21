@@ -261,14 +261,22 @@ class SecretMediaDetailView(View):
 
 class SecretMediaForShareView(View):
 
-    def __init__(self, *, bot_username: str, secret_media: SecretMedia):
+    def __init__(
+            self,
+            *,
+            bot_username: str,
+            secret_media: SecretMedia,
+            from_user_username: str,
+    ):
         self.__bot_username = bot_username
         self.__secret_media = secret_media
+        self.__from_user_username = from_user_username
 
     def get_text(self) -> str:
         return (
             '🖼️ Секретное медиа для'
             f' {self.__secret_media.contact.public_name}'
+            f' от {self.__from_user_username}'
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
