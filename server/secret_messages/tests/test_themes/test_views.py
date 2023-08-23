@@ -25,8 +25,10 @@ class ThemeListApiTests(APITestCase):
             response.data,
             [
                 {
-                    'id': 1,
-                    'description_template_text': self.visible_theme.description_template_text,
+                    'id': self.visible_theme.id,
+                    'description_template_text': (
+                        self.visible_theme.description_template_text
+                    ),
                     'button_text': self.visible_theme.button_text,
                 },
             ],

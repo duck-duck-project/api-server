@@ -17,7 +17,7 @@ from repositories import (
 from repositories import HTTPClientFactory
 from services import (
     determine_media_file,
-    get_message_method_by_media_type,
+    get_message_method_by_media_type, send_view_to_user,
 )
 from states import SecretMediaCreateStates
 from views import (
@@ -68,26 +68,39 @@ async def on_secret_media_create_confirm(
 
     async with closing_http_client_factory() as http_client:
         secret_media_repository = SecretMediaRepository(http_client)
+        contact_repository = ContactRepository(http_client)
         secret_media = await secret_media_repository.create(
             contact_id=contact_id,
             file_id=file_id,
             description=description,
             media_type=media_type_value,
         )
+        contact = await contact_repository.get_by_id(contact_id)
 
     me = await bot.get_me()
+
     view = SecretMediaForShareView(
         bot_username=me.username,
         secret_media=secret_media,
+        from_user_username=contact.of_user.username or contact.of_user.fullname,
     )
     sent_message = await answer_view(message=callback_query.message, view=view)
     await sent_message.reply('Вы можете переслать это сообщение получателю')
+
+    if contact.to_user.can_receive_notifications:
+        await send_view_to_user(
+            bot=bot,
+            view=view,
+            to_chat_id=contact.to_user.id,
+            from_chat_id=contact.of_user.id,
+        )
 
 
 async def on_media_description_skip(
         callback_query: CallbackQuery,
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
+        bot: Bot,
 ) -> None:
     await SecretMediaCreateStates.confirm.set()
     await state.update_data(description=None)

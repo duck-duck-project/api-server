@@ -10,11 +10,11 @@ from repositories import (
     HTTPClientFactory, SecretMessageRepository,
     ContactRepository
 )
-from services import send_secret_message_notification
+from services import send_view_to_user
 from views import (
     answer_view,
     SecretMessagePromptView,
-    SecretMessageTextMissingInlineQueryView,
+    SecretMessageTextMissingInlineQueryView, SecretMessageNotificationView,
 )
 
 __all__ = ('register_handlers',)
@@ -56,10 +56,15 @@ async def on_message_created(
         contact = await contact_repository.get_by_id(contact_id)
 
     if contact.to_user.can_receive_notifications:
-        await send_secret_message_notification(
-            bot=bot,
-            contact=contact,
+        view = SecretMessageNotificationView(
             secret_message_id=secret_message_id,
+            contact=contact,
+        )
+        await send_view_to_user(
+            bot=bot,
+            view=view,
+            to_chat_id=contact.to_user.id,
+            from_chat_id=contact.of_user.id,
         )
 
 

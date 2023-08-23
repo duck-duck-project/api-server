@@ -5,13 +5,17 @@ from uuid import UUID
 
 from aiogram import Bot
 from aiogram.types import Message
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram.utils.exceptions import (
+    TelegramAPIError, BotBlocked,
+    CantInitiateConversation, ChatNotFound
+)
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
 from models import User
 from models.contacts import Contact
 from models.secret_media_types import SecretMediaType
 from repositories import UserRepository
+from views.base import View
 from views import SecretMessageNotificationView
 
 __all__ = (
@@ -28,7 +32,7 @@ __all__ = (
     'can_create_new_contact',
     'get_or_create_user',
     'filter_not_hidden',
-    'send_secret_message_notification',
+    'send_view_to_user',
 )
 
 
@@ -220,19 +224,55 @@ def filter_not_hidden(items: Iterable[HasIsHiddenT]) -> list[HasIsHiddenT]:
     return [item for item in items if not item.is_hidden]
 
 
-async def send_secret_message_notification(
+async def send_view_to_user(
         *,
         bot: Bot,
-        secret_message_id: UUID,
-        contact: Contact,
+        view: View,
+        to_chat_id: int,
+        from_chat_id: int,
 ) -> None:
-    view = SecretMessageNotificationView(
-        secret_message_id=secret_message_id,
-        contact=contact,
-    )
-    with contextlib.suppress(TelegramAPIError):
+    try:
         await bot.send_message(
-            contact.to_user.id,
+            to_chat_id,
             text=view.get_text(),
             reply_markup=view.get_reply_markup(),
+        )
+    except BotBlocked:
+        with contextlib.suppress(TelegramAPIError):
+            await bot.send_message(
+                chat_id=from_chat_id,
+                text=(
+                    '❌ Не удалось отправить сообщение.'
+                    ' Пользователь заблокировал бота'
+                ),
+            )
+    except CantInitiateConversation:
+        with contextlib.suppress(TelegramAPIError):
+            await bot.send_message(
+                chat_id=from_chat_id,
+                text=(
+                    '❌ Не удалось отправить сообщение.'
+                    ' Пользователь пока не начинал диалог с ботом'
+                ),
+            )
+    except ChatNotFound:
+        with contextlib.suppress(TelegramAPIError):
+            await bot.send_message(
+                chat_id=from_chat_id,
+                text=(
+                    '❌ Не удалось отправить сообщение.'
+                    ' Пользователь не существует'
+                ),
+            )
+    except TelegramAPIError as error:
+        with contextlib.suppress(TelegramAPIError):
+            await bot.send_message(
+                chat_id=from_chat_id,
+                text='❌ Не удалось отправить сообщение.',
+            )
+    else:
+        await bot.send_message(
+            chat_id=from_chat_id,
+            text='✅ Секретное сообщение отправлено',
+            disable_notification=True,
         )
