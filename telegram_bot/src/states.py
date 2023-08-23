@@ -4,6 +4,8 @@ __all__ = (
     'ContactUpdateStates',
     'SecretMediaCreateStates',
     'AnonymousMessagingStates',
+    'TeamCreateStates',
+    'TeamDeleteStates',
 )
 
 
@@ -20,4 +22,12 @@ class SecretMediaCreateStates(StatesGroup):
     contact = State()
     media = State()
     description = State()
+    confirm = State()
+
+
+class TeamCreateStates(StatesGroup):
+    name = State()
+
+
+class TeamDeleteStates(StatesGroup):
     confirm = State()
