@@ -9,6 +9,7 @@ __all__ = (
     'ContactUpdateCallbackData',
     'ContactDeleteCallbackData',
     'UserUpdateCallbackData',
+    'TeamDetailCallbackData',
 )
 
 
@@ -68,3 +69,13 @@ class ContactDeleteCallbackData(CallbackData, ParseContactIdMixin):
 
     def __init__(self):
         super().__init__('contact-delete', 'contact_id')
+
+
+class TeamDetailCallbackData(CallbackData):
+
+    def __init__(self):
+        super().__init__('team-detail', 'team_id')
+
+    def parse(self, callback_data: str) -> dict:
+        callback_data = super().parse(callback_data)
+        return {'team_id': int(callback_data['team_id'])}
