@@ -12,6 +12,7 @@ __all__ = (
     'TeamDetailCallbackData',
     'TeamUpdateCallbackData',
     'TeamDeleteAskForConfirmationCallbackData',
+    'TeamMemberDetailCallbackData',
 )
 
 
@@ -96,3 +97,18 @@ class TeamDeleteAskForConfirmationCallbackData(CallbackData, ParseTeamIdMixin):
 
     def __init__(self):
         super().__init__('team-delete-ask-for-confirmation', 'team_id')
+
+
+class ParseTeamMemberIdMixin:
+
+    def parse(self, callback_data: str) -> dict:
+        callback_data = super().parse(callback_data)
+        return callback_data | {
+            'team_member_id': int(callback_data['team_member_id']),
+        }
+
+
+class TeamMemberDetailCallbackData(CallbackData, ParseTeamMemberIdMixin):
+
+    def __init__(self):
+        super().__init__('team-member-detail', 'team_member_id')
