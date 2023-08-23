@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ChatType
 
 from callback_data import TeamDetailCallbackData
@@ -12,7 +13,10 @@ async def on_show_team_detail(
         callback_query: CallbackQuery,
         callback_data: dict,
         closing_http_client_factory: HTTPClientFactory,
+        state: FSMContext
 ) -> None:
+    await state.finish()
+
     team_id: int = callback_data['team_id']
 
     async with closing_http_client_factory() as http_client:
