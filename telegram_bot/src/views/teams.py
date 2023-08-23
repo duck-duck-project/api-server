@@ -2,13 +2,56 @@ from collections.abc import Iterable
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from callback_data import TeamDetailCallbackData
+from callback_data import (
+    TeamDetailCallbackData,
+    TeamDeleteAskForConfirmationCallbackData, TeamUpdateCallbackData
+)
 from models import TeamIdAndName
 from views.base import View
 
 __all__ = (
     'TeamListView',
 )
+
+
+class TeamDetailView(View):
+
+    def __init__(self, team):
+        self.__team = team
+
+    def get_text(self) -> str:
+        return
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text='👥 Участники',
+                        callback_data='',
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text='📝 Переименовать секретную группу',
+                        callback_data=TeamUpdateCallbackData().new(
+                            team_id=self.__team.id,
+                            field='name',
+                        ),
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        text='❌🗑️ Удалить секретную группу',
+                        callback_data=(
+                            TeamDeleteAskForConfirmationCallbackData().new(
+                                team_id=self.__team.id,
+                            )
+                        ),
+                    ),
+                ]
+            ],
+        )
 
 
 class TeamListView(View):
