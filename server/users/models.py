@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from secret_messages.models.secret_message_themes import SecretMessageTheme
 
-__all__ = ('User', 'Contact')
+__all__ = ('User', 'Contact', 'Team', 'TeamMember')
 
 
 class User(models.Model):
@@ -31,6 +31,26 @@ class User(models.Model):
         if self.subscription_started_at is None:
             return False
         return (timezone.now() - self.subscription_started_at).days <= 30
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class TeamMember(models.Model):
+    class Status(models.IntegerChoices):
+        MEMBER = 1
+        OWNER = 2
+
+    team = models.ForeignKey(to=Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    status = models.PositiveSmallIntegerField(choices=Status.choices)
+    is_hidden = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Contact(models.Model):
