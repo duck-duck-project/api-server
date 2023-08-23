@@ -4,12 +4,12 @@ from users.exceptions import ContactDoesNotExistError
 from users.models import Contact
 
 __all__ = (
-    'get_contact_by_id',
-    'get_contacts_by_user_id',
+    'get_not_deleted_contact_by_id',
+    'get_not_deleted_contacts_by_user_id',
 )
 
 
-def get_contact_by_id(contact_id: int) -> Contact:
+def get_not_deleted_contact_by_id(contact_id: int) -> Contact:
     """Retrieve contact instance by ID.
 
     Args:
@@ -30,14 +30,14 @@ def get_contact_by_id(contact_id: int) -> Contact:
                 'of_user__secret_message_theme',
                 'to_user__secret_message_theme',
             )
-            .get(id=contact_id)
+            .get(id=contact_id, is_deleted=False)
         )
     except Contact.DoesNotExist:
-        raise ContactDoesNotExistError(contact_id=contact_id)
+        raise ContactDoesNotExistError
 
 
-def get_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
-    """Retrieve contacts of user.
+def get_not_deleted_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
+    """Retrieve contacts of user that are not marked as deleted.
 
     Args:
         user_id: ID of user.
@@ -53,5 +53,5 @@ def get_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
             'of_user__secret_message_theme',
             'to_user__secret_message_theme',
         )
-        .filter(of_user_id=user_id)
+        .filter(of_user_id=user_id, is_deleted=False)
     )

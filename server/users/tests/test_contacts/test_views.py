@@ -56,7 +56,29 @@ class ContactCreateApiTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_create_contact_already_exists(self):
+
+class ContactCreateSoftDeletedContactTests(APITestCase):
+
+    def setUp(self) -> None:
+        self.eldos = User.objects.create(
+            id=123456789,
+            username='usbtypec',
+            fullname='Eldos',
+        )
+        self.alex = User.objects.create(
+            id=987654321,
+            username='pushkin',
+            fullname='Alexander Pushkin',
+        )
+        self.contact = Contact.objects.create(
+            of_user=self.eldos,
+            to_user=self.alex,
+            private_name='Alex',
+            public_name='Alexander',
+            is_deleted=True,
+        )
+
+    def test_create_contact_mark_as_not_deleted(self) -> None:
         url = reverse('users:contacts-create')
         data = {
             'of_user_id': self.eldos.id,
@@ -64,10 +86,14 @@ class ContactCreateApiTests(APITestCase):
             'private_name': 'Alex',
             'public_name': 'Alexander',
         }
-        self.client.post(url, data, format='json')
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
-        self.assertEqual(response.data, {'detail': 'Contact already exists'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['id'], self.contact.id)
+        self.assertEqual(response.data['of_user']['id'], self.eldos.id)
+        self.assertEqual(response.data['to_user']['id'], self.alex.id)
+        self.assertEqual(response.data['private_name'], 'Alex')
+        self.assertEqual(response.data['public_name'], 'Alexander')
+        self.assertFalse(response.data['is_hidden'])
 
 
 class ContactUpdateApiTests(APITestCase):
@@ -112,7 +138,7 @@ class ContactUpdateApiTests(APITestCase):
     def test_update_contact_not_found(self) -> None:
         url = reverse(
             'users:contacts-retrieve-update-delete',
-            args=(123,),
+            args=(434,),
         )
         data = {
             'private_name': 'Tom',
@@ -150,7 +176,7 @@ class ContactDeleteApiTests(APITestCase):
         )
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Contact.objects.filter(id=self.contact.id).exists())
+        self.assertTrue(Contact.objects.get(id=self.contact.id).is_deleted)
 
     def test_delete_contact_not_found(self) -> None:
         url = reverse(

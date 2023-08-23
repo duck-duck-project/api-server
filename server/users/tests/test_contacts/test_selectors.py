@@ -2,7 +2,10 @@ from django.test import TestCase
 
 from users.exceptions import ContactDoesNotExistError
 from users.models import Contact, User
-from users.selectors.contacts import get_contact_by_id, get_contacts_by_user_id
+from users.selectors.contacts import (
+    get_not_deleted_contact_by_id,
+    get_not_deleted_contacts_by_user_id,
+)
 
 
 class ContactSelectorsTests(TestCase):
@@ -34,20 +37,18 @@ class ContactSelectorsTests(TestCase):
             to_user=self.shahadat,
             private_name='Shahadat 🌙',
             public_name='Yng Moon',
+            is_deleted=True,
         )
 
     def test_get_contact_by_user(self) -> None:
-        contact = get_contact_by_id(self.contact1.id)
+        contact = get_not_deleted_contact_by_id(self.contact1.id)
         self.assertEqual(contact, self.contact1)
 
     def test_get_contact_by_user_does_not_exists(self) -> None:
-        with self.assertRaises(ContactDoesNotExistError) as error:
-            get_contact_by_id(22)
-        self.assertEqual(error.exception.contact_id, 22)
+        with self.assertRaises(ContactDoesNotExistError):
+            get_not_deleted_contact_by_id(self.shahadat.id)
 
     def test_get_contacts_by_user_id(self) -> None:
-        contacts = get_contacts_by_user_id(self.eldos.id)
-        self.assertEqual(contacts.count(), 2)
-
-        for contact in contacts:
-            self.assertEqual(contact.of_user, self.eldos)
+        contacts = get_not_deleted_contacts_by_user_id(self.eldos.id)
+        self.assertEqual(contacts.count(), 1)
+        self.assertEqual(contacts.first(), self.contact1)
