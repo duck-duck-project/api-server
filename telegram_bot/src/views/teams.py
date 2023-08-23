@@ -4,13 +4,16 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from callback_data import (
     TeamDetailCallbackData,
-    TeamDeleteAskForConfirmationCallbackData, TeamUpdateCallbackData
+    TeamDeleteAskForConfirmationCallbackData,
+    TeamUpdateCallbackData,
 )
 from models import TeamIdAndName
 from views.base import View
 
 __all__ = (
+    'TeamDetailView',
     'TeamListView',
+    'TeamDeleteAskForConfirmationView',
 )
 
 
@@ -84,3 +87,28 @@ class TeamListView(View):
             )
         )
         return markup
+
+
+class TeamDeleteAskForConfirmationView(View):
+    text = 'Вы уверены, что хотите удалить секретную группу?'
+
+    def __init__(self, team_id: int):
+        self.__team_id = team_id
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text='🔥 Удалить',
+                        callback_data='confirm'
+                    ),
+                    InlineKeyboardButton(
+                        text='♻️ Отменить',
+                        callback_data=TeamDetailCallbackData().new(
+                            team_id=self.__team_id,
+                        )
+                    )
+                ],
+            ],
+        )
