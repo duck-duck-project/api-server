@@ -41,6 +41,7 @@ class Contact(models.Model):
     public_name = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     is_hidden = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('of_user', 'to_user')
