@@ -54,6 +54,7 @@ def main() -> None:
             timeout=ClientTimeout(60),
         ),
         chat_id_for_retranslation=config.main_chat_id,
+        timezone=config.timezone,
     )
     dispatcher.setup_middleware(dependency_inject_middleware)
     dispatcher.setup_middleware(UserMiddleware())
