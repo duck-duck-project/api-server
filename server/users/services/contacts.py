@@ -1,6 +1,3 @@
-from django.db import IntegrityError
-
-from users.exceptions import ContactAlreadyExistsError
 from users.models import User, Contact
 
 __all__ = (
@@ -16,29 +13,27 @@ def create_contact(
         to_user: User,
         private_name: str,
         public_name: str,
-) -> Contact:
-    """Create contact.
+) -> tuple[Contact, bool]:
+    """Create contact. If soft deleted, mark it as not deleted.
 
     Keyword Args:
-        of_user: user who adds contact.
-        to_user: user who is added to contacts.
+        of_user: user that owns contact.
+        to_user: user that is contact.
         private_name: name of contact that is visible only to user.
         public_name: name of contact that is visible to all users.
 
     Returns:
-        Contact instance.
+        Tuple of contact and whether it was created or not.
     """
-    try:
-        return Contact.objects.create(
-            of_user=of_user,
-            to_user=to_user,
-            private_name=private_name,
-            public_name=public_name,
-        )
-    except IntegrityError as error:
-        if 'duplicate key value violates unique constraint' in str(error):
-            raise ContactAlreadyExistsError
-        raise
+    return Contact.objects.update_or_create(
+        of_user=of_user,
+        to_user=to_user,
+        defaults={
+            'private_name': private_name,
+            'public_name': public_name,
+            'is_deleted': False,
+        },
+    )
 
 
 def update_contact(
@@ -65,13 +60,18 @@ def update_contact(
 
 
 def delete_contact_by_id(contact_id: int) -> bool:
-    """Delete contact by id.
+    """Soft delete contact by id.
 
     Keyword Args:
         contact_id: id of contact to delete.
 
     Returns:
-        True if contact was deleted, False otherwise.
+        True if contact was marked as deleted, False otherwise.
     """
-    deleted_count = Contact.objects.filter(id=contact_id).delete()
+    deleted_count = (
+        Contact
+        .objects
+        .filter(id=contact_id)
+        .update(is_deleted=True)
+    )
     return bool(deleted_count)

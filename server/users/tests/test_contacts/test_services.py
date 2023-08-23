@@ -1,8 +1,10 @@
 from django.test import TestCase
 
-from users.exceptions import ContactAlreadyExistsError
 from users.models import User, Contact
-from users.services.contacts import create_contact, update_contact
+from users.services.contacts import (
+    update_contact,
+    create_contact
+)
 
 
 class ContactCreateServicesTests(TestCase):
@@ -22,7 +24,7 @@ class ContactCreateServicesTests(TestCase):
         )
 
     def test_create_contact(self) -> None:
-        contact = create_contact(
+        contact, is_created = create_contact(
             of_user=self.eldos,
             to_user=self.alex,
             private_name='Alex',
@@ -32,21 +34,7 @@ class ContactCreateServicesTests(TestCase):
         self.assertEqual(contact.to_user, self.alex)
         self.assertEqual(contact.private_name, 'Alex')
         self.assertEqual(contact.public_name, 'Alexender Pushkin')
-
-    def test_create_contact_already_exists_error(self) -> None:
-        create_contact(
-            of_user=self.eldos,
-            to_user=self.alex,
-            private_name='Alex',
-            public_name='Alexender Pushkin',
-        )
-        with self.assertRaises(ContactAlreadyExistsError):
-            create_contact(
-                of_user=self.eldos,
-                to_user=self.alex,
-                private_name='Alex',
-                public_name='Alexender Pushkin',
-            )
+        self.assertTrue(is_created)
 
 
 class ContactUpdateServicesTests(TestCase):

