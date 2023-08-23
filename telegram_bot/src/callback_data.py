@@ -10,6 +10,7 @@ __all__ = (
     'ContactDeleteCallbackData',
     'UserUpdateCallbackData',
     'TeamDetailCallbackData',
+    'TeamUpdateCallbackData',
 )
 
 
@@ -71,11 +72,20 @@ class ContactDeleteCallbackData(CallbackData, ParseContactIdMixin):
         super().__init__('contact-delete', 'contact_id')
 
 
-class TeamDetailCallbackData(CallbackData):
+class ParseTeamIdMixin:
+
+    def parse(self, callback_data: str) -> dict:
+        callback_data = super().parse(callback_data)
+        return callback_data | {'team_id': int(callback_data['team_id'])}
+
+
+class TeamDetailCallbackData(CallbackData, ParseTeamIdMixin):
 
     def __init__(self):
         super().__init__('team-detail', 'team_id')
 
-    def parse(self, callback_data: str) -> dict:
-        callback_data = super().parse(callback_data)
-        return {'team_id': int(callback_data['team_id'])}
+
+class TeamUpdateCallbackData(CallbackData, ParseTeamIdMixin):
+
+    def __init__(self):
+        super().__init__('team-update', 'team_id', 'field')
