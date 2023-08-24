@@ -13,6 +13,7 @@ __all__ = (
     'TeamUpdateCallbackData',
     'TeamDeleteAskForConfirmationCallbackData',
     'TeamMemberDetailCallbackData',
+    'TeamMemberDeleteCallbackData',
 )
 
 
@@ -112,3 +113,9 @@ class TeamMemberDetailCallbackData(CallbackData, ParseTeamMemberIdMixin):
 
     def __init__(self):
         super().__init__('team-member-detail', 'team_member_id')
+
+
+class TeamMemberDeleteCallbackData(CallbackData, ParseTeamMemberIdMixin):
+
+    def __init__(self):
+        super().__init__('team-member-delete', 'team_member_id')
