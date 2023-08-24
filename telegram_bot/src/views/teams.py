@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from zoneinfo import ZoneInfo
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -7,7 +8,7 @@ from callback_data import (
     TeamDeleteAskForConfirmationCallbackData,
     TeamUpdateCallbackData,
 )
-from models import TeamIdAndName
+from models import TeamIdAndName, Team
 from views.base import View
 
 __all__ = (
@@ -19,11 +20,17 @@ __all__ = (
 
 class TeamDetailView(View):
 
-    def __init__(self, team):
+    def __init__(self, team: Team, timezone: ZoneInfo):
         self.__team = team
+        self.__timezone = timezone
 
     def get_text(self) -> str:
-        return
+        created_at_local = self.__team.created_at.astimezone(self.__timezone)
+        return (
+            f'Секретная группа: {self.__team.name}\n'
+            f'Количество участников: {self.__team.members_count}\n'
+            f'Дата создания: {created_at_local:%H:%M %d.%m.%Y}'
+        )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
