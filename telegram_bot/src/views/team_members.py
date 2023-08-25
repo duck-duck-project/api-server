@@ -7,13 +7,23 @@ from callback_data import (
     TeamMemberDetailCallbackData,
     TeamMemberDeleteCallbackData,
     TeamMemberCreateCallbackData,
+    TeamMemberCreateAcceptInvitationCallbackData,
 )
-from models import TeamMember, TeamMemberStatus
+from models import (
+    TeamMember,
+    TeamMemberStatus,
+    Contact,
+    User,
+    Team,
+)
 from views.base import View
 
 __all__ = (
     'TeamMemberListView',
     'TeamMemberDetailView',
+    'TeamMemberCreateChooseContactView',
+    'TeamMemberCreateAcceptInvitationCallbackData',
+    'TeamMemberCreateAskForConfirmationView',
 )
 
 
@@ -117,3 +127,68 @@ class TeamMemberListView(View):
             )
         )
         return markup
+
+
+class TeamMemberCreateChooseContactView(View):
+
+    def __init__(self, *, contacts: Iterable[Contact], team_id: int):
+        self.__contacts = tuple(contacts)
+        self.__team_id = team_id
+
+    def get_text(self) -> str:
+        return (
+            'Выберите контакт, которого хотите добавить в секретную группу 😄'
+            if self.__contacts else
+            'У вас нет контактов, которых можно добавить в секретную группу 😔'
+        )
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        for contact in self.__contacts:
+            markup.row(
+                InlineKeyboardButton(
+                    text=contact.private_name,
+                    callback_data=str(contact.id),
+                ),
+            )
+
+        markup.row(
+            InlineKeyboardButton(
+                text='🔙 Назад',
+                callback_data=TeamDetailCallbackData().new(
+                    team_id=self.__team_id,
+                )
+            ),
+        )
+        return markup
+
+
+class TeamMemberCreateAskForConfirmationView(View):
+
+    def __init__(self, *, from_user: User, team: Team):
+        self.__from_user = from_user
+        self.__team = team
+
+    def get_text(self) -> str:
+        from_user_name = self.__from_user.username or self.__from_user.fullname
+        return (
+            f'❗️ <b>{from_user_name}</b> предложил(-а) вам вступить в'
+            f' секретный чат <b>{self.__team.name}</b>'
+        )
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text='✅ Вступить',
+                        callback_data=(
+                            TeamMemberCreateAcceptInvitationCallbackData().new(
+                                team_id=self.__team.id,
+                            )
+                        ),
+                    ),
+                ],
+            ],
+        )
