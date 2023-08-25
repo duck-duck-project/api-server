@@ -64,7 +64,7 @@ class TeamMemberDetailView(View):
 class TeamMemberListView(View):
     text = 'Участники секретной группы'
 
-    def __init__(self, *, team_members: Iterable, team_id: int):
+    def __init__(self, *, team_members: Iterable[TeamMember], team_id: int):
         self.__team_members = tuple(team_members)
         self.__team_id = team_id
 
@@ -72,9 +72,10 @@ class TeamMemberListView(View):
         markup = InlineKeyboardMarkup()
 
         for team_member in self.__team_members:
+            name = team_member.user_username or team_member.user_fullname
             markup.row(
                 InlineKeyboardButton(
-                    text='участник',
+                    text=name,
                     callback_data=TeamMemberDetailCallbackData().new(
                         team_member_id=team_member.id,
                     ),
