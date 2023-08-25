@@ -1,6 +1,6 @@
 from django.db.models import Count
 
-from users.exceptions import TeamDoesNotExistError
+from users.exceptions import TeamDoesNotExistError, TeamMemberDoesNotExistError
 from users.models import TeamMember, Team
 
 __all__ = (
@@ -79,7 +79,7 @@ def get_team_member_by_id(team_member_id: int) -> dict:
         Team member instance.
 
     Raises:
-        TeamDoesNotExistError: If team member does not exist.
+        TeamMemberDoesNotExistError: If team member does not exist.
     """
     team_member = (
         TeamMember
@@ -90,5 +90,5 @@ def get_team_member_by_id(team_member_id: int) -> dict:
         .first()
     )
     if team_member is None:
-        raise TeamDoesNotExistError
+        raise TeamMemberDoesNotExistError
     return team_member
