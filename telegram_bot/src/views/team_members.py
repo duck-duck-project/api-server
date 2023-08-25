@@ -6,6 +6,7 @@ from callback_data import (
     TeamDetailCallbackData,
     TeamMemberDetailCallbackData,
     TeamMemberDeleteCallbackData,
+    TeamMemberCreateCallbackData,
 )
 from models import TeamMember, TeamMemberStatus
 from views.base import View
@@ -64,9 +65,16 @@ class TeamMemberDetailView(View):
 class TeamMemberListView(View):
     text = 'Участники секретной группы'
 
-    def __init__(self, *, team_members: Iterable[TeamMember], team_id: int):
+    def __init__(
+            self,
+            *,
+            team_members: Iterable[TeamMember],
+            team_id: int,
+            current_user_id: int,
+    ):
         self.__team_members = tuple(team_members)
         self.__team_id = team_id
+        self.__current_user_id = current_user_id
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
@@ -78,6 +86,24 @@ class TeamMemberListView(View):
                     text=name,
                     callback_data=TeamMemberDetailCallbackData().new(
                         team_member_id=team_member.id,
+                    ),
+                )
+            )
+
+        is_current_user_owner = any((
+            team_member for team_member in self.__team_members
+            if team_member.user_id == self.__current_user_id
+               and team_member.status == TeamMemberStatus.OWNER
+        ))
+        has_members = bool(self.__team_members)
+        can_add_members = is_current_user_owner and has_members
+
+        if can_add_members:
+            markup.row(
+                InlineKeyboardButton(
+                    text='➕ Добавить',
+                    callback_data=TeamMemberCreateCallbackData().new(
+                        team_id=self.__team_id,
                     ),
                 )
             )
