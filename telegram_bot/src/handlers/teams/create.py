@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
@@ -5,22 +7,27 @@ from aiogram.types import CallbackQuery, Message, ChatType, ContentTypes
 
 from repositories import HTTPClientFactory, TeamRepository
 from states import TeamCreateStates
-from views import TeamDetailView, answer_view
+from views import (
+    TeamDetailView,
+    answer_view,
+    TeamCreateAskForNameView,
+    edit_message_by_view,
+)
 
 __all__ = ('register_handlers',)
 
 
 async def on_start_team_creation_flow(callback_query: CallbackQuery) -> None:
     await TeamCreateStates.name.set()
-    await callback_query.message.edit_text(
-        '📝 Введите название секретной группы'
-    )
+    view = TeamCreateAskForNameView()
+    await edit_message_by_view(message=callback_query.message, view=view)
 
 
 async def on_team_name_input(
         message: Message,
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
+        timezone: ZoneInfo,
 ) -> None:
     name = message.text
     if len(name) > 64:
@@ -37,7 +44,7 @@ async def on_team_name_input(
     await state.finish()
     await message.answer('✅ Секретная группа создана')
 
-    view = TeamDetailView(team)
+    view = TeamDetailView(team=team, timezone=timezone)
     await answer_view(message=message, view=view)
 
 

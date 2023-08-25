@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ChatType
@@ -13,7 +15,8 @@ async def on_show_team_detail(
         callback_query: CallbackQuery,
         callback_data: dict,
         closing_http_client_factory: HTTPClientFactory,
-        state: FSMContext
+        state: FSMContext,
+        timezone: ZoneInfo,
 ) -> None:
     await state.finish()
 
@@ -23,7 +26,7 @@ async def on_show_team_detail(
         team_repository = TeamRepository(http_client)
         team = await team_repository.get_by_id(team_id)
 
-    view = TeamDetailView(team)
+    view = TeamDetailView(team=team, timezone=timezone)
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
