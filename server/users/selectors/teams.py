@@ -7,6 +7,7 @@ __all__ = (
     'get_team_ids_and_names_by_user_id',
     'get_team_by_id',
     'get_team_members_by_team_id',
+    'get_team_member_by_id',
 )
 
 
@@ -66,3 +67,28 @@ def get_team_members_by_team_id(team_id: int) -> list[dict]:
         .select_related('user')
         .values('id', 'user_id', 'user__fullname', 'user__username', 'status')
     )
+
+
+def get_team_member_by_id(team_member_id: int) -> dict:
+    """Returns team member by ID.
+
+    Args:
+        team_member_id: ID of the team member.
+
+    Returns:
+        Team member instance.
+
+    Raises:
+        TeamDoesNotExistError: If team member does not exist.
+    """
+    team_member = (
+        TeamMember
+        .objects
+        .select_related('user')
+        .filter(id=team_member_id)
+        .values('id', 'user_id', 'user__fullname', 'user__username', 'status')
+        .first()
+    )
+    if team_member is None:
+        raise TeamDoesNotExistError
+    return team_member
