@@ -6,14 +6,14 @@ from aiogram.dispatcher.filters import Text
 from aiogram.types import InlineQuery, InlineQueryResultArticle
 
 from models import User
-from repositories import ContactRepository
+from repositories import ContactRepository, TeamRepository
 from repositories.base import HTTPClientFactory
 from services import filter_not_hidden
 from views import (
     SecretMessageDetailInlineQueryView,
     TooLongSecretMessageTextInlineQueryView,
     NoUserContactsInlineQueryView,
-    NoVisibleContactsInlineQueryView,
+    NoVisibleContactsInlineQueryView, SecretMessageForTeamInlineQueryView,
 )
 
 __all__ = ('register_handlers',)
@@ -29,7 +29,9 @@ async def on_secret_message_typing(
 
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
+        team_repository = TeamRepository(http_client)
         contacts = await contact_repository.get_by_user_id(user.id)
+        teams = await team_repository.get_by_user_id(user.id)
 
     if not contacts:
         items = [
@@ -59,12 +61,23 @@ async def on_secret_message_typing(
     draft_secret_message_id = uuid4()
     await state.update_data(secret_message_id=draft_secret_message_id.hex)
 
+    teams_and_query_ids = [
+        (team, f'{uuid4().hex}@{team.id}')
+        for team in teams
+    ]
     contacts_and_query_ids = [
-        (contact, f'{uuid4().hex}@{contact.id}')
+        (contact, f'{uuid4().hex}@{contact.id}?')
         for contact in visible_contacts
     ]
-
-    items: list[InlineQueryResultArticle] = [
+    teams_items: list[InlineQueryResultArticle] = [
+        SecretMessageForTeamInlineQueryView(
+            query_id=query_id,
+            team=team,
+            secret_message_id=draft_secret_message_id,
+        ).get_inline_query_result_article()
+        for team, query_id in teams_and_query_ids
+    ]
+    contacts_items: list[InlineQueryResultArticle] = [
         SecretMessageDetailInlineQueryView(
             query_id=query_id,
             contact=contact,
@@ -73,6 +86,7 @@ async def on_secret_message_typing(
         ).get_inline_query_result_article()
         for contact, query_id in contacts_and_query_ids
     ]
+    items = teams_items + contacts_items
     await inline_query.answer(items, cache_time=1, is_personal=True)
 
 
