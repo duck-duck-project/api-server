@@ -9,7 +9,7 @@ from models import SecretMediaType
 from repositories import HTTPClientFactory
 from repositories import SecretMediaRepository
 from services import (
-    can_see_secret,
+    can_see_contact_secret,
     extract_secret_media_id,
     get_message_method_by_media_type,
 )
@@ -30,7 +30,7 @@ async def on_show_secret_media(
             secret_media_id=secret_media_id,
         )
 
-    if not can_see_secret(
+    if not can_see_contact_secret(
             user_id=message.from_user.id,
             contact=secret_media.contact,
     ):
