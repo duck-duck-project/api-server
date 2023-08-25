@@ -6,12 +6,14 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from callback_data import (
     SecretMessageDetailCallbackData,
     InvertedSecretMessageDetailCallbackData,
+    SecretMessageForTeamCallbackData,
 )
 from models import (
     Contact,
     SecretMediaType,
     SecretMedia,
     SecretMessageTheme,
+    TeamIdAndName,
 )
 from views import View, InlineQueryView
 
@@ -31,6 +33,7 @@ __all__ = (
     'SecretMessagePromptView',
     'SecretMessageNotificationView',
     'NoVisibleContactsInlineQueryView',
+    'SecretMessageForTeamInlineQueryView',
 )
 
 
@@ -68,6 +71,49 @@ class InvertedSecretMessageDetailInlineQueryView(InlineQueryView):
                     )
                 ]
             ]
+        )
+
+
+class SecretMessageForTeamInlineQueryView(InlineQueryView):
+
+    def __init__(
+            self,
+            query_id: str,
+            team: TeamIdAndName,
+            secret_message_id: UUID,
+    ):
+        self.__query_id = query_id
+        self.__team = team
+        self.__secret_message_id = secret_message_id
+
+    def get_id(self) -> str:
+        return self.__query_id
+
+    def get_title(self) -> str:
+        return f'Группа: {self.__team.name}'
+
+    def get_description(self) -> str:
+        return 'Только для участников этой секретной группы'
+
+    def get_text(self) -> str:
+        return (
+            f'📩 Секретное сообщение для группы'
+            f' <b>{self.__team.name}</b>'
+        )
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text='👀 Прочитать',
+                        callback_data=SecretMessageForTeamCallbackData().new(
+                            team_id=self.__team.id,
+                            secret_message_id=self.__secret_message_id.hex,
+                        ),
+                    ),
+                ],
+            ],
         )
 
 
