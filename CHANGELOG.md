@@ -1,3 +1,9 @@
+## [1.1.0] - 2023-08-23
+
+### Fixed
+
+- Fix displaying warning about banned status to all users.
+
 ## [1.0.0] - 2023-08-23
 
 ### Changed

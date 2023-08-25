@@ -4,6 +4,8 @@ __all__ = (
     'ContactDoesNotExistError',
     'UserDoesNotExistsError',
     'UserAlreadyExistsError',
+    'TeamMemberAlreadyExistsError',
+    'TeamDoesNotExistError',
 )
 
 
@@ -17,4 +19,12 @@ class UserAlreadyExistsError(Exception):
 
 
 class ContactDoesNotExistError(Exception):
+    pass
+
+
+class TeamMemberAlreadyExistsError(Exception):
+    pass
+
+
+class TeamDoesNotExistError(Exception):
     pass

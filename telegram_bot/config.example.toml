@@ -1,4 +1,5 @@
 main_chat_id = 0
+timezone = "Asia/Bishkek"
 
 [logging]
 level = "INFO"

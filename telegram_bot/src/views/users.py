@@ -105,6 +105,7 @@ class UserMenuView(View):
                 [
                     KeyboardButton('🎨 Персональные настройки'),
                     KeyboardButton('👥 Мои контакты'),
+                    KeyboardButton('💬 Teams'),
                 ],
             ],
         )
@@ -114,3 +115,6 @@ class UserBannedInlineQueryView(InlineQueryView):
     title = 'Вы заблокированы в боте 😔'
     description = 'Обратитесь к @usbtypec для разблокировки'
     text = 'Я заблокирован в боте и не могу его использовать 😔'
+    thumbnail_url = 'https://i.imgur.com/JGgzhAI.jpg'
+    thumbnail_height = 100
+    thumbnail_width = 100

@@ -81,5 +81,5 @@ class BannedUsersFilterMiddleware(LifetimeControllerMiddleware):
                         UserBannedInlineQueryView()
                         .get_inline_query_result_article()
                     ]
-                    await obj.answer(items)
+                    await obj.answer(items, is_personal=True)
             raise CancelHandler

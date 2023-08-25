@@ -2,6 +2,7 @@ import pathlib
 import tomllib
 from collections.abc import Mapping
 from dataclasses import dataclass
+from zoneinfo import ZoneInfo
 
 __all__ = (
     'LoggingConfig',
@@ -40,6 +41,7 @@ class Config:
     sentry: SentryConfig
     server_api_base_url: str
     main_chat_id: int | str
+    timezone: ZoneInfo
 
 
 def parse_config(config: Mapping) -> Config:
@@ -60,6 +62,7 @@ def parse_config(config: Mapping) -> Config:
         ),
         server_api_base_url=config['server_api']['base_url'],
         main_chat_id=config['main_chat_id'],
+        timezone=ZoneInfo(config['timezone']),
     )
 
 
