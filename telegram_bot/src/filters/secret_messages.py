@@ -11,8 +11,9 @@ class SecretMessageValidFormatChosenInlineResultFilter(BoundFilter):
             self,
             chosen_inline_result: ChosenInlineResult,
     ) -> bool | dict:
+        is_contact = chosen_inline_result.result_id.endswith('?')
         try:
-            _, contact_id = chosen_inline_result.result_id.split('@')
-            return {'contact_id': int(contact_id)}
+            _, contact_id = chosen_inline_result.result_id.rstrip('?').split('@')
+            return {'contact_id': int(contact_id), 'is_contact': is_contact}
         except ValueError:
             return False
