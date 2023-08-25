@@ -135,3 +135,32 @@ class TeamMemberCreateApiTests(APITestCase):
             response.data,
             {'detail': 'Team member already exists'},
         )
+
+
+class TeamMemberDeleteApiTests(APITestCase):
+
+    def setUp(self) -> None:
+        self.team_member = TeamMemberFactory()
+
+    def test_delete(self) -> None:
+        url = reverse(
+            'users:team-members-retrieve-delete',
+            args=(self.team_member.id,),
+        )
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(
+            TeamMember.objects.filter(id=self.team_member.id).exists()
+        )
+
+    def test_delete_team_member_does_not_exist(self) -> None:
+        url = reverse(
+            'users:team-members-retrieve-delete',
+            args=(self.team_member.id + 1,),
+        )
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.data,
+            {'detail': 'Team member does not exist'},
+        )
