@@ -15,6 +15,7 @@ __all__ = (
     'TeamMemberDetailCallbackData',
     'TeamMemberDeleteCallbackData',
     'SecretMessageForTeamCallbackData',
+    'TeamMemberListCallbackData',
 )
 
 
@@ -137,3 +138,9 @@ class SecretMessageForTeamCallbackData(
 
     def __init__(self):
         super().__init__('secret-message-team', 'team_id', 'secret_message_id')
+
+
+class TeamMemberListCallbackData(ParseTeamIdMixin, CallbackData):
+
+    def __init__(self):
+        super().__init__('team-member-list', 'team_id')
