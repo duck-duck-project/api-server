@@ -52,6 +52,9 @@ class TeamMember(models.Model):
     is_hidden = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('team', 'user')
+
 
 class Contact(models.Model):
     """User contacts."""
