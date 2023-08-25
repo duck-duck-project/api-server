@@ -4,7 +4,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.exceptions import TeamDoesNotExistError, TeamMemberAlreadyExistsError
+from users.exceptions import (
+    TeamDoesNotExistError,
+    TeamMemberAlreadyExistsError, TeamMemberDoesNotExistError
+)
 from users.models import TeamMember
 from users.selectors.teams import (
     get_team_ids_and_names_by_user_id,
@@ -12,13 +15,14 @@ from users.selectors.teams import (
 )
 from users.services.teams import (
     create_team, delete_team_by_id,
-    create_team_member
+    create_team_member, delete_team_member_by_id
 )
 
 __all__ = (
     'TeamListCreateApi',
     'TeamRetrieveDeleteApi',
     'TeamMemberListCreateApi',
+    'TeamMemberRetrieveDeleteApi',
 )
 
 
@@ -121,3 +125,13 @@ class TeamMemberListCreateApi(APIView):
 
         serializer = self.CreateOutputSerializer(team_member)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class TeamMemberRetrieveDeleteApi(APIView):
+
+    def delete(self, request: Request, team_member_id: int):
+        try:
+            delete_team_member_by_id(team_member_id)
+        except TeamMemberDoesNotExistError:
+            raise NotFound('Team member does not exist')
+        return Response(status=status.HTTP_204_NO_CONTENT)

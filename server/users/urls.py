@@ -9,10 +9,16 @@ from users.views import (
     TeamListCreateApi,
     TeamRetrieveDeleteApi,
     TeamMemberListCreateApi,
+    TeamMemberRetrieveDeleteApi,
 )
 
 app_name = 'users'
 urlpatterns = [
+    path(
+        'team-members/<int:team_member_id>/',
+        TeamMemberRetrieveDeleteApi.as_view(),
+        name='team-members-retrieve-delete',
+    ),
     path(
         r'teams/<int:team_id>/members/',
         TeamMemberListCreateApi.as_view(),
