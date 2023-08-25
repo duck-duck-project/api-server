@@ -6,6 +6,7 @@ __all__ = (
     'AnonymousMessagingStates',
     'TeamCreateStates',
     'TeamDeleteStates',
+    'TeamMemberCreateStates',
 )
 
 
@@ -31,3 +32,7 @@ class TeamCreateStates(StatesGroup):
 
 class TeamDeleteStates(StatesGroup):
     confirm = State()
+
+
+class TeamMemberCreateStates(StatesGroup):
+    contact = State()
