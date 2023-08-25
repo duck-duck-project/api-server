@@ -18,6 +18,7 @@ __all__ = (
     'edit_message_by_view',
     'InlineQueryView',
     'render_message_or_callback_query',
+    'send_view',
 )
 
 ReplyMarkup: TypeAlias = (
@@ -119,3 +120,16 @@ async def render_message_or_callback_query(
             )
         case _:
             raise ValueError('Unknown type')
+
+
+async def send_view(
+        *,
+        bot,
+        chat_id: int,
+        view: View,
+) -> Message:
+    return await bot.send_message(
+        chat_id=chat_id,
+        text=view.get_text(),
+        reply_markup=view.get_reply_markup(),
+    )
