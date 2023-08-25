@@ -5,7 +5,7 @@ from users.models import User
 from users.services.teams import create_team, create_team_member
 
 
-class TeamServicesTests(TestCase):
+class TeamCreateServicesTests(TestCase):
 
     def setUp(self) -> None:
         self.user = User.objects.create(
