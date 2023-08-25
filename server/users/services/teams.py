@@ -30,6 +30,7 @@ def create_team(
         user_id=user_id,
         status=TeamMember.Status.OWNER,
     )
+    team.members_count = 1
     return team
 
 
