@@ -6,6 +6,7 @@ from users.models import TeamMember, Team
 __all__ = (
     'get_team_ids_and_names_by_user_id',
     'get_team_by_id',
+    'get_team_members_by_team_id',
 )
 
 
@@ -47,3 +48,21 @@ def get_team_by_id(team_id: int) -> Team:
         )
     except Team.DoesNotExist:
         raise TeamDoesNotExistError
+
+
+def get_team_members_by_team_id(team_id: int) -> list[dict]:
+    """Returns team members by team ID.
+
+    Args:
+        team_id: ID of the team.
+
+    Returns:
+        List of dicts with team members.
+    """
+    return (
+        TeamMember
+        .objects
+        .filter(team_id=team_id)
+        .select_related('user')
+        .values('id', 'user_id', 'user__fullname', 'user__username', 'status')
+    )
