@@ -7,6 +7,7 @@ from . import (
     secret_messages,
     secret_medias,
     teams,
+    team_members,
     users,
     anonymous_messages,
     premium,
@@ -21,6 +22,7 @@ def register_handlers(dispatcher: Dispatcher) -> None:
     secret_messages.register_handlers(dispatcher)
     secret_medias.register_handlers(dispatcher)
     teams.register_handlers(dispatcher)
+    team_members.register_handlers(dispatcher)
     users.register_handlers(dispatcher)
     premium.register_handlers(dispatcher)
     anonymous_messages.register_handlers(dispatcher)
