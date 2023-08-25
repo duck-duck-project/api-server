@@ -4,8 +4,9 @@ from users.exceptions import TeamDoesNotExistError
 from users.models import Team, User, TeamMember
 from users.selectors.teams import (
     get_team_by_id,
-    get_team_ids_and_names_by_user_id,
+    get_team_ids_and_names_by_user_id, get_team_members_by_team_id,
 )
+from users.tests.test_teams.factories import TeamMemberFactory, TeamFactory
 
 
 class TeamSelectorsTests(TestCase):
@@ -39,5 +40,27 @@ class TeamSelectorsTests(TestCase):
             {
                 'id': self.bulls.id,
                 'name': self.bulls.name,
+            }
+        )
+
+
+class TeamMemberSelectorsTests(TestCase):
+
+    def setUp(self) -> None:
+        self.team = TeamFactory()
+        self.team_member_1 = TeamMemberFactory()
+        self.team_member_2 = TeamMemberFactory(team=self.team)
+
+    def test_get_team_members_by_team_id(self):
+        team_members = get_team_members_by_team_id(self.team.id)
+        self.assertEqual(len(team_members), 1)
+        self.assertEqual(
+            team_members[0],
+            {
+                'id': self.team_member_2.id,
+                'user_id': self.team_member_2.user_id,
+                'user__fullname': self.team_member_2.user.fullname,
+                'user__username': self.team_member_2.user.username,
+                'status': self.team_member_2.status.value,
             }
         )
