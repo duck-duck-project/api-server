@@ -1,11 +1,12 @@
 from django.db import transaction, IntegrityError
 
-from users.exceptions import TeamMemberAlreadyExistsError
+from users.exceptions import TeamMemberAlreadyExistsError, TeamDoesNotExistError
 from users.models import Team, TeamMember
 
 __all__ = (
     'create_team',
     'create_team_member',
+    'delete_team_by_id',
 )
 
 
@@ -62,3 +63,17 @@ def create_team_member(
         if 'violates unique constraint' in str(error):
             raise TeamMemberAlreadyExistsError
         raise
+
+
+def delete_team_by_id(team_id: int) -> None:
+    """Delete a team by ID.
+
+    Args:
+        team_id: ID of the team to delete.
+
+    Raises:
+        TeamDoesNotExistError: If the team does not exist.
+    """
+    _, deleted_count = Team.objects.filter(id=team_id).delete()
+    if not deleted_count:
+        raise TeamDoesNotExistError
