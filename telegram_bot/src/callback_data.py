@@ -14,6 +14,7 @@ __all__ = (
     'TeamDeleteAskForConfirmationCallbackData',
     'TeamMemberDetailCallbackData',
     'TeamMemberDeleteCallbackData',
+    'SecretMessageForTeamCallbackData',
 )
 
 
@@ -32,6 +33,15 @@ class ParseContactIdMixin:
         }
 
 
+class ParseSecretMessageIdMixin:
+
+    def parse(self, callback_data: str) -> dict:
+        callback_data = super().parse(callback_data)
+        return callback_data | {
+            'secret_message_id': UUID(callback_data['secret_message_id']),
+        }
+
+
 class InvertedSecretMessageDetailCallbackData(
     CallbackData,
     ParseContactIdMixin,
@@ -45,16 +55,14 @@ class InvertedSecretMessageDetailCallbackData(
         )
 
 
-class SecretMessageDetailCallbackData(CallbackData, ParseContactIdMixin):
+class SecretMessageDetailCallbackData(
+    ParseContactIdMixin,
+    ParseSecretMessageIdMixin,
+    CallbackData,
+):
 
     def __init__(self):
         super().__init__('show-whisp', 'contact_id', 'secret_message_id')
-
-    def parse(self, callback_data: str) -> dict:
-        callback_data = super().parse(callback_data)
-        return callback_data | {
-            'secret_message_id': UUID(callback_data['secret_message_id']),
-        }
 
 
 class ContactDetailCallbackData(CallbackData, ParseContactIdMixin):
@@ -119,3 +127,13 @@ class TeamMemberDeleteCallbackData(CallbackData, ParseTeamMemberIdMixin):
 
     def __init__(self):
         super().__init__('team-member-delete', 'team_member_id')
+
+
+class SecretMessageForTeamCallbackData(
+    ParseTeamIdMixin,
+    ParseSecretMessageIdMixin,
+    CallbackData,
+):
+
+    def __init__(self):
+        super().__init__('secret-message-team', 'team_id', 'secret_message_id')
