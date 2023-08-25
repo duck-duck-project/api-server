@@ -12,10 +12,25 @@ from models import TeamIdAndName, Team
 from views.base import View
 
 __all__ = (
+    'TeamCreateAskForNameView',
     'TeamDetailView',
     'TeamListView',
     'TeamDeleteAskForConfirmationView',
 )
+
+
+class TeamCreateAskForNameView(View):
+    text = '📝 Введите название секретной группы'
+    reply_markup = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='🔙 Назад',
+                    callback_data='show-teams-list',
+                ),
+            ],
+        ],
+    )
 
 
 class TeamDetailView(View):
@@ -40,15 +55,6 @@ class TeamDetailView(View):
                         text='👥 Участники',
                         callback_data='f',
                     ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        text='📝 Переименовать',
-                        callback_data=TeamUpdateCallbackData().new(
-                            team_id=self.__team.id,
-                            field='name',
-                        ),
-                    )
                 ],
                 [
                     InlineKeyboardButton(
