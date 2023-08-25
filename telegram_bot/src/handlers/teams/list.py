@@ -1,4 +1,5 @@
 from aiogram import Dispatcher
+from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import Message, CallbackQuery, ChatType
 
@@ -12,7 +13,9 @@ __all__ = ('register_handlers',)
 async def on_show_teams_list(
         message_or_callback_query: Message | CallbackQuery,
         closing_http_client_factory: HTTPClientFactory,
+        state: FSMContext,
 ) -> None:
+    await state.finish()
     user_id = message_or_callback_query.from_user.id
 
     async with closing_http_client_factory() as http_client:
