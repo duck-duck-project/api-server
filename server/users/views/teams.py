@@ -9,11 +9,11 @@ from users.selectors.teams import (
     get_team_ids_and_names_by_user_id,
     get_team_by_id,
 )
-from users.services.teams import create_team
+from users.services.teams import create_team, delete_team_by_id
 
 __all__ = (
     'TeamListCreateApi',
-    'TeamRetrieveApi',
+    'TeamRetrieveDeleteApi',
 )
 
 
@@ -50,7 +50,7 @@ class TeamListCreateApi(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class TeamRetrieveApi(APIView):
+class TeamRetrieveDeleteApi(APIView):
 
     def get(self, request: Request, team_id: int):
         try:
@@ -59,3 +59,10 @@ class TeamRetrieveApi(APIView):
             raise NotFound('Team does not exist')
         serializer = TeamSerializer(team)
         return Response(serializer.data)
+
+    def delete(self, request: Request, team_id: int):
+        try:
+            delete_team_by_id(team_id)
+        except TeamDoesNotExistError:
+            raise NotFound('Team does not exist')
+        return Response(status=status.HTTP_204_NO_CONTENT)
