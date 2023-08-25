@@ -23,6 +23,7 @@ async def on_show_team_members_list(
     view = TeamMemberListView(
         team_members=team_members,
         team_id=team_id,
+        current_user_id=callback_query.from_user.id,
     )
     await edit_message_by_view(message=callback_query.message, view=view)
 
