@@ -7,7 +7,7 @@ from users.views import (
     ContactRetrieveUpdateDeleteApi,
     ContactCreateApi,
     TeamListCreateApi,
-    TeamRetrieveApi,
+    TeamRetrieveDeleteApi,
 )
 
 app_name = 'users'
@@ -18,8 +18,8 @@ urlpatterns = [
         name='teams-list-create',
     ),
     path(
-        r'/teams/<int:team_id>/',
-        TeamRetrieveApi.as_view(),
+        r'teams/<int:team_id>/',
+        TeamRetrieveDeleteApi.as_view(),
         name='teams-retrieve',
     ),
     path(
