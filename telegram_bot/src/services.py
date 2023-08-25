@@ -21,7 +21,7 @@ __all__ = (
     'HasSendVideoPhotoAnimationVoiceAudioDocumentMethod',
     'determine_media_file_id_and_answer_method',
     'ReturnsMessage',
-    'can_see_secret',
+    'can_see_contact_secret',
     'extract_secret_media_id',
     'determine_media_file',
     'get_message_method_by_media_type',
@@ -29,7 +29,12 @@ __all__ = (
     'get_or_create_user',
     'filter_not_hidden',
     'send_secret_message_notification',
+    'can_see_team_secret',
 )
+
+
+class HasUserId(Protocol):
+    user_id: int
 
 
 class HasIsHidden(Protocol):
@@ -126,17 +131,20 @@ def determine_media_file_id_and_answer_method(
     raise ValueError('Unsupported media type')
 
 
-def can_see_secret(
+def can_see_team_secret(
+        *,
+        user_id: int,
+        team_members: Iterable[HasIsHiddenT],
+) -> bool:
+    user_ids = {member.user_id for member in team_members}
+    return user_id in user_ids
+
+
+def can_see_contact_secret(
         *,
         user_id: int,
         contact: Contact,
 ) -> bool:
-    eldos_and_shahadat = (896678539, 5419409600)
-    if user_id == 406247326:
-        return (
-                contact.of_user.id not in eldos_and_shahadat
-                or contact.to_user.id not in eldos_and_shahadat
-        )
     return user_id in (
         contact.of_user.id,
         contact.to_user.id,
