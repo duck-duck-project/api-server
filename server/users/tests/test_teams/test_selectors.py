@@ -5,6 +5,7 @@ from users.models import Team, User, TeamMember
 from users.selectors.teams import (
     get_team_by_id,
     get_team_ids_and_names_by_user_id, get_team_members_by_team_id,
+    get_team_member_by_id,
 )
 from users.tests.test_teams.factories import TeamMemberFactory, TeamFactory
 
@@ -51,7 +52,7 @@ class TeamMemberSelectorsTests(TestCase):
         self.team_member_1 = TeamMemberFactory()
         self.team_member_2 = TeamMemberFactory(team=self.team)
 
-    def test_get_team_members_by_team_id(self):
+    def test_get_team_members_by_team_id(self) -> None:
         team_members = get_team_members_by_team_id(self.team.id)
         self.assertEqual(len(team_members), 1)
         self.assertEqual(
@@ -62,5 +63,18 @@ class TeamMemberSelectorsTests(TestCase):
                 'user__fullname': self.team_member_2.user.fullname,
                 'user__username': self.team_member_2.user.username,
                 'status': self.team_member_2.status.value,
+            }
+        )
+
+    def test_get_team_member_by_id(self) -> None:
+        team_member = get_team_member_by_id(self.team_member_1.id)
+        self.assertEqual(
+            team_member,
+            {
+                'id': self.team_member_1.id,
+                'user_id': self.team_member_1.user_id,
+                'user__fullname': self.team_member_1.user.fullname,
+                'user__username': self.team_member_1.user.username,
+                'status': self.team_member_1.status.value,
             }
         )
