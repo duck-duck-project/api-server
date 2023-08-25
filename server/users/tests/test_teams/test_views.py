@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from users.models import TeamMember
-from users.tests.test_teams.factories import TeamFactory
+from users.tests.test_teams.factories import TeamFactory, TeamMemberFactory
 from users.tests.test_users.factories import UserFactory
 
 
@@ -65,3 +65,73 @@ class TeamRetrieveApiTests(APITestCase):
         self.assertEqual(response.data['name'], self.team.name)
         self.assertEqual(response.data['members_count'], 0)
         self.assertIn('created_at', response.data)
+
+
+class TeamMemberListApiTests(APITestCase):
+
+    def setUp(self) -> None:
+        self.team = TeamFactory()
+        self.team_member_1 = TeamMemberFactory(team=self.team)
+        self.team_member_2 = TeamMemberFactory()
+        self.team_member_3 = TeamMemberFactory(team=self.team)
+        self.team_member_4 = TeamMemberFactory()
+
+    def test_get(self) -> None:
+        url = reverse('users:team-members-list-create', args=(self.team.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(
+            response.data,
+            [
+                {
+                    'id': self.team_member_1.id,
+                    'user_id': self.team_member_1.user.id,
+                    'user_fullname': self.team_member_1.user.fullname,
+                    'user_username': self.team_member_1.user.username,
+                    'status': self.team_member_1.status.value,
+                },
+                {
+                    'id': self.team_member_3.id,
+                    'user_id': self.team_member_3.user.id,
+                    'user_fullname': self.team_member_3.user.fullname,
+                    'user_username': self.team_member_3.user.username,
+                    'status': self.team_member_3.status.value,
+                },
+            ],
+        )
+
+        team_member_ids = [team_member['id'] for team_member in response.data]
+        self.assertNotIn(self.team_member_2.id, team_member_ids)
+        self.assertNotIn(self.team_member_4.id, team_member_ids)
+
+
+class TeamMemberCreateApiTests(APITestCase):
+
+    def setUp(self) -> None:
+        self.team = TeamFactory()
+        self.user = UserFactory()
+
+    def test_post(self) -> None:
+        url = reverse('users:team-members-list-create', args=(self.team.id,))
+        request_data = {'user_id': self.user.id}
+        response = self.client.post(url, request_data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['user_id'], self.user.id)
+        self.assertEqual(
+            response.data['status'],
+            TeamMember.Status.MEMBER.value,
+        )
+        self.assertIn('id', response.data)
+        self.assertIn('created_at', response.data)
+
+    def test_post_team_member_already_exists(self) -> None:
+        TeamMemberFactory(team=self.team, user=self.user)
+        url = reverse('users:team-members-list-create', args=(self.team.id,))
+        request_data = {'user_id': self.user.id}
+        response = self.client.post(url, request_data)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(
+            response.data,
+            {'detail': 'Team member already exists'},
+        )
