@@ -38,12 +38,12 @@ class TeamDetailView(View):
                 [
                     InlineKeyboardButton(
                         text='👥 Участники',
-                        callback_data='',
+                        callback_data='f',
                     ),
                 ],
                 [
                     InlineKeyboardButton(
-                        text='📝 Переименовать секретную группу',
+                        text='📝 Переименовать',
                         callback_data=TeamUpdateCallbackData().new(
                             team_id=self.__team.id,
                             field='name',
@@ -73,7 +73,7 @@ class TeamListView(View):
         return (
             'Список ваших секретных групп'
             if self.__teams
-            else 'У вас нет ни одной секретной группе'
+            else 'У вас нет ни одной секретной группы'
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
