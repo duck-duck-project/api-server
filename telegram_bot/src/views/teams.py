@@ -6,7 +6,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from callback_data import (
     TeamDetailCallbackData,
     TeamDeleteAskForConfirmationCallbackData,
-    TeamUpdateCallbackData,
+    TeamMemberListCallbackData,
 )
 from models import TeamIdAndName, Team
 from views.base import View
@@ -53,7 +53,9 @@ class TeamDetailView(View):
                 [
                     InlineKeyboardButton(
                         text='👥 Участники',
-                        callback_data='f',
+                        callback_data=TeamMemberListCallbackData().new(
+                            team_id=self.__team.id,
+                        ),
                     ),
                 ],
                 [

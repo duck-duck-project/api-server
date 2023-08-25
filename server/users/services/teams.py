@@ -1,12 +1,16 @@
 from django.db import transaction, IntegrityError
 
-from users.exceptions import TeamMemberAlreadyExistsError, TeamDoesNotExistError
+from users.exceptions import (
+    TeamMemberAlreadyExistsError,
+    TeamDoesNotExistError, TeamMemberDoesNotExistError
+)
 from users.models import Team, TeamMember
 
 __all__ = (
     'create_team',
     'create_team_member',
     'delete_team_by_id',
+    'delete_team_member_by_id',
 )
 
 
@@ -77,3 +81,17 @@ def delete_team_by_id(team_id: int) -> None:
     _, deleted_count = Team.objects.filter(id=team_id).delete()
     if not deleted_count:
         raise TeamDoesNotExistError
+
+
+def delete_team_member_by_id(team_member_id: int) -> None:
+    """Delete a team member by ID.
+
+    Args:
+        team_member_id: ID of the team member to delete.
+
+    Raises:
+        TeamMemberDoesNotExistError: If the team member does not exist.
+    """
+    _, deleted_count = TeamMember.objects.filter(id=team_member_id).delete()
+    if not deleted_count:
+        raise TeamMemberDoesNotExistError

@@ -20,8 +20,9 @@ class TeamMemberStatus(enum.IntEnum):
 
 class TeamMember(BaseModel):
     id: int
-    name: str
     user_id: int
+    user_username: str | None
+    user_fullname: str
     status: TeamMemberStatus
 
 

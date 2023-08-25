@@ -38,6 +38,7 @@ async def on_message_created(
         state: FSMContext,
         bot: Bot,
         contact_id: int,
+        is_contact: bool,
 ):
     state_data = await state.get_data()
     secret_message_id = UUID(state_data['secret_message_id'])
@@ -53,19 +54,21 @@ async def on_message_created(
             secret_message_id=secret_message_id,
             text=text,
         )
-        contact = await contact_repository.get_by_id(contact_id)
 
-    if contact.to_user.can_receive_notifications:
-        view = SecretMessageNotificationView(
-            secret_message_id=secret_message_id,
-            contact=contact,
-        )
-        await send_view_to_user(
-            bot=bot,
-            view=view,
-            to_chat_id=contact.to_user.id,
-            from_chat_id=contact.of_user.id,
-        )
+        if is_contact:
+            contact = await contact_repository.get_by_id(contact_id)
+            if contact.to_user.can_receive_notifications:
+                await send_secret_message_notification(
+                    bot=bot,
+                    contact=contact,
+                    secret_message_id=secret_message_id,
+                )
+                await send_view_to_user(
+                    bot=bot,
+                    view=view,
+                    to_chat_id=contact.to_user.id,
+                    from_chat_id=contact.of_user.id,
+                )
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:

@@ -1,10 +1,8 @@
 from django.test import TestCase
 
-from users.models import User, Contact
-from users.services.contacts import (
-    update_contact,
-    create_contact
-)
+from users.services.contacts import update_contact, create_contact
+from users.tests.test_contacts.factories import ContactFactory
+from users.tests.test_users.factories import UserFactory
 
 
 class ContactCreateServicesTests(TestCase):
@@ -12,26 +10,18 @@ class ContactCreateServicesTests(TestCase):
 
     def setUp(self) -> None:
         """Set up the test case."""
-        self.eldos = User.objects.create(
-            id=123456789,
-            username='usbtypec',
-            fullname='Eldos',
-        )
-        self.alex = User.objects.create(
-            id=987654321,
-            username=None,
-            fullname='Alexander',
-        )
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
 
     def test_create_contact(self) -> None:
         contact, is_created = create_contact(
-            of_user=self.eldos,
-            to_user=self.alex,
+            of_user=self.user_1,
+            to_user=self.user_2,
             private_name='Alex',
             public_name='Alexender Pushkin',
         )
-        self.assertEqual(contact.of_user, self.eldos)
-        self.assertEqual(contact.to_user, self.alex)
+        self.assertEqual(contact.of_user, self.user_1)
+        self.assertEqual(contact.to_user, self.user_2)
         self.assertEqual(contact.private_name, 'Alex')
         self.assertEqual(contact.public_name, 'Alexender Pushkin')
         self.assertTrue(is_created)
@@ -40,22 +30,7 @@ class ContactCreateServicesTests(TestCase):
 class ContactUpdateServicesTests(TestCase):
 
     def setUp(self) -> None:
-        self.eldos = User.objects.create(
-            id=87654321,
-            username='usbtypec',
-            fullname='Eldos',
-        )
-        self.alexander = User.objects.create(
-            id=12345678,
-            username=None,
-            fullname='Alexander',
-        )
-        self.contact = Contact.objects.create(
-            of_user=self.eldos,
-            to_user=self.alexander,
-            private_name='Alex',
-            public_name='Alexender Pushkin',
-        )
+        self.contact = ContactFactory()
 
     def test_update_contact(self) -> None:
         is_updated = update_contact(

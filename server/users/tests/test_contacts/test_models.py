@@ -1,10 +1,12 @@
 from django.test import TestCase
 
-from users.models import Contact
+from users.tests.test_contacts.factories import ContactFactory
 
 
 class ContactModelTestCase(TestCase):
 
+    def setUp(self) -> None:
+        self.contact = ContactFactory(public_name='John Doe')
+
     def test_contact_str(self):
-        contact = Contact(public_name='John Doe')
-        self.assertEqual(str(contact), 'John Doe')
+        self.assertEqual(str(self.contact), 'John Doe')

@@ -1,13 +1,18 @@
 from django.test import TestCase
 
-from users.exceptions import TeamMemberAlreadyExistsError, TeamDoesNotExistError
-from users.models import User, Team
+from users.exceptions import (
+    TeamMemberAlreadyExistsError,
+    TeamDoesNotExistError,
+    TeamMemberDoesNotExistError,
+)
+from users.models import User, Team, TeamMember
 from users.services.teams import (
     create_team,
     create_team_member,
     delete_team_by_id,
+    delete_team_member_by_id,
 )
-from users.tests.test_teams.factories import TeamFactory
+from users.tests.test_teams.factories import TeamFactory, TeamMemberFactory
 
 
 class TeamCreateServicesTests(TestCase):
@@ -43,7 +48,7 @@ class TeamDeleteServicesTests(TestCase):
             delete_team_by_id(123456789)
 
 
-class TeamMemberServicesTests(TestCase):
+class TeamMemberCreateServicesTests(TestCase):
 
     def setUp(self) -> None:
         self.eldos = User.objects.create(
@@ -77,3 +82,20 @@ class TeamMemberServicesTests(TestCase):
                 team_id=self.team.id,
                 user_id=self.eldos.id,
             )
+
+
+class TeamMemberDeleteServicesTests(TestCase):
+
+    def setUp(self) -> None:
+        self.team_member = TeamMemberFactory()
+
+    def test_delete_team_member_by_id(self) -> None:
+        delete_team_member_by_id(self.team_member.id)
+        self.assertEqual(TeamMember.objects.count(), 0)
+
+        with self.assertRaises(TeamMemberDoesNotExistError):
+            delete_team_member_by_id(self.team_member.id)
+
+    def test_delete_team_member_by_id_does_not_exist_error(self) -> None:
+        with self.assertRaises(TeamMemberDoesNotExistError):
+            delete_team_member_by_id(123456789)
