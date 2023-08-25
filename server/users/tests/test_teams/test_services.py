@@ -1,8 +1,13 @@
 from django.test import TestCase
 
-from users.exceptions import TeamMemberAlreadyExistsError
-from users.models import User
-from users.services.teams import create_team, create_team_member
+from users.exceptions import TeamMemberAlreadyExistsError, TeamDoesNotExistError
+from users.models import User, Team
+from users.services.teams import (
+    create_team,
+    create_team_member,
+    delete_team_by_id,
+)
+from users.tests.test_teams.factories import TeamFactory
 
 
 class TeamCreateServicesTests(TestCase):
@@ -22,6 +27,20 @@ class TeamCreateServicesTests(TestCase):
         self.assertEqual(team.name, 'Bulls')
         self.assertEqual(team.teammember_set.count(), 1)
         self.assertEqual(team.teammember_set.first().user, self.user)
+
+
+class TeamDeleteServicesTests(TestCase):
+
+    def setUp(self) -> None:
+        self.team = TeamFactory()
+
+    def test_delete_team_by_id(self) -> None:
+        delete_team_by_id(self.team.id)
+        self.assertEqual(Team.objects.count(), 0)
+
+    def test_delete_team_by_id_does_not_exist_error(self) -> None:
+        with self.assertRaises(TeamDoesNotExistError):
+            delete_team_by_id(123456789)
 
 
 class TeamMemberServicesTests(TestCase):
