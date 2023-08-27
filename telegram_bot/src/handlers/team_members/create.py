@@ -7,7 +7,6 @@ from callback_data import (
     TeamMemberCreateCallbackData,
     TeamMemberCreateAcceptInvitationCallbackData,
 )
-from exceptions import UserHasNoPremiumSubscriptionError
 from repositories import (
     HTTPClientFactory,
     ContactRepository,
@@ -58,11 +57,6 @@ async def on_contact_choice(
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
         contact = await contact_repository.get_by_id(contact_id)
-
-        if not contact.to_user.is_premium:
-            raise UserHasNoPremiumSubscriptionError(
-                '❌ Ваш контакт должен быть премиум пользователем'
-            )
 
         team_repository = TeamRepository(http_client)
         team = await team_repository.get_by_id(team_id)
