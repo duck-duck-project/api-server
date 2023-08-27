@@ -1,3 +1,9 @@
+## [1.2.2] - 2023-08-27
+
+### Fixed
+
+- Fix teams display for non owner users.
+
 ## [1.2.1] - 2023-08-27
 
 ### Removed
