@@ -58,10 +58,9 @@ async def on_message_created(
         if is_contact:
             contact = await contact_repository.get_by_id(contact_id)
             if contact.to_user.can_receive_notifications:
-                await send_secret_message_notification(
-                    bot=bot,
-                    contact=contact,
+                view = SecretMessageNotificationView(
                     secret_message_id=secret_message_id,
+                    contact=contact,
                 )
                 await send_view_to_user(
                     bot=bot,
