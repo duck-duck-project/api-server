@@ -1,3 +1,9 @@
+## [1.2.0] - 2023-08-27
+
+### Added
+
+- Group secret messages.
+
 ## [1.1.0] - 2023-08-23
 
 ### Fixed
