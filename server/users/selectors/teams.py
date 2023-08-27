@@ -23,10 +23,7 @@ def get_team_ids_and_names_by_user_id(user_id: int) -> list[dict]:
     return (
         Team
         .objects
-        .filter(
-            teammember__user_id=user_id,
-            teammember__status=TeamMember.Status.OWNER,
-        )
+        .filter(teammember__user_id=user_id)
         .values('id', 'name')
     )
 
