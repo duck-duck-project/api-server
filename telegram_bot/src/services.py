@@ -6,8 +6,10 @@ from uuid import UUID
 from aiogram import Bot
 from aiogram.types import Message
 from aiogram.utils.exceptions import (
-    TelegramAPIError, BotBlocked,
-    CantInitiateConversation, ChatNotFound
+    TelegramAPIError,
+    BotBlocked,
+    CantInitiateConversation,
+    ChatNotFound,
 )
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
@@ -16,7 +18,6 @@ from models.contacts import Contact
 from models.secret_media_types import SecretMediaType
 from repositories import UserRepository
 from views.base import View
-from views import SecretMessageNotificationView
 
 __all__ = (
     'is_anonymous_messaging_enabled',
@@ -32,7 +33,6 @@ __all__ = (
     'can_create_new_contact',
     'get_or_create_user',
     'filter_not_hidden',
-    'send_secret_message_notification',
     'can_see_team_secret',
     'send_view_to_user',
 )
@@ -139,7 +139,7 @@ def determine_media_file_id_and_answer_method(
 def can_see_team_secret(
         *,
         user_id: int,
-        team_members: Iterable[HasIsHiddenT],
+        team_members: Iterable[HasUserId],
 ) -> bool:
     user_ids = {member.user_id for member in team_members}
     return user_id in user_ids

@@ -1,5 +1,3 @@
-import traceback
-
 from aiogram import Dispatcher, Bot
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
@@ -7,12 +5,14 @@ from aiogram.utils.exceptions import TelegramAPIError
 
 from callback_data import (
     TeamMemberCreateCallbackData,
-    TeamMemberCreateAcceptInvitationCallbackData
+    TeamMemberCreateAcceptInvitationCallbackData,
 )
 from exceptions import UserHasNoPremiumSubscriptionError
 from repositories import (
-    HTTPClientFactory, ContactRepository, TeamRepository,
-    TeamMemberRepository
+    HTTPClientFactory,
+    ContactRepository,
+    TeamRepository,
+    TeamMemberRepository,
 )
 from states import TeamMemberCreateStates
 from views import (
@@ -80,7 +80,6 @@ async def on_contact_choice(
             chat_id=contact.to_user.id,
         )
     except TelegramAPIError:
-        traceback.print_exc()
         await callback_query.answer(
             text='❌ Не удалось отправить приглашение',
             show_alert=True,

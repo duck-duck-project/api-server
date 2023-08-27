@@ -5,12 +5,13 @@ from aiogram.types import CallbackQuery
 
 from callback_data import (
     SecretMessageDetailCallbackData,
-    SecretMessageForTeamCallbackData
+    SecretMessageForTeamCallbackData,
 )
 from repositories import (
     ContactRepository,
     SecretMessageRepository,
-    HTTPClientFactory, TeamRepository,
+    HTTPClientFactory,
+    TeamMemberRepository,
 )
 from services import can_see_contact_secret, can_see_team_secret
 
@@ -26,17 +27,17 @@ async def on_show_team_message(
     secret_message_id: UUID = callback_data['secret_message_id']
 
     async with closing_http_client_factory() as http_client:
-        team_repository = TeamRepository(http_client)
+        team_member_repository = TeamMemberRepository(http_client)
         secret_message_repository = SecretMessageRepository(http_client)
 
-        team = await team_repository.get_by_id(team_id)
+        team_members = await team_member_repository.get_by_team_id(team_id)
         secret_message = await secret_message_repository.get_by_id(
             secret_message_id=secret_message_id,
         )
 
     if not can_see_team_secret(
             user_id=callback_query.from_user.id,
-            team_members=[]
+            team_members=team_members,
     ):
         text = 'Это сообщение не предназначено для тебя 😉'
     else:

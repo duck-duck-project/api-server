@@ -20,7 +20,7 @@ class TeamMemberRepository(APIRepository):
 
     async def delete_by_id(self, team_member_id: int) -> None:
         url = f'/team-members/{team_member_id}/'
-        response = await self._http_client.get(url)
+        response = await self._http_client.delete(url)
         if response.status != 204:
             raise ServerAPIError
 

@@ -7,7 +7,7 @@ from django.utils import timezone
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from users.models import User, Contact
+from users.models import User, Contact, Team, TeamMember
 
 __all__ = (
     'UserAdmin',
@@ -83,3 +83,20 @@ class ContactAdmin(ImportExportModelAdmin):
     list_select_related = ('of_user', 'to_user')
     list_display = ('of_user', 'to_user', 'private_name', 'public_name')
     list_display_links = ('of_user', 'to_user')
+
+
+class TeamMemberInline(admin.TabularInline):
+    model = TeamMember
+    extra = 0
+
+
+@admin.register(Team)
+class TeamAdmin(ImportExportModelAdmin):
+    inlines = (TeamMemberInline,)
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(ImportExportModelAdmin):
+    list_filter = ('team',)
+    list_select_related = ('team',)
+    list_display = ('team', 'user')
