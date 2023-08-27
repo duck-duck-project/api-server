@@ -5,12 +5,15 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from callback_data import (
     TeamDetailCallbackData,
     TeamMemberDetailCallbackData,
-    TeamMemberDeleteCallbackData,
     TeamMemberCreateCallbackData,
     TeamMemberCreateAcceptInvitationCallbackData,
 )
+from callback_data import (
+    TeamMemberListCallbackData,
+    TeamMemberDeleteCallbackData,
+)
+from models import TeamMember
 from models import (
-    TeamMember,
     TeamMemberStatus,
     Contact,
     User,
@@ -24,6 +27,7 @@ __all__ = (
     'TeamMemberCreateChooseContactView',
     'TeamMemberCreateAcceptInvitationCallbackData',
     'TeamMemberCreateAskForConfirmationView',
+    'TeamMemberMenuDetailView',
 )
 
 
@@ -187,6 +191,39 @@ class TeamMemberCreateAskForConfirmationView(View):
                             TeamMemberCreateAcceptInvitationCallbackData().new(
                                 team_id=self.__team.id,
                             )
+                        ),
+                    ),
+                ],
+            ],
+        )
+
+
+class TeamMemberMenuDetailView(View):
+
+    def __init__(self, team_member: TeamMember):
+        self.__team_member = team_member
+
+    def get_text(self) -> str:
+        humanized_status = humanize_team_member_status(
+            team_member_status=self.__team_member.status,
+        )
+        name = (
+                self.__team_member.user_username
+                or self.__team_member.user_fullname
+        )
+        return (
+            f'👤 Имя: {name}\n'
+            f'🌟 Статус: {humanized_status}'
+        )
+
+    def get_reply_markup(self) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text='❌ Удалить',
+                        callback_data=TeamMemberDeleteCallbackData().new(
+                            team_member_id=self.__team_member.id,
                         ),
                     ),
                 ],
