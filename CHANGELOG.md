@@ -1,3 +1,9 @@
+## [1.2.1] - 2023-08-27
+
+### Removed
+
+- Remove group secret messages only for premium users. Now it's available for all users.
+
 ## [1.2.0] - 2023-08-27
 
 ### Added
