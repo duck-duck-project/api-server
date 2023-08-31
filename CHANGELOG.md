@@ -1,3 +1,9 @@
+## [1.3.0] - 2023-08-31
+
+### Added
+
+- Time before studies start countdown functionality.
+
 ## [1.2.2] - 2023-08-27
 
 ### Fixed
