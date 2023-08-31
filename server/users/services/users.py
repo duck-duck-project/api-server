@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import IntegrityError
 
 from users.exceptions import UserAlreadyExistsError
@@ -46,6 +48,7 @@ def update_user(
         secret_message_theme_id: int | None,
         can_be_added_to_contacts: bool,
         can_receive_notifications: bool,
+        born_at: date | None,
 ) -> bool:
     """Update user.
 
@@ -58,6 +61,7 @@ def update_user(
             added to contacts or not.
         can_receive_notifications: Boolean that indicates whether user can
             receive notifications or not.
+        born_at: Date of birth of user.
 
     Returns:
         Boolean that indicates whether user has been updated or not.
@@ -68,5 +72,6 @@ def update_user(
         secret_message_theme_id=secret_message_theme_id,
         can_be_added_to_contacts=can_be_added_to_contacts,
         can_receive_notifications=can_receive_notifications,
+        born_at=born_at,
     )
     return bool(updated_count)

@@ -1,3 +1,5 @@
+from datetime import date
+
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, APIException
 from rest_framework.request import Request
@@ -30,6 +32,7 @@ class UserOutputSerializer(serializers.Serializer):
     profile_photo_url = serializers.URLField(allow_null=True)
     is_banned = serializers.BooleanField()
     can_receive_notifications = serializers.BooleanField()
+    born_at = serializers.DateField(allow_null=True)
 
 
 class UserRetrieveUpdateApi(APIView):
@@ -40,6 +43,7 @@ class UserRetrieveUpdateApi(APIView):
         can_be_added_to_contacts = serializers.BooleanField()
         secret_message_theme_id = serializers.IntegerField(allow_null=True)
         can_receive_notifications = serializers.BooleanField()
+        born_at = serializers.DateField(allow_null=True)
 
     def get(self, request: Request, user_id: int):
         try:
@@ -65,6 +69,7 @@ class UserRetrieveUpdateApi(APIView):
         can_receive_notifications: bool = (
             serialized_data['can_receive_notifications']
         )
+        born_at: date | None = serialized_data['born_at']
 
         is_updated = update_user(
             user_id=user_id,
@@ -73,6 +78,7 @@ class UserRetrieveUpdateApi(APIView):
             can_be_added_to_contacts=can_be_added_to_contacts,
             secret_message_theme_id=secret_message_theme_id,
             can_receive_notifications=can_receive_notifications,
+            born_at=born_at,
         )
 
         response_status_code = (
