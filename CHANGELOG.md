@@ -1,3 +1,9 @@
+## [1.3.1] - 2023-08-31
+
+### Fix
+
+- Fix timedelta rendering method.
+
 ## [1.3.0] - 2023-08-31
 
 ### Added

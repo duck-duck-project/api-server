@@ -19,7 +19,7 @@ class TimeBeforeStudiesStartCountdownView(View):
         self.__urgency_coefficient = urgency_coefficient
 
     def get_text(self) -> str:
-        humanized_time_before_studies_start = humanize.naturaldelta(
+        humanized_time_before_studies_start = humanize.precisedelta(
             self.__time_before_studies_start,
         )
         line = ''
