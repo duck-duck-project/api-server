@@ -1,7 +1,9 @@
 import contextlib
 from collections.abc import Coroutine, Callable, Awaitable, Iterable
+from datetime import timedelta, datetime
 from typing import Protocol, TypeAlias, TypeVar, Any
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from aiogram import Bot
 from aiogram.types import Message
@@ -35,6 +37,8 @@ __all__ = (
     'filter_not_hidden',
     'can_see_team_secret',
     'send_view_to_user',
+    'get_time_before_studies_start',
+    'calculate_urgency_coefficient',
 )
 
 
@@ -285,3 +289,18 @@ async def send_view_to_user(
             text='✅ Секретное сообщение отправлено',
             disable_notification=True,
         )
+
+
+def get_time_before_studies_start(timezone: ZoneInfo) -> timedelta:
+    studies_start_at = datetime(
+        year=2023,
+        month=9,
+        day=11,
+        hour=9,
+        tzinfo=timezone,
+    )
+    return studies_start_at - datetime.now(tz=timezone)
+
+
+def calculate_urgency_coefficient(days_left: int) -> int:
+    return 11 - days_left

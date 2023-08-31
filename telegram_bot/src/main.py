@@ -2,6 +2,7 @@ import pathlib
 from functools import partial
 
 import aiohttp
+import humanize
 import sentry_sdk
 import structlog
 from aiogram import Bot, Dispatcher, executor
@@ -28,6 +29,8 @@ def register_handlers(dispatcher: Dispatcher) -> None:
 
 
 def main() -> None:
+    humanize.i18n.activate('ru_RU')
+
     config_file_path = pathlib.Path(__file__).parent.parent / 'config.toml'
     config = load_config_from_file_path(config_file_path)
 
