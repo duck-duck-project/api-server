@@ -59,5 +59,14 @@ def get_secret_media_by_id(secret_media_id: UUID) -> SecretMedia:
         )
 
 
-def get_visible_themes() -> QuerySet[SecretMessageTheme]:
-    return SecretMessageTheme.objects.exclude(is_hidden=True)
+def get_visible_themes(
+        *,
+        limit: int,
+        offset: int,
+) -> QuerySet[SecretMessageTheme]:
+    return (
+        SecretMessageTheme
+        .objects
+        .exclude(is_hidden=True)
+        .order_by('id')[offset:offset + limit]
+    )

@@ -11,7 +11,7 @@ class ThemeSelectorsTests(TestCase):
         self.visible_theme = ThemeFactory()
 
     def test_get_visible_themes(self):
-        visible_themes = get_visible_themes()
+        visible_themes = get_visible_themes(limit=100, offset=0)
         self.assertEqual(len(visible_themes), 1)
         self.assertEqual(visible_themes[0].id, self.visible_theme.id)
         self.assertEqual(
@@ -27,3 +27,7 @@ class ThemeSelectorsTests(TestCase):
             self.visible_theme.created_at,
         )
         self.assertFalse(visible_themes[0].is_hidden)
+
+    def test_offset(self):
+        visible_themes = get_visible_themes(limit=100, offset=1)
+        self.assertEqual(len(visible_themes), 0)

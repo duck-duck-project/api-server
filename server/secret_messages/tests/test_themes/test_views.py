@@ -16,13 +16,16 @@ class ThemeListApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data,
-            [
-                {
-                    'id': self.visible_theme.id,
-                    'description_template_text': (
-                        self.visible_theme.description_template_text
-                    ),
-                    'button_text': self.visible_theme.button_text,
-                },
-            ],
+            {
+                'themes': [
+                    {
+                        'id': self.visible_theme.id,
+                        'description_template_text': (
+                            self.visible_theme.description_template_text
+                        ),
+                        'button_text': self.visible_theme.button_text,
+                    },
+                ],
+                'is_end_of_list_reached': True,
+            }
         )
