@@ -32,9 +32,23 @@ class UserPersonalSettingsView(View):
             if self.__user.can_receive_notifications
             else '🔕 Уведомления отключены'
         )
+        if self.__user.secret_message_theme is None:
+            theme_text = (
+                '🌈 Тема:\n'
+                '📩 Секретное сообщение для <b>{name}</b>\n'
+                '👀 Прочитать'
+            )
+        else:
+            theme_text = (
+                '🌈 Тема:\n'
+                f'{self.__user.secret_message_theme.description_template_text}'
+                f'\n{self.__user.secret_message_theme.button_text}'
+            )
         return (
             f'{can_be_added_to_contacts_text}\n'
-            f'{can_receive_notifications_text}'
+            f'{can_receive_notifications_text}\n'
+            '\n'
+            f'{theme_text}'
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
@@ -64,6 +78,12 @@ class UserPersonalSettingsView(View):
                         callback_data=UserUpdateCallbackData().new(
                             field='can_receive_notifications',
                         ),
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text='🎨 Тема',
+                        callback_data='show-themes-list',
                     ),
                 ],
             ],

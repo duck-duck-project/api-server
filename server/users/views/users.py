@@ -22,6 +22,7 @@ class UserOutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         description_template_text = serializers.CharField()
         button_text = serializers.CharField()
+        is_hidden = serializers.BooleanField()
 
     id = serializers.IntegerField()
     fullname = serializers.CharField()
