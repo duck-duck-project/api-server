@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from secret_messages.selectors import get_visible_themes
+from secret_messages.exceptions import ThemeDoesNotExistError
+from secret_messages.selectors import get_visible_themes, get_theme_by_id
 from secret_messages.tests.test_themes.factories import ThemeFactory
 
 
@@ -31,3 +32,11 @@ class ThemeSelectorsTests(TestCase):
     def test_offset(self):
         visible_themes = get_visible_themes(limit=100, offset=1)
         self.assertEqual(len(visible_themes), 0)
+
+    def test_get_theme_by_id(self) -> None:
+        theme = get_theme_by_id(self.visible_theme.id)
+        self.assertEqual(theme.id, self.visible_theme.id)
+
+    def test_get_theme_by_id_theme_does_not_exist(self) -> None:
+        with self.assertRaises(ThemeDoesNotExistError):
+            get_theme_by_id(self.visible_theme.id + 1)
