@@ -2,7 +2,10 @@ from uuid import UUID
 
 from django.db.models import QuerySet
 
-from secret_messages.exceptions import SecretMessageDoesNotExistError
+from secret_messages.exceptions import (
+    SecretMessageDoesNotExistError,
+    ThemeDoesNotExistError
+)
 from secret_messages.models.secret_medias import SecretMedia
 from secret_messages.models.secret_message_themes import SecretMessageTheme
 from secret_messages.models.secret_messages import SecretMessage
@@ -11,6 +14,7 @@ __all__ = (
     'get_secret_message_by_id',
     'get_secret_media_by_id',
     'get_visible_themes',
+    'get_theme_by_id',
 )
 
 
@@ -70,3 +74,21 @@ def get_visible_themes(
         .exclude(is_hidden=True)
         .order_by('id')[offset:offset + limit]
     )
+
+
+def get_theme_by_id(theme_id: int) -> SecretMessageTheme:
+    """Retrieve theme by ID.
+
+    Args:
+        theme_id: ID of SecretMessageTheme object.
+
+    Returns:
+        SecretMessageTheme object.
+
+    Raises:
+        ThemeDoesNotExistError: If SecretMessageTheme object does not exist.
+    """
+    try:
+        return SecretMessageTheme.objects.get(id=theme_id)
+    except SecretMessageTheme.DoesNotExist:
+        raise ThemeDoesNotExistError
