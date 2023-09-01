@@ -6,6 +6,7 @@ from secret_messages.views import (
     SecretMediaRetrieveApi,
     SecretMediaCreateApi,
     ThemeListApi,
+    ThemeRetrieveApi,
 )
 
 urlpatterns = [
@@ -29,5 +30,10 @@ urlpatterns = [
         SecretMediaCreateApi.as_view(),
         name='secret-medias-create',
     ),
-    path(r'themes/', ThemeListApi.as_view(), name='themes'),
+    path(r'themes/', ThemeListApi.as_view(), name='themes-list'),
+    path(
+        r'themes/<int:theme_id>/',
+        ThemeRetrieveApi.as_view(),
+        name='themes-retrieve',
+    ),
 ]
