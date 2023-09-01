@@ -3,6 +3,7 @@ from django.test import TestCase
 from users.exceptions import UserAlreadyExistsError
 from users.models import User
 from users.services.users import create_user, update_user
+from users.tests.test_users.factories import UserFactory
 
 
 class UserCreateServicesTests(TestCase):
@@ -32,20 +33,17 @@ class UserCreateServicesTests(TestCase):
 class UserUpdateServicesTests(TestCase):
 
     def setUp(self) -> None:
-        self.user = User.objects.create(
-            id=123456789,
-            username='usbtypec',
-            fullname='Eldos',
-        )
+        self.user = UserFactory()
 
     def test_update_user(self) -> None:
         is_updated = update_user(
-            user_id=123456789,
+            user_id=self.user.id,
             fullname='Alexander',
             username=None,
             secret_message_theme_id=None,
             can_be_added_to_contacts=False,
             can_receive_notifications=True,
+            born_at=None,
         )
         self.assertTrue(is_updated)
 
@@ -56,6 +54,7 @@ class UserUpdateServicesTests(TestCase):
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_be_added_to_contacts)
         self.assertFalse(self.user.is_premium)
+        self.assertIsNone(self.user.born_at)
 
     def test_update_user_not_found(self) -> None:
         is_updated = update_user(
@@ -65,5 +64,6 @@ class UserUpdateServicesTests(TestCase):
             secret_message_theme_id=None,
             can_be_added_to_contacts=False,
             can_receive_notifications=True,
+            born_at=None,
         )
         self.assertFalse(is_updated)

@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, HttpUrl
 
 from models.themes import SecretMessageTheme
@@ -15,3 +17,4 @@ class User(BaseModel):
     profile_photo_url: HttpUrl | None
     is_banned: bool
     can_receive_notifications: bool
+    born_at: date | None

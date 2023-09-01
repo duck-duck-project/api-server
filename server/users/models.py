@@ -21,6 +21,7 @@ class User(models.Model):
     profile_photo_url = models.URLField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
     can_receive_notifications = models.BooleanField(default=True)
+    born_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname

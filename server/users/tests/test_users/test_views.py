@@ -1,18 +1,17 @@
+from datetime import date
+
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from users.models import User
+from users.tests.test_users.factories import UserFactory
 
 
 class UserUpdateApiTests(APITestCase):
 
     def setUp(self) -> None:
-        self.user = User.objects.create(
-            id=123456789,
-            username='usbtypec',
-            fullname='Eldos',
-        )
+        self.user = UserFactory()
 
     def test_update_user(self) -> None:
         url = reverse('users:retrieve-update', args=(self.user.id,))
@@ -22,6 +21,7 @@ class UserUpdateApiTests(APITestCase):
             'can_be_added_to_contacts': False,
             'secret_message_theme_id': None,
             'can_receive_notifications': False,
+            'born_at': '2004-10-07',
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -34,6 +34,7 @@ class UserUpdateApiTests(APITestCase):
         self.assertFalse(self.user.can_be_added_to_contacts, False)
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_receive_notifications)
+        self.assertEqual(self.user.born_at, date(2004, 10, 7))
 
     def test_update_user_not_found(self) -> None:
         url = reverse('users:retrieve-update', args=(12345,))
@@ -44,6 +45,7 @@ class UserUpdateApiTests(APITestCase):
             'can_be_added_to_contacts': False,
             'secret_message_theme_id': None,
             'can_receive_notifications': False,
+            'born_at': '2004-10-07',
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -52,11 +54,7 @@ class UserUpdateApiTests(APITestCase):
 class UserRetrieveApiTests(APITestCase):
 
     def setUp(self) -> None:
-        self.user = User.objects.create(
-            id=123456789,
-            username='usbtypec',
-            fullname='Eldos',
-        )
+        self.user = UserFactory()
 
     def test_retrieve_user(self) -> None:
         url = reverse('users:retrieve-update', args=(self.user.id,))
@@ -65,15 +63,16 @@ class UserRetrieveApiTests(APITestCase):
         self.assertEqual(
             response.data,
             {
-                'id': 123456789,
-                'username': 'usbtypec',
-                'fullname': 'Eldos',
-                'is_premium': False,
-                'can_be_added_to_contacts': True,
-                'secret_message_theme': None,
-                'profile_photo_url': None,
-                'is_banned': False,
-                'can_receive_notifications': True,
+                'id': self.user.id,
+                'fullname': self.user.fullname,
+                'username': self.user.username,
+                'is_premium': self.user.is_premium,
+                'can_be_added_to_contacts': self.user.can_be_added_to_contacts,
+                'secret_message_theme': self.user.secret_message_theme_id,
+                'profile_photo_url': self.user.profile_photo_url,
+                'is_banned': self.user.is_banned,
+                'can_receive_notifications': self.user.can_receive_notifications,
+                'born_at': self.user.born_at,
             },
         )
 
@@ -106,6 +105,7 @@ class UserCreateApiTests(APITestCase):
                 'profile_photo_url': None,
                 'is_banned': False,
                 'can_receive_notifications': True,
+                'born_at': None,
             },
         )
 
@@ -130,6 +130,7 @@ class UserCreateApiTests(APITestCase):
                 'profile_photo_url': None,
                 'is_banned': False,
                 'can_receive_notifications': True,
+                'born_at': None,
             },
         )
 

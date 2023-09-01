@@ -1,6 +1,12 @@
+## [1.4.0] - 2023-09-01
+
+### Added
+
+- Add ability to change theme.
+
 ## [1.3.1] - 2023-08-31
 
-### Fix
+### Fixed
 
 - Fix timedelta rendering method.
 

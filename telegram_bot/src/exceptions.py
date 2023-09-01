@@ -51,3 +51,7 @@ class ContactDoesNotExistError(ServerAPIError):
 
 class UserHasNoPremiumSubscriptionError(Exception):
     pass
+
+
+class ThemeDoesNotExistError(ServerAPIError):
+    pass

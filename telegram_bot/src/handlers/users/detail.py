@@ -64,6 +64,12 @@ def register_handlers(dispatcher: Dispatcher) -> None:
         chat_type=ChatType.PRIVATE,
         state='*',
     )
+    dispatcher.register_callback_query_handler(
+        on_show_personal_settings,
+        Text('show-personal-settings'),
+        chat_type=ChatType.PRIVATE,
+        state='*',
+    )
     dispatcher.register_message_handler(
         on_settings_in_group_chat,
         Command('settings'),
