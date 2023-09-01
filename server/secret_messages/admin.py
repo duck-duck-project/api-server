@@ -11,6 +11,7 @@ class SecretMessageThemeResource(resources.ModelResource):
 
     class Meta:
         model = SecretMessageTheme
+        fields = ('description_template_text', 'button_text')
 
 
 class SecretMessageResource(resources.ModelResource):
