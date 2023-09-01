@@ -5,6 +5,7 @@ __all__ = (
     'SecretMessageDoesNotExistError',
     'SecretMediaAlreadyExistsError',
     'SecretMediaDoesNotExistError',
+    'ThemeDoesNotExistError',
 )
 
 
@@ -19,4 +20,8 @@ class SecretMediaDoesNotExistError(Exception):
 
 
 class SecretMediaAlreadyExistsError(Exception):
+    pass
+
+
+class ThemeDoesNotExistError(Exception):
     pass
