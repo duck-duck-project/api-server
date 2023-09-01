@@ -1,3 +1,5 @@
+from datetime import date
+
 import models
 from exceptions import (
     UserDoesNotExistError,
@@ -77,6 +79,7 @@ class UserRepository(APIRepository):
             can_be_added_to_contacts: bool,
             secret_messages_theme_id: int | None,
             can_receive_notifications: bool,
+            born_at: date | None,
     ) -> None:
         """Update user's data on the server.
 
@@ -87,6 +90,7 @@ class UserRepository(APIRepository):
             can_be_added_to_contacts: Whether user can be added to contacts.
             secret_messages_theme_id: User's secret messages theme ID.
             can_receive_notifications: Whether user can receive notifications.
+            born_at: User's date of birth.
 
         Raises:
             UserDoesNotExistError: If user with given ID does not exist.
