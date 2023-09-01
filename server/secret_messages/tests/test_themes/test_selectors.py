@@ -1,24 +1,14 @@
 from django.test import TestCase
 
-from secret_messages.models.secret_message_themes import SecretMessageTheme
 from secret_messages.selectors import get_visible_themes
+from secret_messages.tests.test_themes.factories import ThemeFactory
 
 
 class ThemeSelectorsTests(TestCase):
 
     def setUp(self) -> None:
-        self.hidden_theme = SecretMessageTheme.objects.create(
-            description_template_text='📩 Секретное сообщение для <b>{name}</b>',
-            button_text='👀 Прочитать',
-            is_hidden=True,
-        )
-        self.visible_theme = SecretMessageTheme.objects.create(
-            description_template_text=(
-                '📨 Индивидуальная весточка для <b>{name}</b>'
-            ),
-            button_text='👓 Ознакомиться',
-            is_hidden=False,
-        )
+        self.hidden_theme = ThemeFactory(is_hidden=True)
+        self.visible_theme = ThemeFactory()
 
     def test_get_visible_themes(self):
         visible_themes = get_visible_themes()

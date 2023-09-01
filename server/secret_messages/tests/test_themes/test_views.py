@@ -1,21 +1,14 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from secret_messages.models.secret_message_themes import SecretMessageTheme
+from secret_messages.tests.test_themes.factories import ThemeFactory
 
 
 class ThemeListApiTests(APITestCase):
 
     def setUp(self) -> None:
-        self.visible_theme = SecretMessageTheme.objects.create(
-            description_template_text='📩 Секретное сообщение для <b>{name}</b>',
-            button_text='👀 Прочитать',
-        )
-        self.hidden_theme = SecretMessageTheme.objects.create(
-            description_template_text='📩 Секретная весточка для <b>{name}</b>',
-            button_text='👀 Просмотреть',
-            is_hidden=True,
-        )
+        self.visible_theme = ThemeFactory()
+        self.hidden_theme = ThemeFactory(is_hidden=True)
 
     def test_get_themes_list(self):
         url = reverse('themes')
