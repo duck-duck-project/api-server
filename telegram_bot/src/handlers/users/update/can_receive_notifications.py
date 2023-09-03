@@ -29,6 +29,7 @@ async def on_toggle_can_receive_notifications(
             can_be_added_to_contacts=user.can_be_added_to_contacts,
             secret_messages_theme_id=secret_message_theme_id,
             can_receive_notifications=not user.can_receive_notifications,
+            born_at=user.born_at,
         )
         user = await user_repository.get_by_id(user.id)
     state_name = await state.get_state()
