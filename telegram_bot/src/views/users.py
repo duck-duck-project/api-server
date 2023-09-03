@@ -82,6 +82,12 @@ class UserPersonalSettingsView(View):
                 ],
                 [
                     InlineKeyboardButton(
+                        text='🌟 Премиум подписка',
+                        callback_data='show-premium-subscription',
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
                         text='🎨 Тема',
                         callback_data='show-themes-list',
                     ),
@@ -116,15 +122,15 @@ class UserMenuView(View):
             resize_keyboard=True,
             keyboard=[
                 [
-                    KeyboardButton('🖼️ Отправить секретное медиа'),
-                    KeyboardButton('🌟 Премиум'),
+                    KeyboardButton('📩 Секретное сообщение'),
+                    KeyboardButton('🖼️ Секретное медиа'),
                 ],
                 [
                     KeyboardButton('🔐 Включить анонимные сообщения'),
                 ],
                 [
-                    KeyboardButton('🎨 Персональные настройки'),
-                    KeyboardButton('👥 Мои контакты'),
+                    KeyboardButton('🎨 Настройки'),
+                    KeyboardButton('👥 Контакты'),
                     KeyboardButton('💬 Teams'),
                 ],
             ],

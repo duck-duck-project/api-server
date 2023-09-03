@@ -83,6 +83,6 @@ def register_handlers(dispatcher: Dispatcher) -> None:
     )
     dispatcher.register_message_handler(
         on_show_inline_query_prompt,
-        Command('secret_message'),
+        Command('secret_message') | Text('📩 Секретное сообщение'),
         state='*',
     )

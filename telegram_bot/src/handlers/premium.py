@@ -1,9 +1,12 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher.filters import Command, Text
-from aiogram.types import Message, Update
+from aiogram.types import Message, Update, CallbackQuery
 
 from exceptions import UserHasNoPremiumSubscriptionError
-from views import answer_view, PremiumSubscriptionInfoView
+from views import (
+    PremiumSubscriptionInfoView,
+    render_message_or_callback_query
+)
 
 __all__ = ('register_handlers',)
 
@@ -21,10 +24,10 @@ async def on_user_has_no_premium_subscription_error(
 
 
 async def on_show_premium_subscription_info(
-        message: Message,
+        message_or_callback_query: Message | CallbackQuery,
 ) -> None:
-    await answer_view(
-        message=message,
+    await render_message_or_callback_query(
+        message_or_callback_query=message_or_callback_query,
         view=PremiumSubscriptionInfoView(),
         disable_web_page_preview=True,
     )
@@ -37,6 +40,11 @@ def register_handlers(dispatcher: Dispatcher) -> None:
     )
     dispatcher.register_message_handler(
         on_show_premium_subscription_info,
-        Command('premium') | Text('🌟 Премиум'),
+        Command('premium'),
+        state='*',
+    )
+    dispatcher.register_callback_query_handler(
+        on_show_premium_subscription_info,
+        Text('show-premium-subscription'),
         state='*',
     )

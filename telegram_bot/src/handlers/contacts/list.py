@@ -24,7 +24,7 @@ async def on_show_contacts_list(
 def register_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.register_message_handler(
         on_show_contacts_list,
-        Text('👥 Мои контакты'),
+        Text('👥 Контакты'),
         chat_type=ChatType.PRIVATE,
         state='*',
     )
