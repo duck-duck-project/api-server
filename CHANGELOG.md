@@ -1,3 +1,9 @@
+## [1.4.2] - 2023-09-03
+
+### Fixed
+
+- Fix user privacy settings changing.
+
 ## [1.4.1] - 2023-09-03
 
 ### Changed
