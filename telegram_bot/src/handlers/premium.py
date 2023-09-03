@@ -5,7 +5,8 @@ from aiogram.types import Message, Update, CallbackQuery
 from exceptions import UserHasNoPremiumSubscriptionError
 from views import (
     PremiumSubscriptionInfoView,
-    render_message_or_callback_query
+    render_message_or_callback_query,
+    PremiumSubscriptionLinkView,
 )
 
 __all__ = ('register_handlers',)
@@ -16,10 +17,12 @@ async def on_user_has_no_premium_subscription_error(
         exception: UserHasNoPremiumSubscriptionError,
 ) -> bool:
     text = str(exception)
-    if update.message is not None:
-        await update.message.answer(text)
-    if update.callback_query is not None:
-        await update.callback_query.answer(text, show_alert=True)
+    view = PremiumSubscriptionLinkView(text)
+    await render_message_or_callback_query(
+        message_or_callback_query=update.message or update.callback_query,
+        view=view,
+        disable_web_page_preview=True,
+    )
     return True
 
 

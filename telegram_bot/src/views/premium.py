@@ -4,7 +4,35 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from views.base import View
 
-__all__ = ('PremiumSubscriptionInfoView',)
+__all__ = (
+    'PremiumSubscriptionLinkView',
+    'PremiumSubscriptionInfoView',
+)
+
+
+class PremiumSubscriptionLinkView(View):
+    reply_markup = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text='❓ Что это мне даёт',
+                    callback_data='show-premium-subscription',
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text='🚀 Купить подписку',
+                    url='https://t.me/usbtypec',
+                ),
+            ],
+        ],
+    )
+
+    def __init__(self, text):
+        self.__text = text
+
+    def get_text(self) -> str:
+        return self.__text
 
 
 class PremiumSubscriptionInfoView(View):
@@ -16,6 +44,8 @@ class PremiumSubscriptionInfoView(View):
         
         3. 💌 Анонимные сообщения в чате. Вы сможете отправлять анонимные сообщения через личку бота, которые будут пересылаться в <a href="https://studmanas.t.me">основной чат Манаса</a>.
         
+        4. 🎨 Смена темы. Вы сможете менять тему секретных сообщений на любую из доступных.
+        
         🔥 <b>Стоимость всего этого чуда всего 50 сомов в месяц!</b> 💰
     ''')
     reply_markup = InlineKeyboardMarkup(
@@ -23,7 +53,7 @@ class PremiumSubscriptionInfoView(View):
             [
                 InlineKeyboardButton(
                     text='🚀 Купить подписку',
-                    url='https://usbtypec.t.me/',
+                    url='https://t.me/usbtypec',
                 ),
             ],
         ],

@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.types import Message, ChatType
 
-from exceptions import ThemeDoesNotExistError
+from exceptions import ThemeDoesNotExistError, UserHasNoPremiumSubscriptionError
 from filters import ThemeUpdateCommandFilter
 from models import User
 from repositories import HTTPClientFactory, UserRepository
@@ -18,6 +18,11 @@ async def on_update_user_theme(
         user: User,
         theme_id: int,
 ) -> None:
+    if not user.is_premium:
+        raise UserHasNoPremiumSubscriptionError(
+            '🌟 Смена темы доступна только премиум пользователям'
+        )
+
     async with closing_http_client_factory() as http_client:
         user_repository = UserRepository(http_client)
         theme_repository = ThemeRepository(http_client)

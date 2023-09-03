@@ -3,6 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery, ChatType
 
+from exceptions import UserHasNoPremiumSubscriptionError
+from models import User
 from repositories import HTTPClientFactory
 from repositories.themes import ThemeRepository
 from views import ThemeListView, edit_message_by_view
@@ -14,7 +16,13 @@ async def on_show_themes_list(
         callback_query: CallbackQuery,
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
+        user: User,
 ) -> None:
+    if not user.is_premium:
+        raise UserHasNoPremiumSubscriptionError(
+            '🌟 Смена темы доступна только премиум пользователям'
+        )
+
     await state.finish()
 
     async with closing_http_client_factory() as http_client:
