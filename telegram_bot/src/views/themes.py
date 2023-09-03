@@ -23,6 +23,8 @@ class ThemeListView(View):
         self.__themes = themes
 
     def get_text(self) -> str:
+        if not self.__themes:
+            return '😔 Нет доступных тем'
         lines = [
             f'{theme.description_template_text}\n'
             f'{theme.button_text}\n'

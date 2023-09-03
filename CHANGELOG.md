@@ -1,3 +1,10 @@
+## [1.4.1] - 2023-09-03
+
+### Changed
+
+- Allow to change theme only for premium users.
+- UI changes.
+
 ## [1.4.0] - 2023-09-01
 
 ### Added

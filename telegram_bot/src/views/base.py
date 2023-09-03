@@ -82,7 +82,7 @@ async def answer_view(
         *,
         message: Message,
         view: View,
-        disable_web_page_preview: bool = False,
+        disable_web_page_preview: bool | None = None,
 ) -> Message:
     return await message.answer(
         text=view.get_text(),
@@ -95,10 +95,12 @@ async def edit_message_by_view(
         *,
         message: Message,
         view: View,
+        disable_web_page_preview: bool | None = None,
 ) -> Message:
     return await message.edit_text(
         text=view.get_text(),
         reply_markup=view.get_reply_markup(),
+        disable_web_page_preview=disable_web_page_preview,
     )
 
 
@@ -106,17 +108,20 @@ async def render_message_or_callback_query(
         *,
         message_or_callback_query: Message | CallbackQuery,
         view: View,
+        disable_web_page_preview: bool | None = None,
 ) -> Message:
     match message_or_callback_query:
         case Message():
             return await answer_view(
                 message=message_or_callback_query,
                 view=view,
+                disable_web_page_preview=disable_web_page_preview,
             )
         case CallbackQuery():
             return await edit_message_by_view(
                 message=message_or_callback_query.message,
                 view=view,
+                disable_web_page_preview=disable_web_page_preview,
             )
         case _:
             raise ValueError('Unknown type')
