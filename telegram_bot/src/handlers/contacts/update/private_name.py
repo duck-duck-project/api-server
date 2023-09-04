@@ -1,25 +1,26 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery, ChatType
+from aiogram import F, Router
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery
 
 from callback_data import ContactUpdateCallbackData
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
 from states import ContactUpdateStates
-from views.contacts import ContactDetailView
 from views import answer_view
+from views.contacts import ContactDetailView
 
 __all__ = ('register_handlers',)
 
 
 async def on_start_contact_private_name_update_flow(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: ContactUpdateCallbackData,
         state: FSMContext,
 ) -> None:
-    contact_id: int = callback_data['contact_id']
-    await ContactUpdateStates.private_name.set()
-    await state.update_data(contact_id=contact_id)
+    await state.set_state(ContactUpdateStates.private_name)
+    await state.update_data(contact_id=callback_data.contact_id)
     await callback_query.message.reply(
         '🔒 Введите новое приватное имя контакта'
     )
@@ -31,7 +32,7 @@ async def on_contact_new_private_name_input(
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     state_data = await state.get_data()
-    await state.finish()
+    await state.clear()
     contact_id: int = state_data['contact_id']
 
     async with closing_http_client_factory() as http_client:
@@ -50,15 +51,15 @@ async def on_contact_new_private_name_input(
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_contact_new_private_name_input,
-        chat_type=ChatType.PRIVATE,
-        state=ContactUpdateStates.private_name,
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter(ContactUpdateStates.private_name),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_start_contact_private_name_update_flow,
-        ContactUpdateCallbackData().filter(field='private_name'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        ContactUpdateCallbackData.filter(F.field == 'private_name'),
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

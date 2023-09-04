@@ -1,7 +1,8 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.types import Message, CallbackQuery, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery
 
 from repositories import TeamRepository, HTTPClientFactory
 from views.base import render_message_or_callback_query
@@ -15,7 +16,7 @@ async def on_show_teams_list(
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
 ) -> None:
-    await state.finish()
+    await state.clear()
     user_id = message_or_callback_query.from_user.id
 
     async with closing_http_client_factory() as http_client:
@@ -29,16 +30,16 @@ async def on_show_teams_list(
     )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_show_teams_list,
-        Text('💬 Teams'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.text == '💬 Teams',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_show_teams_list,
-        Text('show-teams-list'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.data == 'show-teams-list',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

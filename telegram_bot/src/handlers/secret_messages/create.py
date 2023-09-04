@@ -1,11 +1,11 @@
 from uuid import UUID
 
-from aiogram import Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command, Text
+from aiogram import Bot, Router, F
+from aiogram.filters import StateFilter, invert_f, or_f
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ChosenInlineResult, InlineQuery
 
-from filters import SecretMessageValidFormatChosenInlineResultFilter
+from filters import secret_message_valid_format_chosen_inline_result_filter
 from repositories import (
     HTTPClientFactory, SecretMessageRepository,
     ContactRepository
@@ -70,19 +70,22 @@ async def on_message_created(
                 )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_chosen_inline_handler(
+def register_handlers(router: Router) -> None:
+    router.chosen_inline_result.register(
         on_message_created,
-        SecretMessageValidFormatChosenInlineResultFilter(),
-        state='*',
+        secret_message_valid_format_chosen_inline_result_filter,
+        StateFilter('*'),
     )
-    dispatcher.register_inline_handler(
+    router.inline_query.register(
         on_secret_message_text_missing,
-        Text(''),
-        state='*',
+        invert_f(F.query),
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_show_inline_query_prompt,
-        Command('secret_message') | Text('📩 Секретное сообщение'),
-        state='*',
+        or_f(
+            F.text.startswith('/secret_message'),
+            F.text == '📩 Секретное сообщение',
+        ),
+        StateFilter('*'),
     )

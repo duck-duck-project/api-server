@@ -1,5 +1,6 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
+from aiogram import Router
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from callback_data import TeamDeleteAskForConfirmationCallbackData
@@ -17,7 +18,7 @@ __all__ = ('register_handlers',)
 async def on_team_delete_ask_for_confirmation(
         callback_query: CallbackQuery,
         callback_data: dict,
-        state: FSMContext
+        state: FSMContext,
 ) -> None:
     team_id: int = callback_data['team_id']
     await TeamDeleteStates.confirm.set()
@@ -46,13 +47,13 @@ async def on_team_delete_confirm(
     await callback_query.answer('🔥 Секретная группа удалена', show_alert=True)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_team_delete_ask_for_confirmation,
-        TeamDeleteAskForConfirmationCallbackData().filter(),
-        state='*',
+        TeamDeleteAskForConfirmationCallbackData.filter(),
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_team_delete_confirm,
-        state=TeamDeleteStates.confirm,
+        StateFilter(TeamDeleteStates.confirm),
     )

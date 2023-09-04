@@ -1,6 +1,6 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
+from aiogram import F, Router
+from aiogram.filters import and_f, StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineQuery
 
 from repositories import HTTPClientFactory
@@ -16,10 +16,9 @@ async def on_inverted_secret_message_typing(
     text = inline_query.query.lstrip('!')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_inline_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_inverted_secret_message_typing,
-        ~Text(''),
-        Text('!'),
-        state='*',
+        and_f(F.text, F.text.startswith('!')),
+        StateFilter('*'),
     )

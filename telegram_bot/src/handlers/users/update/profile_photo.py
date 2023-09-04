@@ -1,8 +1,7 @@
-from aiogram import Dispatcher
-
+from aiogram import Router
 
 __all__ = ('register_handlers',)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
+def register_handlers(router: Router) -> None:
     pass

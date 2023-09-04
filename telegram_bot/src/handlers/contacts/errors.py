@@ -1,4 +1,5 @@
-from aiogram import Dispatcher
+from aiogram import Router
+from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import Update
 
 from exceptions import ContactDoesNotExistError, ContactAlreadyExistsError
@@ -30,12 +31,12 @@ async def on_contact_already_exists_error(
     return True
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_errors_handler(
+def register_handlers(router: Router) -> None:
+    router.errors.register(
         on_contact_does_not_exist_error,
-        exception=ContactDoesNotExistError,
+        ExceptionTypeFilter(ContactDoesNotExistError),
     )
-    dispatcher.register_errors_handler(
+    router.errors.register(
         on_contact_already_exists_error,
-        exception=ContactAlreadyExistsError,
+        ExceptionTypeFilter(ContactAlreadyExistsError),
     )

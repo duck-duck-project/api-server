@@ -67,17 +67,17 @@ class UserPersonalSettingsView(View):
                 [
                     InlineKeyboardButton(
                         text=can_be_added_to_contacts_toggle_button_text,
-                        callback_data=UserUpdateCallbackData().new(
+                        callback_data=UserUpdateCallbackData(
                             field='can_be_added_to_contacts',
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
                     InlineKeyboardButton(
                         text=can_receive_notifications_toggle_button_text,
-                        callback_data=UserUpdateCallbackData().new(
+                        callback_data=UserUpdateCallbackData(
                             field='can_receive_notifications',
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
@@ -122,16 +122,16 @@ class UserMenuView(View):
             resize_keyboard=True,
             keyboard=[
                 [
-                    KeyboardButton('📩 Секретное сообщение'),
-                    KeyboardButton('🖼️ Секретное медиа'),
+                    KeyboardButton(text='📩 Секретное сообщение'),
+                    KeyboardButton(text='🖼️ Секретное медиа'),
                 ],
                 [
-                    KeyboardButton('🔐 Включить анонимные сообщения'),
+                    KeyboardButton(text='🔐 Включить анонимные сообщения'),
                 ],
                 [
-                    KeyboardButton('🎨 Настройки'),
-                    KeyboardButton('👥 Контакты'),
-                    KeyboardButton('💬 Teams'),
+                    KeyboardButton(text='🎨 Настройки'),
+                    KeyboardButton(text='👥 Контакты'),
+                    KeyboardButton(text='💬 Teams'),
                 ],
             ],
         )

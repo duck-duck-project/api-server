@@ -1,4 +1,5 @@
-from aiogram import Dispatcher
+from aiogram import Router
+from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import Update
 
 from exceptions import SecretMessageDoesNotExistError
@@ -18,8 +19,8 @@ async def on_secret_message_does_not_exist_error(
     return True
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_errors_handler(
+def register_handlers(router: Router) -> None:
+    router.errors.register(
         on_secret_message_does_not_exist_error,
-        exception=SecretMessageDoesNotExistError,
+        ExceptionTypeFilter(SecretMessageDoesNotExistError),
     )

@@ -1,10 +1,10 @@
-from aiogram import Dispatcher
+from aiogram import Router
 
 from . import update, detail
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
 
+router = Router()
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    update.register_handlers(dispatcher)
-    detail.register_handlers(dispatcher)
+update.register_handlers(router)
+detail.register_handlers(router)

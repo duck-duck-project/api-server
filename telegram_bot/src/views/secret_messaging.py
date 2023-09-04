@@ -169,10 +169,10 @@ class SecretMessageDetailInlineQueryView(InlineQueryView):
                 [
                     InlineKeyboardButton(
                         text=text,
-                        callback_data=SecretMessageDetailCallbackData().new(
+                        callback_data=SecretMessageDetailCallbackData(
                             contact_id=self.__contact.id,
-                            secret_message_id=self.__secret_message_id.hex,
-                        ),
+                            secret_message_id=self.__secret_message_id,
+                        ).pack()
                     )
                 ]
             ]
@@ -429,17 +429,17 @@ class SecretMessageNotificationView(View):
         return text
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        theme = self.__contact.of_user.secret_message_theme
+        theme = self.__contact.to_user.secret_message_theme
         text = '👀 Прочитать' if theme is None else theme.button_text
         return InlineKeyboardMarkup(
             inline_keyboard=[
                 [
                     InlineKeyboardButton(
                         text=text,
-                        callback_data=SecretMessageDetailCallbackData().new(
-                            secret_message_id=self.__secret_message_id.hex,
+                        callback_data=SecretMessageDetailCallbackData(
+                            secret_message_id=self.__secret_message_id,
                             contact_id=self.__contact.id,
-                        ),
+                        ).pack()
                     ),
                 ],
             ],

@@ -1,7 +1,9 @@
-from aiogram import Dispatcher, Bot
-from aiogram.dispatcher.filters import Command, Text
-from aiogram.types import Message, ChatType, ContentType
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram import Bot, Router, F
+from aiogram.enums import ChatType
+from aiogram.exceptions import TelegramAPIError
+from aiogram.filters import Command, StateFilter, or_f
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 
 from exceptions import UserHasNoPremiumSubscriptionError
 from models import User
@@ -14,7 +16,9 @@ from views import (
 )
 from views import answer_view
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
+
+router = Router(name=__name__)
 
 
 async def on_video_note_or_sticker_for_retranslation(
@@ -93,52 +97,55 @@ async def on_toggle_anonymous_messaging_mode_in_group_chat(
 async def on_toggle_anonymous_messaging_mode(
         message: Message,
         user: User,
+        state: FSMContext,
 ) -> None:
     if not user.is_premium:
-        raise UserHasNoPremiumSubscriptionError(
+        await message.reply(
             '🌟 Анонимные сообщения только для премиум пользователей'
         )
-    await AnonymousMessagingStates.enabled.set()
+        return
+    await state.set_state(AnonymousMessagingStates.enabled)
     view = AnonymousMessagingEnabledView()
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
-        on_toggle_anonymous_messaging_mode_in_group_chat,
-        Command('anonymous_messaging'),
-        chat_type=(ChatType.GROUP, ChatType.SUPERGROUP),
-        state='*',
-    )
-    dispatcher.register_message_handler(
-        on_toggle_anonymous_messaging_mode,
-        Command('anonymous_messaging')
-        | Text('🔐 Включить анонимные сообщения'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
-    )
-    dispatcher.register_message_handler(
-        on_video_note_or_sticker_for_retranslation,
-        content_types=(ContentType.VIDEO_NOTE, ContentType.STICKER),
-        chat_type=ChatType.PRIVATE,
-        state=AnonymousMessagingStates.enabled,
-    )
-    dispatcher.register_message_handler(
-        on_media_for_retranslation,
-        content_types=(
-            ContentType.PHOTO,
-            ContentType.AUDIO,
-            ContentType.VOICE,
-            ContentType.ANIMATION,
-            ContentType.DOCUMENT,
-            ContentType.VIDEO,
-        ),
-        chat_type=ChatType.PRIVATE,
-        state=AnonymousMessagingStates.enabled,
-    )
-    dispatcher.register_message_handler(
-        on_message_for_retranslation,
-        content_types=ContentType.TEXT,
-        chat_type=ChatType.PRIVATE,
-        state=AnonymousMessagingStates.enabled,
-    )
+router.message.register(
+    on_toggle_anonymous_messaging_mode_in_group_chat,
+    Command('anonymous_messaging'),
+    F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}),
+    StateFilter('*'),
+)
+router.message.register(
+    on_toggle_anonymous_messaging_mode,
+    F.text.in_({
+        '/anonymous_messaging',
+        '🔐 Включить анонимные сообщения',
+    }),
+    F.chat.type == ChatType.PRIVATE,
+    StateFilter('*'),
+)
+router.message.register(
+    on_video_note_or_sticker_for_retranslation,
+    or_f(F.video_note, F.sticker),
+    F.chat.type == ChatType.PRIVATE,
+    StateFilter(AnonymousMessagingStates.enabled),
+)
+router.message.register(
+    on_media_for_retranslation,
+    or_f(
+        F.photo,
+        F.audio,
+        F.voice,
+        F.animation,
+        F.document,
+        F.video,
+    ),
+    F.chat.type == ChatType.PRIVATE,
+    StateFilter(AnonymousMessagingStates.enabled),
+)
+router.message.register(
+    on_message_for_retranslation,
+    F.text,
+    F.chat.type == ChatType.PRIVATE,
+    StateFilter(AnonymousMessagingStates.enabled),
+)

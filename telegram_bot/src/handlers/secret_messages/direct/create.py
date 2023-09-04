@@ -1,8 +1,8 @@
 from uuid import uuid4
 
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
+from aiogram import Router, F
+from aiogram.filters import invert_f, StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineQuery, InlineQueryResultArticle
 
 from models import User
@@ -90,10 +90,10 @@ async def on_secret_message_typing(
     await inline_query.answer(items, cache_time=1, is_personal=True)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_inline_handler(
+def register_handlers(router: Router) -> None:
+    router.inline_query.register(
         on_secret_message_typing,
-        ~Text(''),
-        ~Text('!'),
-        state='*',
+        F.query,
+        invert_f(F.query.startswith('!')),
+        StateFilter('*'),
     )

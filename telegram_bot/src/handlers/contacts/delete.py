@@ -1,25 +1,25 @@
-from aiogram import Dispatcher
-from aiogram.types import CallbackQuery, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.types import CallbackQuery
 
 from callback_data import ContactDeleteCallbackData
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
-from views.contacts import ContactListView
 from views import edit_message_by_view
+from views.contacts import ContactListView
 
 __all__ = ('register_handlers',)
 
 
 async def on_delete_contact(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: ContactDeleteCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    contact_id: int = callback_data['contact_id']
-
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
-        await contact_repository.delete_by_id(contact_id)
+        await contact_repository.delete_by_id(callback_data.contact_id)
         await callback_query.answer(
             text='❗️ Контакт был успешно удален',
             show_alert=True,
@@ -35,10 +35,10 @@ async def on_delete_contact(
     )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_delete_contact,
-        ContactDeleteCallbackData().filter(),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        ContactDeleteCallbackData.filter(),
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

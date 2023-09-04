@@ -1,10 +1,10 @@
-from aiogram import Dispatcher
+from aiogram import Router
 
 from . import list, errors
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
 
+router = Router(name=__name__)
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    list.register_handlers(dispatcher)
-    errors.register_handlers(dispatcher)
+list.register_handlers(router)
+errors.register_handlers(router)

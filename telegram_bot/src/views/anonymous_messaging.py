@@ -43,7 +43,9 @@ class AnonymousMessagingEnabledView(View):
         resize_keyboard=True,
         keyboard=[
             [
-                KeyboardButton('🔙 Отключить режим анонимных сообщений'),
+                KeyboardButton(
+                    text='🔙 Отключить режим анонимных сообщений',
+                ),
             ],
         ],
     )

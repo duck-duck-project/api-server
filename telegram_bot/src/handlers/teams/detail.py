@@ -1,8 +1,10 @@
 from zoneinfo import ZoneInfo
 
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.types import CallbackQuery, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
 from callback_data import TeamDetailCallbackData
 from repositories import HTTPClientFactory, TeamRepository
@@ -18,7 +20,7 @@ async def on_show_team_detail(
         state: FSMContext,
         timezone: ZoneInfo,
 ) -> None:
-    await state.finish()
+    await state.clear()
 
     team_id: int = callback_data['team_id']
 
@@ -30,10 +32,10 @@ async def on_show_team_detail(
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_team_detail,
-        TeamDetailCallbackData().filter(),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        TeamDetailCallbackData.filter(),
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

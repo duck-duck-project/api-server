@@ -1,6 +1,8 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.types import ChatType, CallbackQuery
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
 from callback_data import UserUpdateCallbackData
 from models import User
@@ -37,10 +39,10 @@ async def on_toggle_can_be_added_to_contacts(
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_toggle_can_be_added_to_contacts,
-        UserUpdateCallbackData().filter(field='can_be_added_to_contacts'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        UserUpdateCallbackData.filter(F.field == 'can_be_added_to_contacts'),
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

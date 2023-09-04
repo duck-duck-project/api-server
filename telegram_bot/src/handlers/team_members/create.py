@@ -1,7 +1,7 @@
-from aiogram import Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
+from aiogram import Bot, Router
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from aiogram.utils.exceptions import TelegramAPIError
 
 from callback_data import (
     TeamMemberCreateCallbackData,
@@ -61,7 +61,7 @@ async def on_contact_choice(
         team_repository = TeamRepository(http_client)
         team = await team_repository.get_by_id(team_id)
 
-    await state.finish()
+    await state.clear()
 
     view = TeamMemberCreateAskForConfirmationView(
         from_user=contact.of_user,
@@ -107,18 +107,18 @@ async def on_start_team_member_creation_flow(
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_team_member_invitation_accept,
-        TeamMemberCreateAcceptInvitationCallbackData().filter(),
-        state='*',
+        TeamMemberCreateAcceptInvitationCallbackData.filter(),
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_contact_choice,
-        state=TeamMemberCreateStates.contact,
+        StateFilter(TeamMemberCreateStates.contact),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_start_team_member_creation_flow,
-        TeamMemberCreateCallbackData().filter(),
-        state='*',
+        TeamMemberCreateCallbackData.filter(),
+        StateFilter('*'),
     )

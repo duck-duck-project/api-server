@@ -2,6 +2,7 @@ from datetime import timedelta
 from typing import Iterable
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callback_data import (
     ContactUpdateCallbackData,
@@ -52,36 +53,36 @@ class ContactDetailView(View):
                 [
                     InlineKeyboardButton(
                         text='📝 Поменять публичное имя',
-                        callback_data=ContactUpdateCallbackData().new(
+                        callback_data=ContactUpdateCallbackData(
                             contact_id=self.__contact.id,
                             field='public_name',
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
                     InlineKeyboardButton(
                         text='📝 Поменять приватное имя',
-                        callback_data=ContactUpdateCallbackData().new(
+                        callback_data=ContactUpdateCallbackData(
                             contact_id=self.__contact.id,
                             field='private_name',
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
                     InlineKeyboardButton(
                         text=is_hidden_status_toggle_button_text,
-                        callback_data=ContactUpdateCallbackData().new(
+                        callback_data=ContactUpdateCallbackData(
                             contact_id=self.__contact.id,
                             field='is_hidden',
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
                     InlineKeyboardButton(
                         text='❌ Удалить',
-                        callback_data=ContactDeleteCallbackData().new(
+                        callback_data=ContactDeleteCallbackData(
                             contact_id=self.__contact.id,
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
@@ -106,17 +107,17 @@ class ContactListView(View):
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
+        keyboard = InlineKeyboardBuilder()
         for contact in self.__contacts:
             text = contact.private_name
             if contact.is_hidden:
                 text = f'🙈 {text}'
-            markup.row(
+            keyboard.row(
                 InlineKeyboardButton(
                     text=text,
-                    callback_data=ContactDetailCallbackData().new(
-                        contact_id=contact.id,
+                    callback_data=(
+                        ContactDetailCallbackData(contact_id=contact.id).pack()
                     ),
                 ),
             )
-        return markup
+        return keyboard.as_markup()

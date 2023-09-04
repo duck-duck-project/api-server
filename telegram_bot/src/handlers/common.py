@@ -1,22 +1,23 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
+from aiogram import Router
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
+
+router = Router(name=__name__)
 
 
 async def on_restart(
         message: Message,
         state: FSMContext,
 ) -> None:
-    await state.finish()
+    await state.clear()
     await message.reply('🚀 Бот перезапущен для вас')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
-        on_restart,
-        Command('restart'),
-        state='*',
-    )
+router.message.register(
+    on_restart,
+    Command('restart'),
+    StateFilter('*'),
+)

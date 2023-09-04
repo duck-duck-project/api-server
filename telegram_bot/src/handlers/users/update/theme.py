@@ -1,15 +1,16 @@
-from aiogram import Dispatcher
-from aiogram.types import Message, ChatType
+from aiogram import F, Router
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.types import Message
 
 from exceptions import ThemeDoesNotExistError, UserHasNoPremiumSubscriptionError
-from filters import ThemeUpdateCommandFilter
+from filters import theme_update_command_filter
 from models import User
 from repositories import HTTPClientFactory, UserRepository
 from repositories.themes import ThemeRepository
+from views import ThemeSuccessfullyUpdatedView, answer_view
 
 __all__ = ('register_handlers',)
-
-from views import ThemeSuccessfullyUpdatedView, answer_view
 
 
 async def on_update_user_theme(
@@ -19,9 +20,10 @@ async def on_update_user_theme(
         theme_id: int,
 ) -> None:
     if not user.is_premium:
-        raise UserHasNoPremiumSubscriptionError(
+        await message.reply(
             '🌟 Смена темы доступна только премиум пользователям'
         )
+        return
 
     async with closing_http_client_factory() as http_client:
         user_repository = UserRepository(http_client)
@@ -44,10 +46,10 @@ async def on_update_user_theme(
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_update_user_theme,
-        ThemeUpdateCommandFilter(),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        theme_update_command_filter,
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

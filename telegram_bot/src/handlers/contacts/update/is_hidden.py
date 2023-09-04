@@ -1,6 +1,7 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Command, IsReplyFilter
-from aiogram.types import CallbackQuery, ChatType, Message
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import Command, StateFilter
+from aiogram.types import CallbackQuery, Message
 
 from callback_data import ContactUpdateCallbackData
 from repositories import ContactRepository
@@ -13,10 +14,10 @@ __all__ = ('register_handlers',)
 
 async def on_toggle_is_hidden_status_command(
         message: Message,
-        reply: Message,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    is_hidden = message.get_command(pure=True) == 'hide'
+    reply = message.reply_to_message
+    is_hidden = message.text.startswith('/hide')
 
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
@@ -45,37 +46,36 @@ async def on_toggle_is_hidden_status_command(
 
 async def on_toggle_is_hidden_status(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: ContactUpdateCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    contact_id: int = callback_data['contact_id']
 
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
+        contact = await contact_repository.get_by_id(callback_data.contact_id)
         await contact_repository.update(
-            contact_id=contact_id,
+            contact_id=callback_data.contact_id,
             public_name=contact.public_name,
             private_name=contact.private_name,
             is_hidden=not contact.is_hidden,
         )
-        contact = await contact_repository.get_by_id(contact_id)
+        contact = await contact_repository.get_by_id(callback_data.contact_id)
 
     view = ContactDetailView(contact)
     await edit_message_by_view(message=callback_query.message, view=view)
     await callback_query.answer('✅ Статус скрытости обновлен')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_toggle_is_hidden_status_command,
-        Command('hide') | Command('show'),
-        IsReplyFilter(is_reply=True),
-        state='*',
+        Command('hide', 'show'),
+        F.reply_to_message,
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_toggle_is_hidden_status,
-        ContactUpdateCallbackData().filter(field='is_hidden'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        ContactUpdateCallbackData.filter(F.field == 'is_hidden'),
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

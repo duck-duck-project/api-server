@@ -1,23 +1,25 @@
 import aiohttp
 import structlog
-from aiogram import Dispatcher
+from aiogram import Router
+from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import Update
 from structlog.stdlib import BoundLogger
 
 from exceptions import ServerAPIError
 from views import (
     ClientConnectorErrorInlineQueryView,
-    ServerAPIErrorInlineQueryView
+    ServerAPIErrorInlineQueryView,
 )
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
 
 logger: BoundLogger = structlog.get_logger('app')
+
+router = Router(name=__name__)
 
 
 async def on_client_connector_error(
         update: Update,
-        exception: aiohttp.ClientConnectorError,
 ) -> bool:
     text = '❌ Ошибка подключения к серверу, попробуйте позже'
     if update.message is not None:
@@ -29,16 +31,12 @@ async def on_client_connector_error(
             ClientConnectorErrorInlineQueryView()
             .get_inline_query_result_article()
         ], is_personal=True)
-    await logger.acritical(
-        'Can not connect to the API server',
-        exc_info=exception,
-    )
+    await logger.acritical('Can not connect to the API server')
     return True
 
 
 async def on_server_api_error(
         update: Update,
-        exception: ServerAPIError,
 ) -> bool:
     text = '❌ Ошибка API сервера, попробуйте позже'
     if update.message is not None:
@@ -50,19 +48,15 @@ async def on_server_api_error(
             ServerAPIErrorInlineQueryView()
             .get_inline_query_result_article()
         ])
-    await logger.acritical(
-        'Error on the API server side',
-        exc_info=exception,
-    )
+    await logger.acritical('Error on the API server side')
     return True
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_errors_handler(
-        on_client_connector_error,
-        exception=aiohttp.ClientConnectorError,
-    )
-    dispatcher.register_errors_handler(
-        on_server_api_error,
-        exception=ServerAPIError,
-    )
+router.errors.register(
+    on_client_connector_error,
+    ExceptionTypeFilter(aiohttp.ClientConnectorError),
+)
+router.errors.register(
+    on_server_api_error,
+    ExceptionTypeFilter(ServerAPIError),
+)

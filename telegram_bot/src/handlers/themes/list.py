@@ -1,7 +1,8 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.types import CallbackQuery, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
 
 from exceptions import UserHasNoPremiumSubscriptionError
 from models import User
@@ -19,11 +20,13 @@ async def on_show_themes_list(
         user: User,
 ) -> None:
     if not user.is_premium:
-        raise UserHasNoPremiumSubscriptionError(
-            '🌟 Смена темы доступна только премиум пользователям'
+        await callback_query.answer(
+            '🌟 Смена темы доступна только премиум пользователям',
+            show_alert=True,
         )
+        return
 
-    await state.finish()
+    await state.clear()
 
     async with closing_http_client_factory() as http_client:
         theme_repository = ThemeRepository(http_client)
@@ -33,10 +36,10 @@ async def on_show_themes_list(
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_themes_list,
-        Text('show-themes-list'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.data == 'show-themes-list',
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )
