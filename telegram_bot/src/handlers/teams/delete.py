@@ -17,14 +17,13 @@ __all__ = ('register_handlers',)
 
 async def on_team_delete_ask_for_confirmation(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamDeleteAskForConfirmationCallbackData,
         state: FSMContext,
 ) -> None:
-    team_id: int = callback_data['team_id']
-    await TeamDeleteStates.confirm.set()
-    await state.update_data(team_id=team_id)
+    await state.set_state(TeamDeleteStates.confirm)
+    await state.update_data(team_id=callback_data.team_id)
 
-    view = TeamDeleteAskForConfirmationView(team_id)
+    view = TeamDeleteAskForConfirmationView(callback_data.team_id)
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
@@ -34,6 +33,7 @@ async def on_team_delete_confirm(
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     state_data = await state.get_data()
+    await state.clear()
     team_id: int = state_data['team_id']
     user_id = callback_query.from_user.id
 

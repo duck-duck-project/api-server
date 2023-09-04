@@ -1,4 +1,5 @@
 from aiogram import Bot, Router
+from aiogram.exceptions import TelegramAPIError
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -26,15 +27,14 @@ __all__ = ('register_handlers',)
 
 async def on_team_member_invitation_accept(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamMemberCreateAcceptInvitationCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    team_id: int = callback_data['team_id']
 
     async with closing_http_client_factory() as http_client:
         team_member_repository = TeamMemberRepository(http_client)
         await team_member_repository.create(
-            team_id=team_id,
+            team_id=callback_data.team_id,
             user_id=callback_query.from_user.id,
         )
     await callback_query.answer(
@@ -87,11 +87,10 @@ async def on_contact_choice(
 
 async def on_start_team_member_creation_flow(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamMemberCreateCallbackData,
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    team_id: int = callback_data['team_id']
     user_id = callback_query.from_user.id
 
     async with closing_http_client_factory() as http_client:
@@ -100,10 +99,10 @@ async def on_start_team_member_creation_flow(
 
     view = TeamMemberCreateChooseContactView(
         contacts=contacts,
-        team_id=team_id,
+        team_id=callback_data.team_id,
     )
-    await TeamMemberCreateStates.contact.set()
-    await state.update_data(team_id=team_id)
+    await state.set_state(TeamMemberCreateStates.contact)
+    await state.update_data(team_id=callback_data.team_id)
     await edit_message_by_view(message=callback_query.message, view=view)
 
 

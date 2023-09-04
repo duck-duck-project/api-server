@@ -18,8 +18,11 @@ from views import (
 __all__ = ('register_handlers',)
 
 
-async def on_start_team_creation_flow(callback_query: CallbackQuery) -> None:
-    await TeamCreateStates.name.set()
+async def on_start_team_creation_flow(
+        callback_query: CallbackQuery,
+        state: FSMContext,
+) -> None:
+    await state.set_state(TeamCreateStates.name)
     view = TeamCreateAskForNameView()
     await edit_message_by_view(message=callback_query.message, view=view)
 

@@ -1,8 +1,14 @@
+## [1.5.1] - 2023-09-04
+
+### Fixed
+
+- Migrate teams functionality to aiogram v3.
+
 ## [1.5.0] - 2023-09-04
 
 ### Changed
 
-- Migrate to aiogram v3
+- Migrate to aiogram v3.
 
 ## [1.4.2] - 2023-09-03
 
