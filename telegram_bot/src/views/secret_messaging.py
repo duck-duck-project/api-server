@@ -39,16 +39,34 @@ __all__ = (
 
 class InvertedSecretMessageDetailInlineQueryView(InlineQueryView):
 
+    thumbnail_width = 100
+    thumbnail_height = 100
+
     def __init__(
             self,
+            query_id: str,
             contact: Contact,
             secret_message_id: UUID,
+            secret_message_theme: SecretMessageTheme | None,
     ):
+        self.__query_id = query_id
         self.__contact = contact
         self.__secret_message_id = secret_message_id
+        self.__secret_message_theme = secret_message_theme
+
+    def get_id(self) -> str:
+        return self.__query_id
+
+    def get_description(self) -> str:
+        return self.__contact.public_name
+
+    def get_thumbnail_url(self) -> str | None:
+        if self.__contact.to_user.profile_photo_url is None:
+            return
+        return str(self.__contact.to_user.profile_photo_url)
 
     def get_title(self) -> str:
-        return f'Все кроме: {self.__contact.private_name}'
+        return f'❗️ Все кроме: {self.__contact.private_name}'
 
     def get_text(self) -> str:
         return (
@@ -63,10 +81,10 @@ class InvertedSecretMessageDetailInlineQueryView(InlineQueryView):
                     InlineKeyboardButton(
                         text='👀 Прочитать',
                         callback_data=(
-                            InvertedSecretMessageDetailCallbackData().new(
+                            InvertedSecretMessageDetailCallbackData(
                                 contact_id=self.__contact.id,
                                 secret_message_id=self.__secret_message_id.hex,
-                            )
+                            ).pack()
                         ),
                     )
                 ]
@@ -107,10 +125,10 @@ class SecretMessageForTeamInlineQueryView(InlineQueryView):
                 [
                     InlineKeyboardButton(
                         text='👀 Прочитать',
-                        callback_data=SecretMessageForTeamCallbackData().new(
+                        callback_data=SecretMessageForTeamCallbackData(
                             team_id=self.__team.id,
                             secret_message_id=self.__secret_message_id.hex,
-                        ),
+                        ).pack(),
                     ),
                 ],
             ],

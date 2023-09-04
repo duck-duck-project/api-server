@@ -27,7 +27,7 @@ class UserUpdateCallbackData(CallbackData, prefix='user-update'):
 
 class InvertedSecretMessageDetailCallbackData(
     CallbackData,
-    prefix='show-inverted-whisp',
+    prefix='inverted-whisp',
 ):
     contact_id: int
     secret_message_id: UUID
