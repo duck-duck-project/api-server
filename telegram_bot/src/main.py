@@ -1,3 +1,4 @@
+import asyncio
 import pathlib
 from functools import partial
 
@@ -5,63 +6,69 @@ import aiohttp
 import humanize
 import sentry_sdk
 import structlog
-from aiogram import Bot, Dispatcher, executor
-from aiogram.contrib.fsm_storage.redis import RedisStorage2
-from aiogram.types import ParseMode
+from aiogram import Bot, Dispatcher
+from aiogram.enums import ParseMode
+from aiogram.fsm.storage.redis import RedisStorage
 from aiohttp import ClientTimeout
+from redis.asyncio import Redis
 from structlog.stdlib import BoundLogger
 
 import handlers
 from config import load_config_from_file_path
 from logger import setup_logging
-from middlewares import (
-    DependencyInjectMiddleware,
-    UserMiddleware,
-    BannedUsersFilterMiddleware,
-)
+from middlewares import UserMiddleware
 
 logger: BoundLogger = structlog.get_logger('app')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    handlers.register_handlers(dispatcher)
-    logger.info('Handlers registered')
+def include_routers(dispatcher: Dispatcher) -> None:
+    dispatcher.include_routers(
+        handlers.countdown.router,
+        handlers.premium.router,
+        handlers.server.router,
+        handlers.users.router,
+        handlers.teams.router,
+        handlers.team_members.router,
+        handlers.themes.router,
+        handlers.secret_messages.router,
+        handlers.secret_medias.router,
+        handlers.contacts.router,
+        handlers.anonymous_messages.router,
+        handlers.common.router,
+    )
 
 
-def main() -> None:
+async def main() -> None:
     humanize.i18n.activate('ru_RU')
 
     config_file_path = pathlib.Path(__file__).parent.parent / 'config.toml'
     config = load_config_from_file_path(config_file_path)
 
     setup_logging(config.logging.level)
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+
+    redis = Redis(
+        host=config.redis.host,
+        port=config.redis.port,
+        db=config.redis.db,
+    )
+    storage = RedisStorage(redis)
 
     bot = Bot(token=config.telegram_bot_token, parse_mode=ParseMode.HTML)
-    dispatcher = Dispatcher(
-        bot=bot,
-        storage=RedisStorage2(
-            host=config.redis.host,
-            port=config.redis.port,
-            db=config.redis.db,
-        ),
-    )
+    dispatcher = Dispatcher(storage=storage)
 
-    register_handlers(dispatcher)
-
-    dependency_inject_middleware = DependencyInjectMiddleware(
-        bot=bot,
-        dispatcher=dispatcher,
-        closing_http_client_factory=partial(
-            aiohttp.ClientSession,
-            base_url=config.server_api_base_url,
-            timeout=ClientTimeout(60),
-        ),
-        chat_id_for_retranslation=config.main_chat_id,
-        timezone=config.timezone,
+    dispatcher['closing_http_client_factory'] = partial(
+        aiohttp.ClientSession,
+        base_url=config.server_api_base_url,
+        timeout=ClientTimeout(60),
     )
-    dispatcher.setup_middleware(dependency_inject_middleware)
-    dispatcher.setup_middleware(UserMiddleware())
-    dispatcher.setup_middleware(BannedUsersFilterMiddleware())
+    dispatcher['chat_id_for_retranslation'] = config.main_chat_id
+    dispatcher['timezone'] = config.timezone
+
+    include_routers(dispatcher)
+
+    dispatcher.update.outer_middleware(UserMiddleware())
 
     if config.sentry.is_enabled:
         sentry_sdk.init(
@@ -70,11 +77,9 @@ def main() -> None:
         )
         logger.info('Sentry enabled')
 
-    executor.start_polling(
-        dispatcher=dispatcher,
-        skip_updates=True,
-    )
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dispatcher.start_polling(bot)
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

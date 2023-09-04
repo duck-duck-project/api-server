@@ -1,5 +1,5 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Command, IsReplyFilter
+from aiogram import Router, F
+from aiogram.filters import Command, invert_f, StateFilter
 from aiogram.types import Message
 
 from models import User
@@ -25,10 +25,10 @@ async def on_contact_command_is_not_replied_to_user(
 
 async def on_add_contact(
         message: Message,
-        reply: Message,
         closing_http_client_factory: HTTPClientFactory,
         user: User,
 ) -> None:
+    reply = message.reply_to_message
     if reply.from_user.is_bot:
         await message.reply('Вы не можете добавить бота в контакты')
         return
@@ -77,16 +77,16 @@ async def on_add_contact(
         await message.reply('✅ Контакт успешно добавлен')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_contact_command_is_not_replied_to_user,
         Command('contact'),
-        IsReplyFilter(is_reply=False),
-        state='*',
+        invert_f(F.reply_to_message),
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_add_contact,
         Command('contact'),
-        IsReplyFilter(is_reply=True),
-        state='*',
+        F.reply_to_message,
+        StateFilter('*'),
     )

@@ -6,13 +6,8 @@ from uuid import UUID
 from zoneinfo import ZoneInfo
 
 from aiogram import Bot
+from aiogram.exceptions import TelegramAPIError
 from aiogram.types import Message
-from aiogram.utils.exceptions import (
-    TelegramAPIError,
-    BotBlocked,
-    CantInitiateConversation,
-    ChatNotFound,
-)
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
 from models import User
@@ -244,51 +239,51 @@ async def send_view_to_user(
         to_chat_id: int,
         from_chat_id: int,
 ) -> None:
-    try:
-        await bot.send_message(
-            to_chat_id,
-            text=view.get_text(),
-            reply_markup=view.get_reply_markup(),
-        )
-    except BotBlocked:
-        with contextlib.suppress(TelegramAPIError):
-            await bot.send_message(
-                chat_id=from_chat_id,
-                text=(
-                    '❌ Не удалось отправить сообщение.'
-                    ' Пользователь заблокировал бота'
-                ),
-            )
-    except CantInitiateConversation:
-        with contextlib.suppress(TelegramAPIError):
-            await bot.send_message(
-                chat_id=from_chat_id,
-                text=(
-                    '❌ Не удалось отправить сообщение.'
-                    ' Пользователь пока не начинал диалог с ботом'
-                ),
-            )
-    except ChatNotFound:
-        with contextlib.suppress(TelegramAPIError):
-            await bot.send_message(
-                chat_id=from_chat_id,
-                text=(
-                    '❌ Не удалось отправить сообщение.'
-                    ' Пользователь не существует'
-                ),
-            )
-    except TelegramAPIError as error:
-        with contextlib.suppress(TelegramAPIError):
-            await bot.send_message(
-                chat_id=from_chat_id,
-                text='❌ Не удалось отправить сообщение.',
-            )
-    else:
-        await bot.send_message(
-            chat_id=from_chat_id,
-            text='✅ Секретное сообщение отправлено',
-            disable_notification=True,
-        )
+    await bot.send_message(
+        to_chat_id,
+        text=view.get_text(),
+        reply_markup=view.get_reply_markup(),
+    )
+#     except BotBlocked:
+#     with contextlib.suppress(TelegramAPIError):
+#         await bot.send_message(
+#             chat_id=from_chat_id,
+#             text=(
+#                 '❌ Не удалось отправить сообщение.'
+#                 ' Пользователь заблокировал бота'
+#             ),
+#         )
+#
+# except CantInitiateConversation:
+# with contextlib.suppress(TelegramAPIError):
+#     await bot.send_message(
+#         chat_id=from_chat_id,
+#         text=(
+#             '❌ Не удалось отправить сообщение.'
+#             ' Пользователь пока не начинал диалог с ботом'
+#         ),
+#     )
+# except ChatNotFound:
+# with contextlib.suppress(TelegramAPIError):
+#     await bot.send_message(
+#         chat_id=from_chat_id,
+#         text=(
+#             '❌ Не удалось отправить сообщение.'
+#             ' Пользователь не существует'
+#         ),
+#     )
+# except TelegramAPIError as error:
+# with contextlib.suppress(TelegramAPIError):
+#     await bot.send_message(
+#         chat_id=from_chat_id,
+#         text='❌ Не удалось отправить сообщение.',
+#     )
+# else:
+# await bot.send_message(
+#     chat_id=from_chat_id,
+#     text='✅ Секретное сообщение отправлено',
+#     disable_notification=True,
+# )
 
 
 def get_time_before_studies_start(timezone: ZoneInfo) -> timedelta:

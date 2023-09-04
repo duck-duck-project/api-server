@@ -1,5 +1,6 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
+from aiogram import Router
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from callback_data import TeamMemberListCallbackData
@@ -15,7 +16,7 @@ async def on_show_team_members_list(
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    await state.finish()
+    await state.clear()
     team_id: int = callback_data['team_id']
     async with closing_http_client_factory() as http_client:
         team_member_repository = TeamMemberRepository(http_client)
@@ -28,9 +29,9 @@ async def on_show_team_members_list(
     await edit_message_by_view(message=callback_query.message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_team_members_list,
-        TeamMemberListCallbackData().filter(),
-        state='*',
+        TeamMemberListCallbackData.filter(),
+        StateFilter('*'),
     )

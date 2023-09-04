@@ -1,12 +1,12 @@
-from aiogram import Dispatcher
+from aiogram import Router
 
 from . import direct, inverted, errors, create
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
 
+router = Router(name=__name__)
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    create.register_handlers(dispatcher)
-    errors.register_handlers(dispatcher)
-    direct.register_handlers(dispatcher)
-    inverted.register_handlers(dispatcher)
+create.register_handlers(router)
+errors.register_handlers(router)
+direct.register_handlers(router)
+inverted.register_handlers(router)

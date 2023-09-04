@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from aiogram import Dispatcher
+from aiogram import Router
+from aiogram.filters import StateFilter
 from aiogram.types import CallbackQuery
 
 from callback_data import InvertedSecretMessageDetailCallbackData
@@ -37,9 +38,9 @@ async def on_show_inverted_message(
     await callback_query.answer(text, show_alert=True)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_inverted_message,
-        InvertedSecretMessageDetailCallbackData().filter(),
-        state='*',
+        InvertedSecretMessageDetailCallbackData.filter(),
+        StateFilter('*'),
     )

@@ -1,4 +1,5 @@
-from aiogram import Dispatcher
+from aiogram import Router
+from aiogram.filters import StateFilter
 from aiogram.types import CallbackQuery
 
 from callback_data import TeamMemberDetailCallbackData
@@ -25,9 +26,9 @@ async def on_show_team_member_menu(
     )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_team_member_menu,
-        TeamMemberDetailCallbackData().filter(),
-        state='*',
+        TeamMemberDetailCallbackData.filter(),
+        StateFilter('*'),
     )

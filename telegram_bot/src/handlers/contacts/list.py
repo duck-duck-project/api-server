@@ -1,30 +1,42 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Text
-from aiogram.types import Message, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.types import Message, CallbackQuery
 
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
+from views import answer_view, render_message_or_callback_query
 from views.contacts import ContactListView
-from views import answer_view
 
 __all__ = ('register_handlers',)
 
 
 async def on_show_contacts_list(
-        message: Message,
+        message_or_callback_query: Message | CallbackQuery,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
-        contacts = await contact_repository.get_by_user_id(message.from_user.id)
+        contacts = await contact_repository.get_by_user_id(
+            user_id=message_or_callback_query.from_user.id,
+        )
     view = ContactListView(contacts)
-    await answer_view(message=message, view=view)
+    await render_message_or_callback_query(
+        message_or_callback_query=message_or_callback_query,
+        view=view,
+    )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_show_contacts_list,
-        Text('👥 Контакты'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.text == '👥 Контакты',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
+    )
+    router.callback_query.register(
+        on_show_contacts_list,
+        F.data == 'show-contacts-list',
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

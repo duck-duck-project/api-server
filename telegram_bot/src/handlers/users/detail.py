@@ -1,7 +1,8 @@
-from aiogram import Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command, CommandStart, Text
-from aiogram.types import Message, ChatType, CallbackQuery
+from aiogram import Bot, Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter, Command, or_f
+from aiogram.fsm.context import FSMContext
+from aiogram.types import Message, CallbackQuery
 
 from models import User
 from services import is_anonymous_messaging_enabled
@@ -40,7 +41,7 @@ async def on_show_settings(
         state: FSMContext,
         user: User,
 ) -> None:
-    await state.finish()
+    await state.clear()
     state_name = await state.get_state()
     view = UserMenuView(
         user=user,
@@ -57,37 +58,40 @@ async def on_show_settings(
         )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_show_personal_settings,
-        Text('🎨 Настройки'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.text == '🎨 Настройки',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_show_personal_settings,
-        Text('show-personal-settings'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.data == 'show-personal-settings',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_settings_in_group_chat,
         Command('settings'),
-        chat_type=(ChatType.GROUP, ChatType.SUPERGROUP),
-        state='*',
+        F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}),
+        StateFilter('*'),
     )
-    dispatcher.register_callback_query_handler(
+    router.callback_query.register(
         on_show_settings,
-        Text('show-user-settings'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        F.data == 'show-user-settings',
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_show_settings,
-        CommandStart()
-        | Command('settings')
-        | CommandStart(deep_link='settings')
-        | Text('🔙 Отключить режим анонимных сообщений'),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        or_f(
+            F.text.in_({
+                '/start',
+                '/settings',
+                '🔙 Отключить режим анонимных сообщений',
+            }),
+        ),
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

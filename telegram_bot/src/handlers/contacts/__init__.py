@@ -1,14 +1,14 @@
-from aiogram import Dispatcher
+from aiogram import Router
 
 from . import delete, list, create, detail, update, errors
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
 
+router = Router(name=__name__)
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    errors.register_handlers(dispatcher)
-    delete.register_handlers(dispatcher)
-    list.register_handlers(dispatcher)
-    create.register_handlers(dispatcher)
-    detail.register_handlers(dispatcher)
-    update.register_handlers(dispatcher)
+errors.register_handlers(router)
+delete.register_handlers(router)
+list.register_handlers(router)
+create.register_handlers(router)
+detail.register_handlers(router)
+update.register_handlers(router)

@@ -1,5 +1,5 @@
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Command, Text
+from aiogram import F, Router
+from aiogram.filters import Command, ExceptionTypeFilter, StateFilter
 from aiogram.types import Message, Update, CallbackQuery
 
 from exceptions import UserHasNoPremiumSubscriptionError
@@ -9,7 +9,9 @@ from views import (
     PremiumSubscriptionLinkView,
 )
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
+
+router = Router(name=__name__)
 
 
 async def on_user_has_no_premium_subscription_error(
@@ -36,18 +38,17 @@ async def on_show_premium_subscription_info(
     )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_errors_handler(
-        on_user_has_no_premium_subscription_error,
-        exception=UserHasNoPremiumSubscriptionError,
-    )
-    dispatcher.register_message_handler(
-        on_show_premium_subscription_info,
-        Command('premium'),
-        state='*',
-    )
-    dispatcher.register_callback_query_handler(
-        on_show_premium_subscription_info,
-        Text('show-premium-subscription'),
-        state='*',
-    )
+router.errors.register(
+    on_user_has_no_premium_subscription_error,
+    ExceptionTypeFilter(UserHasNoPremiumSubscriptionError),
+)
+router.message.register(
+    on_show_premium_subscription_info,
+    Command('premium'),
+    StateFilter('*'),
+)
+router.callback_query.register(
+    on_show_premium_subscription_info,
+    F.data == 'show-premium-subscription',
+    StateFilter('*'),
+)

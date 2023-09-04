@@ -9,9 +9,14 @@ from secret_messages.models.secret_messages import SecretMessage
 
 class SecretMessageThemeResource(resources.ModelResource):
 
+    def get_export_fields(self):
+        return [
+            field for field in super().get_export_fields()
+            if field.column_name in ('description_template_text', 'button_text')
+        ]
+
     class Meta:
         model = SecretMessageTheme
-        fields = ('description_template_text', 'button_text')
 
 
 class SecretMessageResource(resources.ModelResource):

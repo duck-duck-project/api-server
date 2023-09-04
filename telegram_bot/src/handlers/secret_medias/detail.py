@@ -1,9 +1,10 @@
 import re
 
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import CommandStart
-from aiogram.types import Message, ChatType
-from aiogram.utils.exceptions import TelegramAPIError
+from aiogram import Dispatcher, Router, F
+from aiogram.enums import ChatType
+from aiogram.exceptions import TelegramAPIError
+from aiogram.filters import StateFilter, CommandStart
+from aiogram.types import Message
 
 from models import SecretMediaType
 from repositories import HTTPClientFactory
@@ -20,10 +21,9 @@ __all__ = ('register_handlers',)
 
 async def on_show_secret_media(
         message: Message,
-        deep_link: re.Match,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    secret_media_id = extract_secret_media_id(deep_link.string)
+    secret_media_id = extract_secret_media_id(message.text)
     async with closing_http_client_factory() as http_client:
         secret_media_repository = SecretMediaRepository(http_client)
         secret_media = await secret_media_repository.get_by_id(
@@ -57,10 +57,10 @@ async def on_show_secret_media(
         await message.answer('❌ Не удалось загрузить секретное медиа')
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_show_secret_media,
-        CommandStart(deep_link=re.compile(r'^secret_media-[0-9a-fA-F]{32}$')),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        CommandStart(magic=F.args.regexp(r'^secret_media-[0-9a-fA-F]{32}$')),
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

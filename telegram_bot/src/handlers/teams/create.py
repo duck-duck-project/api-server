@@ -1,9 +1,10 @@
 from zoneinfo import ZoneInfo
 
-from aiogram import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.types import CallbackQuery, Message, ChatType, ContentTypes
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, Message
 
 from repositories import HTTPClientFactory, TeamRepository
 from states import TeamCreateStates
@@ -41,22 +42,22 @@ async def on_team_name_input(
             name=name,
         )
 
-    await state.finish()
+    await state.clear()
     await message.answer('✅ Секретная группа создана')
 
     view = TeamDetailView(team=team, timezone=timezone)
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_start_team_creation_flow,
-        Text('create-team'),
-        state='*',
+        F.data == 'create-team',
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_team_name_input,
-        content_types=ContentTypes.TEXT,
-        chat_type=ChatType.PRIVATE,
-        state=TeamCreateStates.name,
+        F.text,
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter(TeamCreateStates.name),
     )

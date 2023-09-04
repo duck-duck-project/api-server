@@ -1,7 +1,7 @@
 from zoneinfo import ZoneInfo
 
-from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Command
+from aiogram import Router
+from aiogram.filters import Command, StateFilter
 from aiogram.types import Message
 
 from services import (
@@ -11,7 +11,9 @@ from services import (
 from views import answer_view
 from views.countdown import TimeBeforeStudiesStartCountdownView
 
-__all__ = ('register_handlers',)
+__all__ = ('router',)
+
+router = Router(name=__name__)
 
 
 async def on_show_time_before_studies_start(
@@ -29,9 +31,8 @@ async def on_show_time_before_studies_start(
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_message_handler(
-        on_show_time_before_studies_start,
-        Command('time'),
-        state='*',
-    )
+router.message.register(
+    on_show_time_before_studies_start,
+    Command('time'),
+    StateFilter('*'),
+)

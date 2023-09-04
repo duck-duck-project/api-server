@@ -1,25 +1,25 @@
-from aiogram import Dispatcher
-from aiogram.types import CallbackQuery, ChatType
+from aiogram import Router, F
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter
+from aiogram.types import CallbackQuery
 
 from callback_data import ContactDetailCallbackData
 from repositories import ContactRepository
 from repositories import HTTPClientFactory
-from views.contacts import ContactDetailView
 from views import edit_message_by_view
+from views.contacts import ContactDetailView
 
 __all__ = ('register_handlers',)
 
 
 async def on_show_contact_detail(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: ContactDetailCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    contact_id: int = callback_data['contact_id']
-
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
+        contact = await contact_repository.get_by_id(callback_data.contact_id)
 
     view = ContactDetailView(contact)
     await edit_message_by_view(
@@ -28,10 +28,10 @@ async def on_show_contact_detail(
     )
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
+def register_handlers(router: Router) -> None:
+    router.callback_query.register(
         on_show_contact_detail,
-        ContactDetailCallbackData().filter(),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        ContactDetailCallbackData.filter(),
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
     )

@@ -70,7 +70,9 @@ class InlineQueryView(View):
             id=self.get_id(),
             title=self.get_title(),
             description=self.get_description(),
-            input_message_content=InputTextMessageContent(self.get_text()),
+            input_message_content=InputTextMessageContent(
+                message_text=self.get_text(),
+            ),
             reply_markup=self.get_reply_markup(),
             thumb_url=self.get_thumbnail_url(),
             thumb_width=self.get_thumbnail_width(),

@@ -1,12 +1,12 @@
-from aiogram import Dispatcher, Bot
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command, CommandStart, Text
+from aiogram import Bot, F, Router
+from aiogram.enums import ChatType
+from aiogram.filters import StateFilter, or_f
+from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     Message,
-    ChatType,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    CallbackQuery, ContentType,
+    CallbackQuery,
 )
 
 from models import SecretMediaType
@@ -17,7 +17,7 @@ from repositories import (
 from repositories import HTTPClientFactory
 from services import (
     determine_media_file,
-    get_message_method_by_media_type, send_view_to_user,
+    get_message_method_by_media_type, send_view_to_user, filter_not_hidden,
 )
 from states import SecretMediaCreateStates
 from views import (
@@ -48,7 +48,7 @@ async def on_secret_media_create_cancel(
         state: FSMContext,
 
 ) -> None:
-    await state.finish()
+    await state.clear()
     await callback_query.answer('Отмена', show_alert=True)
 
 
@@ -59,7 +59,7 @@ async def on_secret_media_create_confirm(
         bot: Bot,
 ) -> None:
     state_data = await state.get_data()
-    await state.finish()
+    await state.clear()
 
     contact_id: int = state_data['contact_id']
     file_id: str = state_data['file_id']
@@ -102,7 +102,7 @@ async def on_media_description_skip(
         closing_http_client_factory: HTTPClientFactory,
         bot: Bot,
 ) -> None:
-    await SecretMediaCreateStates.confirm.set()
+    await state.set_state(SecretMediaCreateStates.confirm)
     await state.update_data(description=None)
     state_data = await state.get_data()
 
@@ -136,7 +136,7 @@ async def on_media_description(
     if len(message.text) > 64:
         await message.reply('❌ Описание не должно быть длиннее 64 символов')
         return
-    await SecretMediaCreateStates.confirm.set()
+    await state.set_state(SecretMediaCreateStates.confirm)
     await state.update_data(description=message.text)
     state_data = await state.get_data()
 
@@ -168,7 +168,7 @@ async def on_media_file(
 ) -> None:
     file_id, media_type = determine_media_file(message)
     await state.update_data(file_id=file_id, media_type_value=media_type.value)
-    await SecretMediaCreateStates.description.set()
+    await state.set_state(SecretMediaCreateStates.description)
     await message.answer(
         text='Вы можете ввести описание (оно будет показано получателю)',
         reply_markup=InlineKeyboardMarkup(
@@ -190,8 +190,8 @@ async def on_contact_choice(
 ) -> None:
     contact_id = int(callback_query.data)
     await state.update_data(contact_id=contact_id)
-    await SecretMediaCreateStates.media.set()
-    await callback_query.message.answer(
+    await state.set_state(SecretMediaCreateStates.media)
+    await callback_query.message.edit_text(
         'Отправьте ваше медиа, которое хотите секретно отправить.'
         ' Это может быть фото, видео, стикер, войс,'
         ' кружочек, документ, аудио или гифка',
@@ -201,75 +201,74 @@ async def on_contact_choice(
 async def on_secret_media_command(
         message: Message,
         closing_http_client_factory: HTTPClientFactory,
+        state: FSMContext,
 ) -> None:
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
         contacts = await contact_repository.get_by_user_id(message.from_user.id)
-    not_hidden_contacts = [
-        contact for contact in contacts
-        if not contact.is_hidden
-    ]
-    view = SecretMediaCreateContactListView(not_hidden_contacts)
-    await SecretMediaCreateStates.contact.set()
+    contacts = filter_not_hidden(contacts)
+    view = SecretMediaCreateContactListView(contacts)
+    await state.set_state(SecretMediaCreateStates.contact)
     await answer_view(message=message, view=view)
 
 
-def register_handlers(dispatcher: Dispatcher) -> None:
-    dispatcher.register_callback_query_handler(
-        on_secret_media_create_cancel,
-        Text('cancel'),
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.confirm,
-    )
-    dispatcher.register_callback_query_handler(
-        on_secret_media_create_confirm,
-        Text('confirm'),
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.confirm,
-    )
-    dispatcher.register_callback_query_handler(
-        on_media_description_skip,
-        Text('skip'),
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.description,
-    )
-    dispatcher.register_message_handler(
-        on_media_description,
-        content_types=ContentType.TEXT,
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.description,
-    )
-    dispatcher.register_message_handler(
-        on_media_file,
-        content_types=(
-            ContentType.PHOTO,
-            ContentType.VOICE,
-            ContentType.AUDIO,
-            ContentType.VIDEO,
-            ContentType.VIDEO_NOTE,
-            ContentType.DOCUMENT,
-            ContentType.STICKER,
-            ContentType.ANIMATION,
-        ),
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.media,
-    )
-    dispatcher.register_callback_query_handler(
-        on_contact_choice,
-        chat_type=ChatType.PRIVATE,
-        state=SecretMediaCreateStates.contact,
-    )
-    dispatcher.register_message_handler(
+def register_handlers(router: Router) -> None:
+    router.message.register(
         on_secret_media_command_called_in_group_chat,
-        Command('secret_media'),
-        chat_type=(ChatType.GROUP, ChatType.SUPERGROUP),
-        state='*',
+        F.text.startswith('/secret_media'),
+        F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}),
+        StateFilter('*'),
     )
-    dispatcher.register_message_handler(
+    router.message.register(
         on_secret_media_command,
-        (Command('secret_media')
-         | CommandStart(deep_link='secret_media')
-         | Text('🖼️ Секретное медиа')),
-        chat_type=ChatType.PRIVATE,
-        state='*',
+        or_f(
+            F.text.startswith('/secret_media'),
+            F.text == '🖼️ Секретное медиа',
+        ),
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter('*'),
+    )
+    router.callback_query.register(
+        on_secret_media_create_cancel,
+        F.data == 'cancel',
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.confirm),
+    )
+    router.callback_query.register(
+        on_secret_media_create_confirm,
+        F.data == 'confirm',
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.confirm),
+    )
+    router.callback_query.register(
+        on_media_description_skip,
+        F.data == 'skip',
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.description),
+    )
+    router.message.register(
+        on_media_description,
+        F.text,
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.description),
+    )
+    router.message.register(
+        on_media_file,
+        or_f(
+            F.photo,
+            F.video,
+            F.animation,
+            F.voice,
+            F.audio,
+            F.document,
+            F.sticker,
+            F.video_note,
+        ),
+        F.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.media),
+    )
+    router.callback_query.register(
+        on_contact_choice,
+        F.message.chat.type == ChatType.PRIVATE,
+        StateFilter(SecretMediaCreateStates.contact),
     )
