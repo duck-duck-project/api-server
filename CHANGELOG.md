@@ -1,3 +1,9 @@
+## [1.5.0] - 2023-09-04
+
+### Changed
+
+- Migrate to aiogram v3
+
 ## [1.4.2] - 2023-09-03
 
 ### Fixed
