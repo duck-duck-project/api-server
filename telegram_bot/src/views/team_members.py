@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callback_data import (
     TeamDetailCallbackData,
@@ -91,16 +92,16 @@ class TeamMemberListView(View):
         self.__current_user_id = current_user_id
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
+        keyboard = InlineKeyboardBuilder()
 
         for team_member in self.__team_members:
             name = team_member.user_username or team_member.user_fullname
-            markup.row(
+            keyboard.row(
                 InlineKeyboardButton(
                     text=name,
-                    callback_data=TeamMemberDetailCallbackData().new(
+                    callback_data=TeamMemberDetailCallbackData(
                         team_member_id=team_member.id,
-                    ),
+                    ).pack(),
                 )
             )
 
@@ -113,24 +114,24 @@ class TeamMemberListView(View):
         can_add_members = is_current_user_owner and has_members
 
         if can_add_members:
-            markup.row(
+            keyboard.row(
                 InlineKeyboardButton(
                     text='➕ Добавить',
-                    callback_data=TeamMemberCreateCallbackData().new(
+                    callback_data=TeamMemberCreateCallbackData(
                         team_id=self.__team_id,
-                    ),
+                    ).pack(),
                 )
             )
 
-        markup.row(
+        keyboard.row(
             InlineKeyboardButton(
                 text='🔙 Назад',
-                callback_data=TeamDetailCallbackData().new(
+                callback_data=TeamDetailCallbackData(
                     team_id=self.__team_id,
-                )
+                ).pack()
             )
         )
-        return markup
+        return keyboard.as_markup()
 
 
 class TeamMemberCreateChooseContactView(View):
@@ -147,25 +148,25 @@ class TeamMemberCreateChooseContactView(View):
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
+        keyboard = InlineKeyboardBuilder()
 
         for contact in self.__contacts:
-            markup.row(
+            keyboard.row(
                 InlineKeyboardButton(
                     text=contact.private_name,
                     callback_data=str(contact.id),
                 ),
             )
 
-        markup.row(
+        keyboard.row(
             InlineKeyboardButton(
                 text='🔙 Назад',
-                callback_data=TeamDetailCallbackData().new(
+                callback_data=TeamDetailCallbackData(
                     team_id=self.__team_id,
-                )
+                ).pack(),
             ),
         )
-        return markup
+        return keyboard.as_markup()
 
 
 class TeamMemberCreateAskForConfirmationView(View):
@@ -188,9 +189,9 @@ class TeamMemberCreateAskForConfirmationView(View):
                     InlineKeyboardButton(
                         text='✅ Вступить',
                         callback_data=(
-                            TeamMemberCreateAcceptInvitationCallbackData().new(
+                            TeamMemberCreateAcceptInvitationCallbackData(
                                 team_id=self.__team.id,
-                            )
+                            ).pack()
                         ),
                     ),
                 ],
@@ -222,9 +223,9 @@ class TeamMemberMenuDetailView(View):
                 [
                     InlineKeyboardButton(
                         text='❌ Удалить',
-                        callback_data=TeamMemberDeleteCallbackData().new(
+                        callback_data=TeamMemberDeleteCallbackData(
                             team_member_id=self.__team_member.id,
-                        ),
+                        ).pack(),
                     ),
                 ],
             ],

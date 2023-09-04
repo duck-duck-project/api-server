@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from zoneinfo import ZoneInfo
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callback_data import (
     TeamDetailCallbackData,
@@ -53,18 +54,18 @@ class TeamDetailView(View):
                 [
                     InlineKeyboardButton(
                         text='👥 Участники',
-                        callback_data=TeamMemberListCallbackData().new(
+                        callback_data=TeamMemberListCallbackData(
                             team_id=self.__team.id,
-                        ),
+                        ).pack(),
                     ),
                 ],
                 [
                     InlineKeyboardButton(
                         text='❌🗑️ Удалить секретную группу',
                         callback_data=(
-                            TeamDeleteAskForConfirmationCallbackData().new(
+                            TeamDeleteAskForConfirmationCallbackData(
                                 team_id=self.__team.id,
-                            )
+                            ).pack()
                         ),
                     ),
                 ]
@@ -85,23 +86,23 @@ class TeamListView(View):
         )
 
     def get_reply_markup(self) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
+        keyboard = InlineKeyboardBuilder()
         for team in self.__teams:
-            markup.row(
+            keyboard.row(
                 InlineKeyboardButton(
                     text=team.name,
-                    callback_data=TeamDetailCallbackData().new(
+                    callback_data=TeamDetailCallbackData(
                         team_id=team.id,
-                    ),
+                    ).pack(),
                 )
             )
-        markup.row(
+        keyboard.row(
             InlineKeyboardButton(
                 text='➕ Создать новую секретную группу',
                 callback_data='create-team',
             )
         )
-        return markup
+        return keyboard.as_markup()
 
 
 class TeamDeleteAskForConfirmationView(View):
@@ -120,9 +121,9 @@ class TeamDeleteAskForConfirmationView(View):
                     ),
                     InlineKeyboardButton(
                         text='♻️ Отменить',
-                        callback_data=TeamDetailCallbackData().new(
+                        callback_data=TeamDetailCallbackData(
                             team_id=self.__team_id,
-                        )
+                        ).pack()
                     )
                 ],
             ],

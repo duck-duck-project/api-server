@@ -12,18 +12,19 @@ __all__ = ('register_handlers',)
 
 async def on_show_team_members_list(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamMemberListCallbackData,
         state: FSMContext,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     await state.clear()
-    team_id: int = callback_data['team_id']
     async with closing_http_client_factory() as http_client:
         team_member_repository = TeamMemberRepository(http_client)
-        team_members = await team_member_repository.get_by_team_id(team_id)
+        team_members = await team_member_repository.get_by_team_id(
+            team_id=callback_data.team_id,
+        )
     view = TeamMemberListView(
         team_members=team_members,
-        team_id=team_id,
+        team_id=callback_data.team_id,
         current_user_id=callback_query.from_user.id,
     )
     await edit_message_by_view(message=callback_query.message, view=view)

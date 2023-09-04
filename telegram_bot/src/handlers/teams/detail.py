@@ -15,18 +15,16 @@ __all__ = ('register_handlers',)
 
 async def on_show_team_detail(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamDetailCallbackData,
         closing_http_client_factory: HTTPClientFactory,
         state: FSMContext,
         timezone: ZoneInfo,
 ) -> None:
     await state.clear()
 
-    team_id: int = callback_data['team_id']
-
     async with closing_http_client_factory() as http_client:
         team_repository = TeamRepository(http_client)
-        team = await team_repository.get_by_id(team_id)
+        team = await team_repository.get_by_id(callback_data.team_id)
 
     view = TeamDetailView(team=team, timezone=timezone)
     await edit_message_by_view(message=callback_query.message, view=view)
@@ -36,6 +34,6 @@ def register_handlers(router: Router) -> None:
     router.callback_query.register(
         on_show_team_detail,
         TeamDetailCallbackData.filter(),
-        F.chat.type == ChatType.PRIVATE,
+        F.message.chat.type == ChatType.PRIVATE,
         StateFilter('*'),
     )

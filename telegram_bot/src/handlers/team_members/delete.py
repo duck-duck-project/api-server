@@ -10,14 +10,15 @@ __all__ = ('register_handlers',)
 
 async def on_delete_team_member(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamMemberDeleteCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    team_member_id: int = callback_data['team_member_id']
 
     async with closing_http_client_factory() as http_client:
         team_member_repository = TeamMemberRepository(http_client)
-        await team_member_repository.delete_by_id(team_member_id)
+        await team_member_repository.delete_by_id(
+            team_member_id=callback_data.team_member_id,
+        )
 
     await callback_query.answer('✅ Участник удален', show_alert=True)
     await callback_query.message.delete_reply_markup()

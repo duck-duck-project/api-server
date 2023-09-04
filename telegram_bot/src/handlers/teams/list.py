@@ -40,6 +40,6 @@ def register_handlers(router: Router) -> None:
     router.callback_query.register(
         on_show_teams_list,
         F.data == 'show-teams-list',
-        F.chat.type == ChatType.PRIVATE,
+        F.message.chat.type == ChatType.PRIVATE,
         StateFilter('*'),
     )

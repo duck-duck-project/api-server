@@ -11,13 +11,13 @@ __all__ = ('register_handlers',)
 
 async def on_show_team_member_menu(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: TeamMemberDetailCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
     async with closing_http_client_factory() as http_client:
         team_member_repository = TeamMemberRepository(http_client)
         team_member = await team_member_repository.get_by_id(
-            team_member_id=callback_data['team_member_id'],
+            team_member_id=callback_data.team_member_id,
         )
     view = TeamMemberMenuDetailView(team_member)
     await edit_message_by_view(
