@@ -1,3 +1,9 @@
+## [1.6.0] - 2023-09-04
+
+### Added
+
+- Inverted secret messages.
+
 ## [1.5.1] - 2023-09-04
 
 ### Fixed

@@ -16,22 +16,21 @@ __all__ = ('register_handlers',)
 
 async def on_show_inverted_message(
         callback_query: CallbackQuery,
-        callback_data: dict,
+        callback_data: InvertedSecretMessageDetailCallbackData,
         closing_http_client_factory: HTTPClientFactory,
 ) -> None:
-    contact_id: int = callback_data['contact_id']
-    secret_message_id: UUID = callback_data['secret_message_id']
-
     async with closing_http_client_factory() as http_client:
         contact_repository = ContactRepository(http_client)
         secret_message_repository = SecretMessageRepository(http_client)
 
-        contact = await contact_repository.get_by_id(contact_id)
+        contact = await contact_repository.get_by_id(
+            contact_id=callback_data.contact_id,
+        )
         secret_message = await secret_message_repository.get_by_id(
-            secret_message_id=secret_message_id,
+            secret_message_id=callback_data.secret_message_id,
         )
 
-    if callback_query.from_user.id == contact.of_user.id:
+    if callback_query.from_user.id == contact.to_user.id:
         text = 'Это сообщение не предназначено для тебя 😉'
     else:
         text = secret_message.text
