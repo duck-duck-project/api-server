@@ -16,6 +16,7 @@ class User(models.Model):
         to=SecretMessageTheme,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
     )
     can_be_added_to_contacts = models.BooleanField(default=True)
     profile_photo_url = models.URLField(null=True, blank=True)
