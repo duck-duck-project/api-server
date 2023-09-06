@@ -1,4 +1,3 @@
-import contextlib
 from collections.abc import Coroutine, Callable, Awaitable, Iterable
 from datetime import timedelta, datetime
 from typing import Protocol, TypeAlias, TypeVar, Any
@@ -6,8 +5,7 @@ from uuid import UUID
 from zoneinfo import ZoneInfo
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramAPIError
-from aiogram.types import Message
+from aiogram.types import Message, Update, User as FromUser
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
 from models import User
@@ -34,6 +32,7 @@ __all__ = (
     'send_view_to_user',
     'get_time_before_studies_start',
     'calculate_urgency_coefficient',
+    'extract_user_from_update',
 )
 
 
@@ -244,6 +243,8 @@ async def send_view_to_user(
         text=view.get_text(),
         reply_markup=view.get_reply_markup(),
     )
+
+
 #     except BotBlocked:
 #     with contextlib.suppress(TelegramAPIError):
 #         await bot.send_message(
@@ -299,3 +300,27 @@ def get_time_before_studies_start(timezone: ZoneInfo) -> timedelta:
 
 def calculate_urgency_coefficient(days_left: int) -> int:
     return 11 - days_left
+
+
+def extract_user_from_update(update: Update) -> FromUser:
+    """Extract user from update.
+
+    Args:
+        update: Update object.
+
+    Returns:
+        User object.
+
+    Raises:
+        ValueError: If update type is unknown.
+    """
+    if update.message is not None:
+        return update.message.from_user
+    elif update.callback_query is not None:
+        return update.callback_query.from_user
+    elif update.inline_query is not None:
+        return update.inline_query.from_user
+    elif update.chosen_inline_result is not None:
+        return update.chosen_inline_result.from_user
+    else:
+        raise ValueError('Unknown event type')
