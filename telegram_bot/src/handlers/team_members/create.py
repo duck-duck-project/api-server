@@ -9,7 +9,6 @@ from callback_data import (
     TeamMemberCreateAcceptInvitationCallbackData,
 )
 from repositories import (
-    HTTPClientFactory,
     ContactRepository,
     TeamRepository,
     TeamMemberRepository,
@@ -28,15 +27,12 @@ __all__ = ('register_handlers',)
 async def on_team_member_invitation_accept(
         callback_query: CallbackQuery,
         callback_data: TeamMemberCreateAcceptInvitationCallbackData,
-        closing_http_client_factory: HTTPClientFactory,
+        team_member_repository: TeamMemberRepository,
 ) -> None:
-
-    async with closing_http_client_factory() as http_client:
-        team_member_repository = TeamMemberRepository(http_client)
-        await team_member_repository.create(
-            team_id=callback_data.team_id,
-            user_id=callback_query.from_user.id,
-        )
+    await team_member_repository.create(
+        team_id=callback_data.team_id,
+        user_id=callback_query.from_user.id,
+    )
     await callback_query.answer(
         text='✅ Вы вступили в секретную группу',
         show_alert=True,
@@ -47,19 +43,16 @@ async def on_team_member_invitation_accept(
 async def on_contact_choice(
         callback_query: CallbackQuery,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
+        team_repository: TeamRepository,
         bot: Bot,
 ) -> None:
     contact_id = int(callback_query.data)
     state_data = await state.get_data()
     team_id: int = state_data['team_id']
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
-
-        team_repository = TeamRepository(http_client)
-        team = await team_repository.get_by_id(team_id)
+    contact = await contact_repository.get_by_id(contact_id)
+    team = await team_repository.get_by_id(team_id)
 
     await state.clear()
 
@@ -89,13 +82,10 @@ async def on_start_team_member_creation_flow(
         callback_query: CallbackQuery,
         callback_data: TeamMemberCreateCallbackData,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
     user_id = callback_query.from_user.id
-
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client=http_client)
-        contacts = await contact_repository.get_by_user_id(user_id)
+    contacts = await contact_repository.get_by_user_id(user_id)
 
     view = TeamMemberCreateChooseContactView(
         contacts=contacts,

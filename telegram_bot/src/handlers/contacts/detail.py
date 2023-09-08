@@ -15,12 +15,9 @@ __all__ = ('register_handlers',)
 async def on_show_contact_detail(
         callback_query: CallbackQuery,
         callback_data: ContactDetailCallbackData,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(callback_data.contact_id)
-
+    contact = await contact_repository.get_by_id(callback_data.contact_id)
     view = ContactDetailView(contact)
     await edit_message_by_view(
         message=callback_query.message,

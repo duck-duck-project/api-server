@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from aiogram import Router
 from aiogram.filters import StateFilter
 from aiogram.types import CallbackQuery
@@ -11,7 +9,6 @@ from callback_data import (
 from repositories import (
     ContactRepository,
     SecretMessageRepository,
-    HTTPClientFactory,
     TeamMemberRepository,
 )
 from services import can_see_contact_secret, can_see_team_secret
@@ -22,18 +19,15 @@ __all__ = ('register_handlers',)
 async def on_show_team_message(
         callback_query: CallbackQuery,
         callback_data: SecretMessageForTeamCallbackData,
-        closing_http_client_factory: HTTPClientFactory,
+        team_member_repository: TeamMemberRepository,
+        secret_message_repository: SecretMessageRepository,
 ) -> None:
-    async with closing_http_client_factory() as http_client:
-        team_member_repository = TeamMemberRepository(http_client)
-        secret_message_repository = SecretMessageRepository(http_client)
-
-        team_members = await team_member_repository.get_by_team_id(
-            team_id=callback_data.team_id,
-        )
-        secret_message = await secret_message_repository.get_by_id(
-            secret_message_id=callback_data.secret_message_id,
-        )
+    team_members = await team_member_repository.get_by_team_id(
+        team_id=callback_data.team_id,
+    )
+    secret_message = await secret_message_repository.get_by_id(
+        secret_message_id=callback_data.secret_message_id,
+    )
 
     if not can_see_team_secret(
             user_id=callback_query.from_user.id,
@@ -48,17 +42,13 @@ async def on_show_team_message(
 async def on_show_contact_message(
         callback_query: CallbackQuery,
         callback_data: SecretMessageDetailCallbackData,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
+        secret_message_repository: SecretMessageRepository,
 ) -> None:
-
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        secret_message_repository = SecretMessageRepository(http_client)
-
-        contact = await contact_repository.get_by_id(callback_data.contact_id)
-        secret_message = await secret_message_repository.get_by_id(
-            secret_message_id=callback_data.secret_message_id,
-        )
+    contact = await contact_repository.get_by_id(callback_data.contact_id)
+    secret_message = await secret_message_repository.get_by_id(
+        secret_message_id=callback_data.secret_message_id,
+    )
 
     if not can_see_contact_secret(
             user_id=callback_query.from_user.id,

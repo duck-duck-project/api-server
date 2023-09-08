@@ -4,8 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram.types import Message, CallbackQuery
 
 from repositories import ContactRepository
-from repositories import HTTPClientFactory
-from views import answer_view, render_message_or_callback_query
+from views import render_message_or_callback_query
 from views.contacts import ContactListView
 
 __all__ = ('register_handlers',)
@@ -13,13 +12,10 @@ __all__ = ('register_handlers',)
 
 async def on_show_contacts_list(
         message_or_callback_query: Message | CallbackQuery,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contacts = await contact_repository.get_by_user_id(
-            user_id=message_or_callback_query.from_user.id,
-        )
+    user_id = message_or_callback_query.from_user.id
+    contacts = await contact_repository.get_by_user_id(user_id)
     view = ContactListView(contacts)
     await render_message_or_callback_query(
         message_or_callback_query=message_or_callback_query,

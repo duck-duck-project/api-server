@@ -7,7 +7,6 @@ from aiogram.types import InlineQuery, InlineQueryResultArticle
 
 from models import User
 from repositories import ContactRepository, TeamRepository
-from repositories.base import HTTPClientFactory
 from services import filter_not_hidden
 from views import (
     SecretMessageDetailInlineQueryView,
@@ -21,17 +20,15 @@ __all__ = ('register_handlers',)
 
 async def on_secret_message_typing(
         inline_query: InlineQuery,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
+        team_repository: TeamRepository,
         state: FSMContext,
         user: User,
 ) -> None:
     text = inline_query.query
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        team_repository = TeamRepository(http_client)
-        contacts = await contact_repository.get_by_user_id(user.id)
-        teams = await team_repository.get_by_user_id(user.id)
+    contacts = await contact_repository.get_by_user_id(user.id)
+    teams = await team_repository.get_by_user_id(user.id)
 
     if not contacts:
         items = [

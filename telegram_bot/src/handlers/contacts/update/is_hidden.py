@@ -14,32 +14,30 @@ __all__ = ('register_handlers',)
 
 async def on_toggle_is_hidden_status_command(
         message: Message,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
     reply = message.reply_to_message
     is_hidden = message.text.startswith('/hide')
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contacts = await contact_repository.get_by_user_id(message.from_user.id)
+    contacts = await contact_repository.get_by_user_id(message.from_user.id)
 
-        contact_to_update = None
-        for contact in contacts:
-            if contact.to_user.id == reply.from_user.id:
-                contact_to_update = contact
-                break
+    contact_to_update = None
+    for contact in contacts:
+        if contact.to_user.id == reply.from_user.id:
+            contact_to_update = contact
+            break
 
-        if contact_to_update is None:
-            await message.reply(
-                f'❌ {reply.from_user.full_name} не ваш контакт')
-            return
+    if contact_to_update is None:
+        await message.reply(
+            f'❌ {reply.from_user.full_name} не ваш контакт')
+        return
 
-        await contact_repository.update(
-            contact_id=contact_to_update.id,
-            public_name=contact_to_update.public_name,
-            private_name=contact.private_name,
-            is_hidden=is_hidden,
-        )
+    await contact_repository.update(
+        contact_id=contact_to_update.id,
+        public_name=contact_to_update.public_name,
+        private_name=contact.private_name,
+        is_hidden=is_hidden,
+    )
     text = '🙈 Контакт скрыт' if is_hidden else '🙉 Контакт больше не скрыт'
     await message.reply(text)
 
