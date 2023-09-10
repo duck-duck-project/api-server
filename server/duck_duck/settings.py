@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'import_export',
     'users',
     'secret_messages',
+    'economics',
 ]
 
 MIDDLEWARE = [
@@ -101,3 +102,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     )
 }
+
+if DEBUG:
+    INSTALLED_APPS.append('silk')
+    MIDDLEWARE.append('silk.middleware.SilkyMiddleware')

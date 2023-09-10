@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from callback_data import TeamMemberListCallbackData
-from repositories import HTTPClientFactory, TeamMemberRepository
+from repositories import TeamMemberRepository
 from views import TeamMemberListView, edit_message_by_view
 
 __all__ = ('register_handlers',)
@@ -14,14 +14,12 @@ async def on_show_team_members_list(
         callback_query: CallbackQuery,
         callback_data: TeamMemberListCallbackData,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        team_member_repository: TeamMemberRepository,
 ) -> None:
     await state.clear()
-    async with closing_http_client_factory() as http_client:
-        team_member_repository = TeamMemberRepository(http_client)
-        team_members = await team_member_repository.get_by_team_id(
-            team_id=callback_data.team_id,
-        )
+    team_members = await team_member_repository.get_by_team_id(
+        team_id=callback_data.team_id,
+    )
     view = TeamMemberListView(
         team_members=team_members,
         team_id=callback_data.team_id,

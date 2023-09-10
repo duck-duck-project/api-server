@@ -6,7 +6,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from repositories import HTTPClientFactory, TeamRepository
+from repositories import TeamRepository
 from states import TeamCreateStates
 from views import (
     TeamDetailView,
@@ -30,20 +30,18 @@ async def on_start_team_creation_flow(
 async def on_team_name_input(
         message: Message,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
         timezone: ZoneInfo,
+        team_repository: TeamRepository,
 ) -> None:
     name = message.text
     if len(name) > 64:
         await message.reply('❌ Слишком длинное название')
         return
 
-    async with closing_http_client_factory() as http_client:
-        team_repository = TeamRepository(http_client)
-        team = await team_repository.create(
-            user_id=message.from_user.id,
-            name=name,
-        )
+    team = await team_repository.create(
+        user_id=message.from_user.id,
+        name=name,
+    )
 
     await state.clear()
     await message.answer('✅ Секретная группа создана')

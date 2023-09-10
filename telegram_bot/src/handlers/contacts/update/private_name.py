@@ -6,7 +6,6 @@ from aiogram.types import Message, CallbackQuery
 
 from callback_data import ContactUpdateCallbackData
 from repositories import ContactRepository
-from repositories import HTTPClientFactory
 from states import ContactUpdateStates
 from views import answer_view
 from views.contacts import ContactDetailView
@@ -29,22 +28,20 @@ async def on_start_contact_private_name_update_flow(
 async def on_contact_new_private_name_input(
         message: Message,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
     state_data = await state.get_data()
     await state.clear()
     contact_id: int = state_data['contact_id']
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
-        await contact_repository.update(
-            contact_id=contact_id,
-            public_name=contact.public_name,
-            private_name=message.text,
-            is_hidden=contact.is_hidden,
-        )
-        contact = await contact_repository.get_by_id(contact_id)
+    contact = await contact_repository.get_by_id(contact_id)
+    await contact_repository.update(
+        contact_id=contact_id,
+        public_name=contact.public_name,
+        private_name=message.text,
+        is_hidden=contact.is_hidden,
+    )
+    contact = await contact_repository.get_by_id(contact_id)
 
     await message.reply('✅ Приватное имя контакта обновлено')
     view = ContactDetailView(contact)

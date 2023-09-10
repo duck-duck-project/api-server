@@ -16,7 +16,18 @@ from structlog.stdlib import BoundLogger
 import handlers
 from config import load_config_from_file_path
 from logger import setup_logging
-from middlewares import UserMiddleware
+from middlewares import (
+    HTTPClientFactoryMiddleware,
+    APIRepositoriesInitializerMiddleware,
+    user_retrieve_middleware,
+    banned_users_middleware,
+)
+from repositories import (
+    UserRepository, ContactRepository,
+    SecretMediaRepository, SecretMessageRepository, TeamMemberRepository,
+    TeamRepository
+)
+from repositories.themes import ThemeRepository
 
 logger: BoundLogger = structlog.get_logger('app')
 
@@ -68,7 +79,22 @@ async def main() -> None:
 
     include_routers(dispatcher)
 
-    dispatcher.update.outer_middleware(UserMiddleware())
+    dispatcher.update.outer_middleware(HTTPClientFactoryMiddleware(
+        dispatcher['closing_http_client_factory'],
+    ))
+    dispatcher.update.outer_middleware(
+        APIRepositoriesInitializerMiddleware(
+            contact_repository=ContactRepository,
+            secret_media_repository=SecretMediaRepository,
+            secret_message_repository=SecretMessageRepository,
+            team_member_repository=TeamMemberRepository,
+            team_repository=TeamRepository,
+            theme_repository=ThemeRepository,
+            user_repository=UserRepository,
+        )
+    )
+    dispatcher.update.outer_middleware(user_retrieve_middleware)
+    dispatcher.update.middleware(banned_users_middleware)
 
     if config.sentry.is_enabled:
         sentry_sdk.init(

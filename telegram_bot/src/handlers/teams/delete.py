@@ -30,17 +30,15 @@ async def on_team_delete_ask_for_confirmation(
 async def on_team_delete_confirm(
         callback_query: CallbackQuery,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        team_repository: TeamRepository,
 ) -> None:
     state_data = await state.get_data()
     await state.clear()
     team_id: int = state_data['team_id']
     user_id = callback_query.from_user.id
 
-    async with closing_http_client_factory() as http_client:
-        team_repository = TeamRepository(http_client)
-        await team_repository.delete_by_id(team_id)
-        teams = await team_repository.get_by_user_id(user_id)
+    await team_repository.delete_by_id(team_id)
+    teams = await team_repository.get_by_user_id(user_id)
 
     view = TeamListView(teams)
     await edit_message_by_view(message=callback_query.message, view=view)

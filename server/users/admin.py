@@ -7,6 +7,7 @@ from django.utils import timezone
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
+from economics.services import compute_user_balance
 from users.models import User, Contact, Team, TeamMember
 
 __all__ = (
@@ -60,7 +61,7 @@ class ContactResource(resources.ModelResource):
 class UserAdmin(ImportExportModelAdmin):
     resource_class = UserResource
     search_fields = ('username', 'fullname', 'id')
-    readonly_fields = ('id', 'view_is_premium')
+    readonly_fields = ('id', 'view_balance', 'view_is_premium')
     list_filter = (IsPremiumListFilter, 'can_be_added_to_contacts', 'is_banned')
     list_display = ('username', 'fullname', 'view_is_premium')
     ordering = ('-created_at',)
@@ -68,6 +69,10 @@ class UserAdmin(ImportExportModelAdmin):
     @admin.display(description='Is premium', boolean=True)
     def view_is_premium(self, user: User):
         return user.is_premium
+
+    @admin.display(description='Balance')
+    def view_balance(self, user: User):
+        return str(compute_user_balance(user))
 
 
 @admin.register(Contact)

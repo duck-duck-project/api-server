@@ -1,37 +1,32 @@
 from uuid import uuid4
 
 from aiogram import F, Router
-from aiogram.filters import and_f, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineQuery, InlineQueryResultArticle
 
 from models import User
-from repositories import HTTPClientFactory, TeamRepository, ContactRepository
-
-__all__ = ('register_handlers',)
-
+from repositories import ContactRepository
 from services import filter_not_hidden
-
 from views import (
     NoUserContactsInlineQueryView,
-    NoVisibleContactsInlineQueryView, TooLongSecretMessageTextInlineQueryView,
-    SecretMessageForTeamInlineQueryView, SecretMessageDetailInlineQueryView,
-    InvertedSecretMessageDetailInlineQueryView
+    NoVisibleContactsInlineQueryView,
+    TooLongSecretMessageTextInlineQueryView,
+    InvertedSecretMessageDetailInlineQueryView,
 )
+
+__all__ = ('register_handlers',)
 
 
 async def on_inverted_secret_message_typing(
         inline_query: InlineQuery,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
         state: FSMContext,
         user: User,
 ) -> None:
     text = inline_query.query.lstrip('!')
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        team_repository = TeamRepository(http_client)
-        contacts = await contact_repository.get_by_user_id(user.id)
+    contacts = await contact_repository.get_by_user_id(user.id)
 
     if not contacts:
         items = [

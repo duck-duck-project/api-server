@@ -55,8 +55,9 @@ async def on_secret_media_create_cancel(
 async def on_secret_media_create_confirm(
         callback_query: CallbackQuery,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
         bot: Bot,
+        secret_media_repository: SecretMediaRepository,
+        contact_repository: ContactRepository,
 ) -> None:
     state_data = await state.get_data()
     await state.clear()
@@ -66,16 +67,13 @@ async def on_secret_media_create_confirm(
     description: str | None = state_data['description']
     media_type_value: int = state_data['media_type_value']
 
-    async with closing_http_client_factory() as http_client:
-        secret_media_repository = SecretMediaRepository(http_client)
-        contact_repository = ContactRepository(http_client)
-        secret_media = await secret_media_repository.create(
-            contact_id=contact_id,
-            file_id=file_id,
-            description=description,
-            media_type=media_type_value,
-        )
-        contact = await contact_repository.get_by_id(contact_id)
+    secret_media = await secret_media_repository.create(
+        contact_id=contact_id,
+        file_id=file_id,
+        description=description,
+        media_type=media_type_value,
+    )
+    contact = await contact_repository.get_by_id(contact_id)
 
     me = await bot.get_me()
 
@@ -99,8 +97,7 @@ async def on_secret_media_create_confirm(
 async def on_media_description_skip(
         callback_query: CallbackQuery,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
-        bot: Bot,
+        contact_repository: ContactRepository,
 ) -> None:
     await state.set_state(SecretMediaCreateStates.confirm)
     await state.update_data(description=None)
@@ -111,9 +108,7 @@ async def on_media_description_skip(
     media_type_value: int = state_data['media_type_value']
     media_type = SecretMediaType(media_type_value)
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
+    contact = await contact_repository.get_by_id(contact_id)
 
     view = SecretMediaCreateConfirmView(
         contact=contact,
@@ -131,7 +126,7 @@ async def on_media_description_skip(
 async def on_media_description(
         message: Message,
         state: FSMContext,
-        closing_http_client_factory: HTTPClientFactory,
+        contact_repository: ContactRepository,
 ) -> None:
     if len(message.text) > 64:
         await message.reply('❌ Описание не должно быть длиннее 64 символов')
@@ -145,9 +140,7 @@ async def on_media_description(
     media_type_value: int = state_data['media_type_value']
     media_type = SecretMediaType(media_type_value)
 
-    async with closing_http_client_factory() as http_client:
-        contact_repository = ContactRepository(http_client)
-        contact = await contact_repository.get_by_id(contact_id)
+    contact = await contact_repository.get_by_id(contact_id)
 
     view = SecretMediaCreateConfirmView(
         contact=contact,

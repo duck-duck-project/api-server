@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from callback_data import TeamDetailCallbackData
-from repositories import HTTPClientFactory, TeamRepository
+from repositories import TeamRepository
 from views import edit_message_by_view, TeamDetailView
 
 __all__ = ('register_handlers',)
@@ -16,16 +16,12 @@ __all__ = ('register_handlers',)
 async def on_show_team_detail(
         callback_query: CallbackQuery,
         callback_data: TeamDetailCallbackData,
-        closing_http_client_factory: HTTPClientFactory,
+        team_repository: TeamRepository,
         state: FSMContext,
         timezone: ZoneInfo,
 ) -> None:
     await state.clear()
-
-    async with closing_http_client_factory() as http_client:
-        team_repository = TeamRepository(http_client)
-        team = await team_repository.get_by_id(callback_data.team_id)
-
+    team = await team_repository.get_by_id(callback_data.team_id)
     view = TeamDetailView(team=team, timezone=timezone)
     await edit_message_by_view(message=callback_query.message, view=view)
 
