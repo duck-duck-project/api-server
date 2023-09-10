@@ -1,3 +1,9 @@
+## [1.7.0] - 2023-09-10
+
+### Added
+
+- User's balance and transfers system.
+
 ## [1.6.0] - 2023-09-04
 
 ### Added
