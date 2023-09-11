@@ -1,6 +1,10 @@
 from django.urls import path
 
-from economics.views import TransactionListApi, TransferCreateApi
+from economics.views import (
+    TransactionListApi,
+    TransferCreateApi,
+    BalanceRetrieveApi,
+)
 
 app_name = 'economics'
 urlpatterns = [
@@ -13,5 +17,10 @@ urlpatterns = [
         r'transfers/',
         TransferCreateApi.as_view(),
         name='transfers-create',
+    ),
+    path(
+        r'balance/users/<int:user_id>/',
+        BalanceRetrieveApi.as_view(),
+        name='balance-retrieve',
     ),
 ]
