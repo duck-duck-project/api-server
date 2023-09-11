@@ -65,7 +65,7 @@ class UserRepository(APIRepository):
         url = '/users/'
         async with self._http_client.post(url, json=request_data) as response:
             if response.status == 409:
-                raise UserAlreadyExistsError
+                raise UserAlreadyExistsError(user_id=user_id)
             if response.status != 201:
                 raise ServerAPIError
             response_data = await response.json()
