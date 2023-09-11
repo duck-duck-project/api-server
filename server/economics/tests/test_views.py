@@ -45,6 +45,13 @@ class BalanceRetrieveApiTests(APITestCase):
             },
         )
 
+    def test_user_not_found(self) -> None:
+        url = reverse('economics:balance-retrieve', args=(12321321,))
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['detail'], 'User does not exists')
+
 
 class TransferCreateApiTests(APITestCase):
 
