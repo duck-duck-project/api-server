@@ -57,8 +57,6 @@ async def main() -> None:
     config = load_config_from_file_path(config_file_path)
 
     setup_logging(config.logging.level)
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
 
     redis = Redis(
         host=config.redis.host,
