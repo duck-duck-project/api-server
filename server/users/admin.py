@@ -7,6 +7,7 @@ from django.utils import timezone
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
+from economics.models import Transaction
 from economics.services import compute_user_balance
 from users.models import User, Contact, Team, TeamMember
 
@@ -65,6 +66,7 @@ class UserAdmin(ImportExportModelAdmin):
     list_filter = (IsPremiumListFilter, 'can_be_added_to_contacts', 'is_banned')
     list_display = ('username', 'fullname', 'view_is_premium')
     ordering = ('-created_at',)
+    actions = ('deposit_balance',)
 
     @admin.display(description='Is premium', boolean=True)
     def view_is_premium(self, user: User):
@@ -73,6 +75,21 @@ class UserAdmin(ImportExportModelAdmin):
     @admin.display(description='Balance')
     def view_balance(self, user: User):
         return str(compute_user_balance(user))
+
+    @admin.action(description='Deposit balance for $1000')
+    def deposit_balance(
+            self,
+            _: HttpRequest,
+            queryset: QuerySet[User],
+    ) -> None:
+        transactions = [
+            Transaction(
+                recipient=user,
+                source=Transaction.Source.SYSTEM,
+                amount=1000,
+            ) for user in queryset
+        ]
+        Transaction.objects.bulk_create(transactions)
 
 
 @admin.register(Contact)
