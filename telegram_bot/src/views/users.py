@@ -98,9 +98,15 @@ class UserPersonalSettingsView(View):
 
 class UserMenuView(View):
 
-    def __init__(self, user: User, is_anonymous_messaging_enabled: bool):
+    def __init__(
+            self,
+            user: User,
+            is_anonymous_messaging_enabled: bool,
+            balance: int,
+    ):
         self.__user = user
         self.__is_anonymous_messaging_enabled = is_anonymous_messaging_enabled
+        self.__balance = balance
 
     def get_text(self) -> str:
         is_premium_emoji = '✅' if self.__user.is_premium else '❌'
@@ -113,6 +119,7 @@ class UserMenuView(View):
         return (
             f'🙎🏿‍♂️ Имя: {name}\n'
             f'✨ Премиум: {is_premium_emoji}\n'
+            f'💰 Баланс: 🐥${self.__balance}\n'
             '🔒 Режим анонимных сообщений:'
             f' {is_anonymous_messaging_enabled_emoji}\n'
         )

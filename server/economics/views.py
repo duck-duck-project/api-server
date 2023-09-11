@@ -7,11 +7,11 @@ from rest_framework.views import APIView
 from economics.exceptions import InsufficientFundsForTransferError
 from economics.models import Transaction
 from economics.selectors import get_latest_user_transactions
-from economics.services import create_transfer
+from economics.services import create_transfer, compute_user_balance
 from users.exceptions import UserDoesNotExistsError
 from users.selectors.users import get_user_by_id
 
-__all__ = ('TransferCreateApi', 'TransactionListApi',)
+__all__ = ('TransferCreateApi', 'TransactionListApi', 'BalanceRetrieveApi')
 
 
 class UserPartialSerializer(serializers.Serializer):
@@ -111,3 +111,18 @@ class TransferCreateApi(APIView):
 
         serializer = self.OutputSerializer(transfer)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+class BalanceRetrieveApi(APIView):
+
+    def get(self, request: Request, user_id: int):
+        try:
+            user = get_user_by_id(user_id)
+        except UserDoesNotExistsError:
+            raise NotFound('User does not exists')
+        balance = compute_user_balance(user)
+        response_data = {
+            'user_id': user.id,
+            'balance': balance,
+        }
+        return Response(response_data)

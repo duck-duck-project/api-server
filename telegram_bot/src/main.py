@@ -25,7 +25,7 @@ from middlewares import (
 from repositories import (
     UserRepository, ContactRepository,
     SecretMediaRepository, SecretMessageRepository, TeamMemberRepository,
-    TeamRepository
+    TeamRepository, TransferRepository
 )
 from repositories.themes import ThemeRepository
 
@@ -41,6 +41,7 @@ def include_routers(dispatcher: Dispatcher) -> None:
         handlers.teams.router,
         handlers.team_members.router,
         handlers.themes.router,
+        handlers.transfers.router,
         handlers.secret_messages.router,
         handlers.secret_medias.router,
         handlers.contacts.router,
@@ -56,8 +57,6 @@ async def main() -> None:
     config = load_config_from_file_path(config_file_path)
 
     setup_logging(config.logging.level)
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
 
     redis = Redis(
         host=config.redis.host,
@@ -90,6 +89,7 @@ async def main() -> None:
             team_member_repository=TeamMemberRepository,
             team_repository=TeamRepository,
             theme_repository=ThemeRepository,
+            transfer_repository=TransferRepository,
             user_repository=UserRepository,
         )
     )
