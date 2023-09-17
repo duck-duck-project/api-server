@@ -1,10 +1,9 @@
-from django.db.models import Sum
-
 from economics.exceptions import InsufficientFundsForTransferError
 from economics.models import Transaction
+from economics.services.balance import compute_user_balance
 from users.models import User
 
-__all__ = ('compute_user_balance', 'create_transfer')
+__all__ = ('create_transfer',)
 
 
 def create_transfer(
@@ -47,19 +46,3 @@ def create_transfer(
     transaction.save()
 
     return transaction
-
-
-def compute_user_balance(user: User) -> int:
-    income = (
-        Transaction
-        .objects
-        .filter(recipient=user)
-        .aggregate(Sum('amount'))
-    )
-    spending = (
-        Transaction
-        .objects
-        .filter(sender=user)
-        .aggregate(Sum('amount'))
-    )
-    return (income['amount__sum'] or 0) - (spending['amount__sum'] or 0)
