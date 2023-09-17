@@ -34,8 +34,16 @@ class SentryConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class CloudinaryConfig:
+    cloud_name: str
+    api_key: str
+    api_secret: str
+
+
+@dataclass(frozen=True, slots=True)
 class Config:
     logging: LoggingConfig
+    cloudinary: CloudinaryConfig
     telegram_bot_token: str
     redis: RedisConfig
     sentry: SentryConfig
@@ -48,6 +56,11 @@ def parse_config(config: Mapping) -> Config:
     return Config(
         logging=LoggingConfig(
             level=config['logging']['level'],
+        ),
+        cloudinary=CloudinaryConfig(
+            cloud_name=config['cloudinary']['cloud_name'],
+            api_key=config['cloudinary']['api_key'],
+            api_secret=config['cloudinary']['api_secret'],
         ),
         telegram_bot_token=config['telegram_bot']['token'],
         redis=RedisConfig(
