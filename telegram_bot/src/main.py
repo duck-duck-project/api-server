@@ -3,6 +3,7 @@ import pathlib
 from functools import partial
 
 import aiohttp
+import cloudinary
 import humanize
 import sentry_sdk
 import structlog
@@ -35,6 +36,7 @@ logger: BoundLogger = structlog.get_logger('app')
 def include_routers(dispatcher: Dispatcher) -> None:
     dispatcher.include_routers(
         handlers.countdown.router,
+        handlers.food_menu.router,
         handlers.premium.router,
         handlers.server.router,
         handlers.users.router,
@@ -57,6 +59,12 @@ async def main() -> None:
     config = load_config_from_file_path(config_file_path)
 
     setup_logging(config.logging.level)
+
+    cloudinary.config(
+        cloud_name=config.cloudinary.cloud_name,
+        api_key=config.cloudinary.api_key,
+        api_secret=config.cloudinary.api_secret,
+    )
 
     redis = Redis(
         host=config.redis.host,

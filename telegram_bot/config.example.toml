@@ -19,3 +19,8 @@ db = 0
 is_enabled = false
 dsn = ""
 traces_sample_rate = 1.0  # 100% of traces to be sent to Sentry
+
+[cloudinary]
+cloud_name = ""
+api_key = ""
+api_secret = ""

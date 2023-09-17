@@ -14,5 +14,6 @@ class InsufficientFundsForTransferErrorStrTests(TestCase):
         )
         self.assertEqual(
             str(error),
-            'User 1 has insufficient funds for transfer of 200 to user 2.',
+            f'User {error.sender_id} has insufficient funds for transfer of'
+            f' {error.transfer_amount} to user {error.recipient_id}.',
         )
