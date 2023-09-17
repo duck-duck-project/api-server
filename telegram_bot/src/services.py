@@ -1,14 +1,18 @@
+import asyncio
 from collections.abc import Coroutine, Callable, Awaitable, Iterable
 from datetime import timedelta, datetime
-from typing import Protocol, TypeAlias, TypeVar, Any
+from typing import Protocol, TypeAlias, TypeVar, Any, NewType
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
+import aiohttp
+import cloudinary.uploader
 from aiogram import Bot
 from aiogram.types import Message, Update, User as FromUser
+from bs4 import BeautifulSoup
 
 from exceptions import InvalidSecretMediaDeeplinkError, UserDoesNotExistError
-from models import User
+from models import User, FoodMenuItem
 from models.contacts import Contact
 from models.secret_media_types import SecretMediaType
 from repositories import UserRepository
@@ -33,7 +37,11 @@ __all__ = (
     'get_time_before_studies_start',
     'calculate_urgency_coefficient',
     'extract_user_from_update',
+    'get_food_menu_html',
+    'parse_food_menu_html',
 )
+
+Url = NewType('Url', str)
 
 
 class HasUserId(Protocol):
@@ -302,6 +310,40 @@ def calculate_urgency_coefficient(days_left: int) -> int:
     return 11 - days_left
 
 
+def parse_food_menu_html(html: str) -> list[FoodMenuItem]:
+    soup = BeautifulSoup(html, 'lxml')
+
+    food_item_tags = soup.find_all('div', attrs={'class': 'features-image'})
+
+    food_items: list[FoodMenuItem] = []
+    for food_item in food_item_tags:
+        image_url = food_item.find('img')['src']
+        name = food_item.find('h5', attrs={'class': 'item-title'}).text.strip()
+        calories = (
+            food_item.find('h6', attrs={'class': 'item-subtitle'})
+            .text
+            .strip()
+            .split()[-1]
+        )
+        food_items.append(
+            FoodMenuItem(
+                image_url=image_url,
+                name=name,
+                calories=calories,
+            )
+        )
+
+    return food_items
+
+
+async def get_food_menu_html() -> str:
+    url = 'https://beslenme.manas.edu.kg'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, ssl=False) as response:
+            html = await response.text()
+    return html
+
+
 def extract_user_from_update(update: Update) -> FromUser:
     """Extract user from update.
 
@@ -324,3 +366,8 @@ def extract_user_from_update(update: Update) -> FromUser:
         return update.chosen_inline_result.from_user
     else:
         raise ValueError('Unknown event type')
+
+
+async def upload_photo_to_cloud(url: str) -> Url:
+    uploaded_media = await asyncio.to_thread(cloudinary.uploader.upload, url)
+    return Url(uploaded_media['url'])

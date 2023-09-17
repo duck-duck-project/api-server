@@ -1,5 +1,6 @@
 from . import (
     contacts,
+    food_menu,
     secret_messages,
     secret_medias,
     teams,
@@ -16,6 +17,7 @@ from . import (
 
 __all__ = (
     'contacts',
+    'food_menu',
     'secret_medias',
     'secret_messages',
     'teams',
