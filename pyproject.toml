@@ -23,3 +23,10 @@ django-silk = "^5.0.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.coverage.run]
+omit = [
+    "duck_duck/*",
+    "manage.py",
+]
