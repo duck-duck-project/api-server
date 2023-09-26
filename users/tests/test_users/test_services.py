@@ -44,6 +44,7 @@ class UserUpdateServicesTests(TestCase):
             can_be_added_to_contacts=False,
             can_receive_notifications=True,
             born_at=None,
+            profile_photo_url=None,
         )
         self.assertTrue(is_updated)
 
@@ -55,6 +56,7 @@ class UserUpdateServicesTests(TestCase):
         self.assertFalse(self.user.can_be_added_to_contacts)
         self.assertFalse(self.user.is_premium)
         self.assertIsNone(self.user.born_at)
+        self.assertIsNone(self.user.profile_photo_url)
 
     def test_update_user_not_found(self) -> None:
         is_updated = update_user(
@@ -65,5 +67,6 @@ class UserUpdateServicesTests(TestCase):
             can_be_added_to_contacts=False,
             can_receive_notifications=True,
             born_at=None,
+            profile_photo_url=None,
         )
         self.assertFalse(is_updated)

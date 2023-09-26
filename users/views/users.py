@@ -45,6 +45,7 @@ class UserRetrieveUpdateApi(APIView):
         secret_message_theme_id = serializers.IntegerField(allow_null=True)
         can_receive_notifications = serializers.BooleanField()
         born_at = serializers.DateField(allow_null=True)
+        profile_photo_url = serializers.URLField(allow_null=True)
 
     def get(self, request: Request, user_id: int):
         try:
@@ -71,6 +72,7 @@ class UserRetrieveUpdateApi(APIView):
             serialized_data['can_receive_notifications']
         )
         born_at: date | None = serialized_data['born_at']
+        profile_photo_url: str | None = serialized_data['profile_photo_url']
 
         is_updated = update_user(
             user_id=user_id,
@@ -80,6 +82,7 @@ class UserRetrieveUpdateApi(APIView):
             secret_message_theme_id=secret_message_theme_id,
             can_receive_notifications=can_receive_notifications,
             born_at=born_at,
+            profile_photo_url=profile_photo_url,
         )
 
         response_status_code = (
