@@ -22,6 +22,7 @@ class UserUpdateApiTests(APITestCase):
             'secret_message_theme_id': None,
             'can_receive_notifications': False,
             'born_at': '2004-10-07',
+            'profile_photo_url': 'https://example.com/pushkin.jpg',
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -46,6 +47,7 @@ class UserUpdateApiTests(APITestCase):
             'secret_message_theme_id': None,
             'can_receive_notifications': False,
             'born_at': '2004-10-07',
+            'profile_photo_url': 'https://example.com/pushkin.jpg'
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

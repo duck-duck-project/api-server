@@ -49,6 +49,7 @@ def update_user(
         can_be_added_to_contacts: bool,
         can_receive_notifications: bool,
         born_at: date | None,
+        profile_photo_url: str | None,
 ) -> bool:
     """Update user.
 
@@ -62,6 +63,7 @@ def update_user(
         can_receive_notifications: Boolean that indicates whether user can
             receive notifications or not.
         born_at: Date of birth of user.
+        profile_photo_url: URL of profile photo of user.
 
     Returns:
         Boolean that indicates whether user has been updated or not.
@@ -73,5 +75,6 @@ def update_user(
         can_be_added_to_contacts=can_be_added_to_contacts,
         can_receive_notifications=can_receive_notifications,
         born_at=born_at,
+        profile_photo_url=profile_photo_url,
     )
     return bool(updated_count)

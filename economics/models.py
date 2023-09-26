@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from uuid import uuid4
 
 from django.core.exceptions import ValidationError
@@ -5,7 +6,7 @@ from django.db import models
 
 from users.models import User
 
-__all__ = ('Transaction',)
+__all__ = ('Transaction', 'UserBalance')
 
 
 class Transaction(models.Model):
@@ -60,3 +61,9 @@ class Transaction(models.Model):
                 raise ValidationError(
                     'System transaction must have either sender or recipient',
                 )
+
+
+@dataclass(frozen=True, slots=True)
+class UserBalance:
+    user_id: int
+    balance: int
