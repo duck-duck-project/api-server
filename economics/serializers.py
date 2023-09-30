@@ -13,10 +13,8 @@ class SystemTransactionInputSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     amount = serializers.IntegerField(
         min_value=1,
-        max_value=5000,
         error_messages={
             'min_value': 'Amount must be greater than 0',
-            'max_value': 'Amount must be less or equal to 5000',
         },
     )
     description = serializers.CharField(max_length=255)

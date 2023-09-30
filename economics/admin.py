@@ -14,3 +14,4 @@ class TransactionAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
     list_filter = ('source',)
     empty_value_display = 'System'
+    autocomplete_fields = ('sender', 'recipient')
