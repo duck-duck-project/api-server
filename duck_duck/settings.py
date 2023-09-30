@@ -13,6 +13,8 @@ DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
