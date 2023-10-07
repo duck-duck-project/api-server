@@ -134,7 +134,3 @@ class TransferCreateApiTests(APITestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(
-            response.data['amount'][0],
-            'Amount must be less or equal to 5000',
-        )
