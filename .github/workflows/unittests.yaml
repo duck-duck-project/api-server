@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
   # Triggered based on the git event type
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
