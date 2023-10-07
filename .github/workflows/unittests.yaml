@@ -72,6 +72,9 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
+      - name: activate venv
+        run: poetry shell
+
       - name: check dependencies
         run: poetry show --tree
       
