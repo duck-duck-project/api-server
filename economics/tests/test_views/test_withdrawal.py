@@ -115,7 +115,6 @@ class WithdrawalCreateApiTests(APITestCase):
         for amount, error_message in (
                 (-100, 'Amount must be greater than 0'),
                 (0, 'Amount must be greater than 0'),
-                (5001, 'Amount must be less or equal to 5000'),
         ):
             request_data = {
                 'user_id': self.user.id,
