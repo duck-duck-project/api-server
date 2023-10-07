@@ -72,7 +72,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       
-      - name: Run Tests
+      - name: Run Tests 
         # Step specific environment variables
         env:
           DEBUG: "0"
@@ -87,4 +87,9 @@ jobs:
           CELERY_BROKER_URL: "redis://localhost:6379"
           
         run: |
-          /home/runner/work/api-server/api-server/.venv/bin/python manage.py test
+          coverage run manage.py test && coverage xml
+          
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
