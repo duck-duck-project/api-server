@@ -76,7 +76,7 @@ jobs:
         # Step specific environment variables
         env:
           DEBUG: "0"
-          DJANGO_SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
+          SECRET_KEY: ${{ env.DJANGO_SECRET_KEY }}
           DATABASE_USER: ${{ env.POSTGRES_USER }}
           DATABASE_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           DATABASE_HOST: ${{ env.POSTGRES_HOST }}
