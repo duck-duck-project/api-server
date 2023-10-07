@@ -71,12 +71,6 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-
-      - name: activate venv
-        run: poetry shell
-
-      - name: check dependencies
-        run: poetry show --tree
       
       - name: Run Tests
         # Step specific environment variables
@@ -93,4 +87,4 @@ jobs:
           CELERY_BROKER_URL: "redis://localhost:6379"
           
         run: |
-          python manage.py test
+          /home/runner/work/api-server/api-server/.venv/bin/python manage.py test
