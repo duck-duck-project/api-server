@@ -1,4 +1,4 @@
-name: Example CI Django + Postgres Tests
+name: Test
 
 # Controls when the workflow will run
 on:
