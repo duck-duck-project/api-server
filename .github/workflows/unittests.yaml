@@ -87,7 +87,7 @@ jobs:
           CELERY_BROKER_URL: "redis://localhost:6379"
           
         run: |
-          coverage run manage.py test && coverage xml
+          /home/runner/work/api-server/api-server/.venv/bin/coverage run manage.py test && /home/runner/work/api-server/api-server/.venv/bin/coverage xml
           
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
