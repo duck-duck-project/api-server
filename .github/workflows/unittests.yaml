@@ -72,6 +72,9 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
 
+      - name: check dependencies
+        run: poetry show --tree
+      
       - name: Run Tests
         # Step specific environment variables
         env:
