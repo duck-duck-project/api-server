@@ -3,13 +3,13 @@ from typing import NewType
 
 import httpx
 
-from economics.models import Transaction
+from economics.models import Transaction, OperationPrice
 
 __all__ = (
     'TelegramHttpClient',
     'closing_telegram_http_client_factory',
     'TelegramBotService',
-    'TransactionNotifier'
+    'TransactionNotifier',
 )
 
 TelegramHttpClient = NewType('TelegramHttpClient', httpx.Client)
@@ -63,5 +63,16 @@ class TransactionNotifier:
 
         self.__telegram_bot_service.send_message(
             chat_id=deposit.recipient.id,
+            text=text,
+        )
+
+    def notify_insufficient_funds(self, chat_id: int) -> None:
+        text = (
+            '❌ Недостаточно средств на балансе.\n'
+            f'Необходимо {OperationPrice.RICHEST_USERS} дак-дак коинов'
+        )
+
+        self.__telegram_bot_service.send_message(
+            chat_id=chat_id,
             text=text,
         )
