@@ -96,8 +96,8 @@ def get_user_balances() -> list[UserBalance]:
             user_fullname = sent_transactions_statistics['sender__fullname']
         elif has_received_transactions_statistics:
             user_balance = received_transactions_statistics['received_amount']
-            user_username = sent_transactions_statistics['received__username']
-            user_fullname = sent_transactions_statistics['received__fullname']
+            user_username = received_transactions_statistics['recipient__username']
+            user_fullname = received_transactions_statistics['recipient__fullname']
         else:
             continue
 
