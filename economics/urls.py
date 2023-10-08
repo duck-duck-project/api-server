@@ -6,6 +6,7 @@ from economics.views import (
     BalanceRetrieveApi,
     SystemDepositCreateApi,
     SystemWithdrawalCreateApi,
+    RichestUsersStatisticsApi,
 )
 
 app_name = 'economics'
@@ -24,6 +25,11 @@ urlpatterns = [
         r'balance/users/<int:user_id>/',
         BalanceRetrieveApi.as_view(),
         name='balance-retrieve',
+    ),
+    path(
+        r'richest-users-statistics/',
+        RichestUsersStatisticsApi.as_view(),
+        name='richest-users-statistics',
     ),
     path(
         r'deposit/',
