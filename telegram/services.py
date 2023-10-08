@@ -10,6 +10,7 @@ __all__ = (
     'closing_telegram_http_client_factory',
     'TelegramBotService',
     'TransactionNotifier',
+    'int_gaps',
 )
 
 TelegramHttpClient = NewType('TelegramHttpClient', httpx.Client)
@@ -76,3 +77,7 @@ class TransactionNotifier:
             chat_id=chat_id,
             text=text,
         )
+
+
+def int_gaps(number: int) -> str:
+    return f'{number:,}'.replace(',', ' ')
