@@ -68,7 +68,10 @@ class Transaction(models.Model):
                 )
 
 
+# TODO rename fields
 @dataclass(frozen=True, slots=True)
 class UserBalance:
     user_id: int
+    user_fullname: str
+    user_username: str | None
     balance: int
