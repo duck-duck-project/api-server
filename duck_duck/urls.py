@@ -7,6 +7,7 @@ urlpatterns = [
     path('', include('users.urls')),
     path('', include('secret_messages.urls')),
     path('economics/', include('economics.urls')),
+    path('', include('food_menu.urls')),
 ]
 
 if settings.DEBUG:
