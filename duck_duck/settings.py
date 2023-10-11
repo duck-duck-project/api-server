@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'users',
     'secret_messages',
     'economics',
+    'food_menu',
 ]
 
 MIDDLEWARE = [
