@@ -67,6 +67,20 @@ class Transaction(models.Model):
                     'System transaction must have either sender or recipient',
                 )
 
+    @property
+    def is_deposit(self) -> bool:
+        return (
+                self.source == Transaction.Source.SYSTEM
+                and self.recipient is not None
+        )
+
+    @property
+    def is_withdrawal(self) -> bool:
+        return (
+                self.source == Transaction.Source.SYSTEM
+                and self.sender is not None
+        )
+
 
 # TODO rename fields
 @dataclass(frozen=True, slots=True)
