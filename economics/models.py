@@ -1,3 +1,4 @@
+import enum
 from dataclasses import dataclass
 from uuid import uuid4
 
@@ -6,7 +7,11 @@ from django.db import models
 
 from users.models import User
 
-__all__ = ('Transaction', 'UserBalance')
+__all__ = ('OperationPrice', 'Transaction', 'UserBalance')
+
+
+class OperationPrice(enum.IntEnum):
+    RICHEST_USERS = 5000
 
 
 class Transaction(models.Model):
@@ -63,7 +68,10 @@ class Transaction(models.Model):
                 )
 
 
+# TODO rename fields
 @dataclass(frozen=True, slots=True)
 class UserBalance:
     user_id: int
+    user_fullname: str
+    user_username: str | None
     balance: int
