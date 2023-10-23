@@ -1,3 +1,7 @@
+from django.db import transaction
+
+from economics.models import OperationPrice
+from economics.services import create_system_withdrawal
 from users.models import User, Contact
 
 __all__ = (
@@ -7,6 +11,7 @@ __all__ = (
 )
 
 
+@transaction.atomic
 def create_contact(
         *,
         of_user: User,
@@ -24,7 +29,17 @@ def create_contact(
 
     Returns:
         Tuple of contact and whether it was created or not.
+
+    Raises:
+        InsufficientFundsForSystemWithdrawalError:
+            if user does not have enough funds for contact creation.
     """
+    create_system_withdrawal(
+        user=of_user,
+        amount=OperationPrice.CREATE_CONTACT,
+        description='Добавление в контакты контакта'
+    )
+
     return Contact.objects.update_or_create(
         of_user=of_user,
         to_user=to_user,
