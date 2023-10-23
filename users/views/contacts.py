@@ -1,9 +1,10 @@
 from rest_framework import serializers, status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, APIException
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from economics.exceptions import InsufficientFundsForSystemWithdrawalError
 from users.exceptions import UserDoesNotExistsError, ContactDoesNotExistError
 from users.selectors.contacts import (
     get_not_deleted_contacts_by_user_id,
@@ -66,12 +67,19 @@ class ContactCreateApi(APIView):
         except UserDoesNotExistsError as error:
             raise NotFound(f'User by ID "{error.user_id}" does not exist')
 
-        contact, _ = create_contact(
-            of_user=of_user,
-            to_user=to_user,
-            private_name=private_name,
-            public_name=public_name,
-        )
+        try:
+            contact, _ = create_contact(
+                of_user=of_user,
+                to_user=to_user,
+                private_name=private_name,
+                public_name=public_name,
+            )
+        except InsufficientFundsForSystemWithdrawalError:
+            error = APIException(
+                detail={'detail': 'Insufficient funds for contact creation'},
+            )
+            error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
 
         serializer = ContactSerializer(contact)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
