@@ -1,5 +1,8 @@
 from django.test import TestCase
 
+from economics.exceptions import InsufficientFundsForSystemWithdrawalError
+from economics.services import compute_user_balance
+from economics.tests.factories import SystemDepositFactory
 from users.services.contacts import update_contact, create_contact
 from users.tests.test_contacts.factories import ContactFactory
 from users.tests.test_users.factories import UserFactory
@@ -13,7 +16,17 @@ class ContactCreateServicesTests(TestCase):
         self.user_1 = UserFactory()
         self.user_2 = UserFactory()
 
+    def test_create_contact_insufficient_funds(self) -> None:
+        with self.assertRaises(InsufficientFundsForSystemWithdrawalError):
+            create_contact(
+                of_user=self.user_1,
+                to_user=self.user_2,
+                private_name='Alex',
+                public_name='Alexender Pushkin',
+            )
+
     def test_create_contact(self) -> None:
+        SystemDepositFactory(amount=1000, recipient=self.user_1)
         contact, is_created = create_contact(
             of_user=self.user_1,
             to_user=self.user_2,
@@ -25,6 +38,8 @@ class ContactCreateServicesTests(TestCase):
         self.assertEqual(contact.private_name, 'Alex')
         self.assertEqual(contact.public_name, 'Alexender Pushkin')
         self.assertTrue(is_created)
+
+        self.assertEqual(compute_user_balance(self.user_1), 900)
 
 
 class ContactUpdateServicesTests(TestCase):

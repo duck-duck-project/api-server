@@ -7,10 +7,16 @@ from economics.views import (
     SystemDepositCreateApi,
     SystemWithdrawalCreateApi,
     RichestUsersStatisticsApi,
+    RichestUsersStatisticsView,
 )
 
 app_name = 'economics'
 urlpatterns = [
+    path(
+        r'richest-users-statistics',
+        RichestUsersStatisticsView.as_view(),
+        name='richest-users-statistics-view',
+    ),
     path(
         r'transactions/users/<int:user_id>/',
         TransactionListApi.as_view(),
