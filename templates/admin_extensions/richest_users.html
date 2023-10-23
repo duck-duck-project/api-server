@@ -1,0 +1,22 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+    <table>
+        <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Balance</th>
+        </tr>
+        </thead>
+        {% for user_balance in user_balances %}
+            <tr>
+                <td>{{ user_balance.user_fullname }}</td>
+                <td>{{ user_balance.balance }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><b>Total balance of the {{ user_balances | length }} richest users</b></td>
+            <td><b>{{ total_balance }}</b></td>
+        </tr>
+    </table>
+{% endblock %}
