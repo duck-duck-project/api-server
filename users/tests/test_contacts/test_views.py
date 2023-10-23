@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from economics.tests.factories import SystemDepositFactory
 from users.models import User, Contact
 from users.tests.test_contacts.factories import ContactFactory
 from users.tests.test_users.factories import UserFactory
@@ -13,7 +14,23 @@ class ContactCreateApiTests(APITestCase):
         self.user_1 = UserFactory()
         self.user_2 = UserFactory()
 
+    def test_create_contact_insufficient_funds(self) -> None:
+        url = reverse('users:contacts-create')
+        data = {
+            'of_user_id': self.user_1.id,
+            'to_user_id': self.user_2.id,
+            'private_name': 'Alex',
+            'public_name': 'Alexander',
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data,
+            {'detail': 'Insufficient funds for contact creation'},
+        )
+
     def test_create_contact(self) -> None:
+        SystemDepositFactory(recipient=self.user_1, amount=1000)
         url = reverse('users:contacts-create')
         data = {
             'of_user_id': self.user_1.id,
@@ -57,6 +74,7 @@ class ContactCreateSoftDeletedContactTests(APITestCase):
         self.contact = ContactFactory()
 
     def test_create_contact_mark_as_not_deleted(self) -> None:
+        SystemDepositFactory(recipient=self.contact.of_user, amount=1000)
         url = reverse('users:contacts-create')
         data = {
             'of_user_id': self.contact.of_user.id,
