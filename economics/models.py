@@ -12,6 +12,7 @@ __all__ = ('OperationPrice', 'Transaction', 'UserBalance')
 
 class OperationPrice(enum.IntEnum):
     RICHEST_USERS = 5000
+    CREATE_CONTACT = 100
 
 
 class Transaction(models.Model):
