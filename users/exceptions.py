@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 __all__ = (
     'ContactDoesNotExistError',
+    'ContactAlreadyExistsError',
     'UserDoesNotExistsError',
     'UserAlreadyExistsError',
     'TeamMemberAlreadyExistsError',
@@ -20,6 +21,10 @@ class UserAlreadyExistsError(Exception):
 
 
 class ContactDoesNotExistError(Exception):
+    pass
+
+
+class ContactAlreadyExistsError(Exception):
     pass
 
 
