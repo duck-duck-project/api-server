@@ -5,7 +5,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from economics.exceptions import InsufficientFundsForSystemWithdrawalError
-from users.exceptions import UserDoesNotExistsError, ContactDoesNotExistError
+from economics.models import OperationPrice
+from users.exceptions import (
+    UserDoesNotExistsError, ContactDoesNotExistError,
+    ContactAlreadyExistsError
+)
 from users.selectors.contacts import (
     get_not_deleted_contacts_by_user_id,
     get_not_deleted_contact_by_id,
@@ -68,7 +72,7 @@ class ContactCreateApi(APIView):
             raise NotFound(f'User by ID "{error.user_id}" does not exist')
 
         try:
-            contact, _ = create_contact(
+            contact = create_contact(
                 of_user=of_user,
                 to_user=to_user,
                 private_name=private_name,
@@ -76,9 +80,16 @@ class ContactCreateApi(APIView):
             )
         except InsufficientFundsForSystemWithdrawalError:
             error = APIException(
-                detail={'detail': 'Insufficient funds for contact creation'},
+                detail={
+                    'detail': 'Insufficient funds for contact creation',
+                    'amount': OperationPrice.CREATE_CONTACT,
+                },
             )
             error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
+        except ContactAlreadyExistsError:
+            error = APIException(detail={'detail': 'Contact already exists'})
+            error.status_code = status.HTTP_409_CONFLICT
             raise error
 
         serializer = ContactSerializer(contact)
