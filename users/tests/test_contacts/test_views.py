@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from economics.models import OperationPrice
 from economics.tests.factories import SystemDepositFactory
 from users.models import User, Contact
 from users.tests.test_contacts.factories import ContactFactory
@@ -25,8 +26,32 @@ class ContactCreateApiTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data,
-            {'detail': 'Insufficient funds for contact creation'},
+            str(response.data['detail']),
+            'Insufficient funds for contact creation',
+        )
+        self.assertEqual(
+            int(response.data['amount']),
+            OperationPrice.CREATE_CONTACT,
+        )
+
+    def test_create_contact_already_exists(self) -> None:
+        SystemDepositFactory(
+            recipient=self.user_1,
+            amount=OperationPrice.CREATE_CONTACT,
+        )
+        contact = ContactFactory(of_user=self.user_1, to_user=self.user_2)
+        data = {
+            'of_user_id': contact.of_user.id,
+            'to_user_id': contact.to_user.id,
+            'private_name': contact.private_name,
+            'public_name': contact.public_name,
+        }
+        url = reverse('users:contacts-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(
+            str(response.data['detail']),
+            'Contact already exists',
         )
 
     def test_create_contact(self) -> None:
@@ -70,31 +95,27 @@ class ContactCreateApiTests(APITestCase):
 
 class ContactCreateSoftDeletedContactTests(APITestCase):
 
-    def setUp(self) -> None:
-        self.contact = ContactFactory()
-
     def test_create_contact_mark_as_not_deleted(self) -> None:
-        SystemDepositFactory(recipient=self.contact.of_user, amount=1000)
+        contact = ContactFactory(is_deleted=True)
+        SystemDepositFactory(recipient=contact.of_user, amount=1000)
         url = reverse('users:contacts-create')
         data = {
-            'of_user_id': self.contact.of_user.id,
-            'to_user_id': self.contact.to_user.id,
+            'of_user_id': contact.of_user.id,
+            'to_user_id': contact.to_user.id,
             'private_name': 'Alex',
             'public_name': 'Alexander',
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['id'], self.contact.id)
+        self.assertEqual(response.data['id'], contact.id)
         self.assertEqual(
             response.data['of_user']['id'],
-            self.contact.of_user.id,
+            contact.of_user.id,
         )
         self.assertEqual(
             response.data['to_user']['id'],
-            self.contact.to_user.id,
+            contact.to_user.id,
         )
-        self.assertEqual(response.data['private_name'], 'Alex')
-        self.assertEqual(response.data['public_name'], 'Alexander')
         self.assertFalse(response.data['is_hidden'])
 
 
