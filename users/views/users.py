@@ -27,7 +27,6 @@ class UserOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     fullname = serializers.CharField()
     username = serializers.CharField(allow_null=True)
-    is_premium = serializers.BooleanField()
     can_be_added_to_contacts = serializers.BooleanField()
     secret_message_theme = SecretMessageThemeSerializer()
     profile_photo_url = serializers.URLField(allow_null=True)

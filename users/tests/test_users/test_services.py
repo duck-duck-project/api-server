@@ -54,7 +54,6 @@ class UserUpdateServicesTests(TestCase):
         self.assertIsNone(self.user.username)
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_be_added_to_contacts)
-        self.assertFalse(self.user.is_premium)
         self.assertIsNone(self.user.born_at)
         self.assertIsNone(self.user.profile_photo_url)
 

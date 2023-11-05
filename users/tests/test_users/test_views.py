@@ -31,7 +31,6 @@ class UserUpdateApiTests(APITestCase):
 
         self.assertEqual(self.user.username, 'pushkin')
         self.assertEqual(self.user.fullname, 'Alexander Pushkin')
-        self.assertFalse(self.user.is_premium)
         self.assertFalse(self.user.can_be_added_to_contacts, False)
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_receive_notifications)
@@ -68,7 +67,6 @@ class UserRetrieveApiTests(APITestCase):
                 'id': self.user.id,
                 'fullname': self.user.fullname,
                 'username': self.user.username,
-                'is_premium': self.user.is_premium,
                 'can_be_added_to_contacts': self.user.can_be_added_to_contacts,
                 'secret_message_theme': self.user.secret_message_theme_id,
                 'profile_photo_url': self.user.profile_photo_url,
@@ -101,7 +99,6 @@ class UserCreateApiTests(APITestCase):
                 'id': 123456789,
                 'username': 'usbtypec',
                 'fullname': 'Eldos',
-                'is_premium': False,
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
                 'profile_photo_url': None,
@@ -126,7 +123,6 @@ class UserCreateApiTests(APITestCase):
                 'id': 123456789,
                 'username': None,
                 'fullname': 'Eldos',
-                'is_premium': False,
                 'can_be_added_to_contacts': True,
                 'secret_message_theme': None,
                 'profile_photo_url': None,

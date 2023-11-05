@@ -10,7 +10,6 @@ class User(models.Model):
     """User model."""
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=64, null=True, blank=True)
-    subscription_started_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     secret_message_theme = models.ForeignKey(
         to=SecretMessageTheme,
@@ -26,13 +25,6 @@ class User(models.Model):
 
     def __str__(self):
         return self.username or self.fullname
-
-    @property
-    def is_premium(self) -> bool:
-        """Determine whether user is premium or not via on subscription date."""
-        if self.subscription_started_at is None:
-            return False
-        return (timezone.now() - self.subscription_started_at).days <= 30
 
 
 class Team(models.Model):
