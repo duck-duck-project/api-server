@@ -42,6 +42,9 @@ class Transaction(models.Model):
                         | models.Q(recipient__isnull=False)
                 ),
                 name='either_sender_or_recipient',
+                violation_error_message=(
+                    'Transaction must have at least either sender or recipient',
+                )
             )
         ]
 
