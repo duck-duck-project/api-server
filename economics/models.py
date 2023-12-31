@@ -2,7 +2,6 @@ import enum
 from dataclasses import dataclass
 from uuid import uuid4
 
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from users.models import User
@@ -16,11 +15,6 @@ class OperationPrice(enum.IntEnum):
 
 
 class Transaction(models.Model):
-
-    class Source(models.IntegerChoices):
-        TRANSFER = 1
-        SYSTEM = 2
-
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     sender = models.ForeignKey(
         to=User,
@@ -38,49 +32,30 @@ class Transaction(models.Model):
     )
     amount = models.PositiveIntegerField()
     description = models.CharField(max_length=255, null=True, blank=True)
-    source = models.PositiveSmallIntegerField(choices=Source.choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def full_clean(
-            self,
-            exclude=None,
-            validate_unique=True,
-            validate_constraints=True,
-    ):
-        super().full_clean(
-            exclude=exclude,
-            validate_unique=validate_unique,
-            validate_constraints=validate_constraints,
-        )
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                        models.Q(sender__isnull=False)
+                        | models.Q(recipient__isnull=False)
+                ),
+                name='either_sender_or_recipient',
+            )
+        ]
 
-        if self.source == Transaction.Source.TRANSFER:
-            if self.sender is None or self.recipient is None:
-                raise ValidationError(
-                    'Transfer transaction must have both sender and recipient',
-                )
-        if self.source == Transaction.Source.SYSTEM:
-            if self.sender is not None and self.recipient is not None:
-                raise ValidationError(
-                    'System transaction can not have both sender and recipient',
-                )
-            if self.sender is None and self.recipient is None:
-                raise ValidationError(
-                    'System transaction must have either sender or recipient',
-                )
+    @property
+    def is_transfer(self) -> bool:
+        return self.sender is not None and self.recipient is not None
 
     @property
     def is_deposit(self) -> bool:
-        return (
-                self.source == Transaction.Source.SYSTEM
-                and self.recipient is not None
-        )
+        return self.recipient is not None and self.sender is None
 
     @property
     def is_withdrawal(self) -> bool:
-        return (
-                self.source == Transaction.Source.SYSTEM
-                and self.sender is not None
-        )
+        return self.sender is not None and self.recipient is None
 
 
 # TODO rename fields
