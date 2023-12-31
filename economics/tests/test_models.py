@@ -5,123 +5,56 @@ from economics.models import Transaction
 from users.tests.test_users.factories import UserFactory
 
 
-class SystemTransactionValidationTests(TestCase):
+class TransactionTypeTests(TestCase):
 
     def setUp(self) -> None:
-        self.alice = UserFactory()
-        self.bob = UserFactory()
+        self.user = UserFactory()
 
-    def test_system_transaction_has_sender(self) -> None:
+    def test_is_deposit(self):
+        transaction = Transaction(recipient=self.user, amount=100)
+        self.assertTrue(transaction.is_deposit)
+        self.assertFalse(transaction.is_transfer)
+        self.assertFalse(transaction.is_withdrawal)
+
+    def test_is_withdrawal(self):
+        transaction = Transaction(sender=self.user, amount=100)
+        self.assertTrue(transaction.is_withdrawal)
+        self.assertFalse(transaction.is_deposit)
+        self.assertFalse(transaction.is_transfer)
+
+    def test_is_transfer(self):
         transaction = Transaction(
-            sender=self.alice,
+            sender=self.user,
+            recipient=self.user,
             amount=100,
-            source=Transaction.Source.SYSTEM,
         )
-        transaction.full_clean()
-        transaction.save()
-
-        self.assertTrue(Transaction.objects.filter(id=transaction.id).exists())
-
-    def test_system_transaction_has_recipient(self) -> None:
-        transaction = Transaction(
-            recipient=self.bob,
-            amount=100,
-            source=Transaction.Source.SYSTEM,
-        )
-        transaction.full_clean()
-        transaction.save()
-
-        self.assertTrue(Transaction.objects.filter(id=transaction.id).exists())
-
-    def test_system_transaction_has_not_sender_nor_recipient(self) -> None:
-        transaction = Transaction(
-            amount=100,
-            source=Transaction.Source.SYSTEM,
-        )
-        with self.assertRaisesMessage(
-                expected_exception=ValidationError,
-                expected_message=(
-                        'System transaction must have'
-                        ' either sender or recipient'
-                ),
-        ):
-            transaction.full_clean()
-
-    def test_system_transaction_has_both_sender_and_recipient(self) -> None:
-        transaction = Transaction(
-            sender=self.alice,
-            recipient=self.bob,
-            amount=100,
-            source=Transaction.Source.SYSTEM,
-        )
-        with self.assertRaisesMessage(
-                expected_exception=ValidationError,
-                expected_message=(
-                        'System transaction can not have both'
-                        ' sender and recipient'
-                ),
-        ):
-            transaction.full_clean()
+        self.assertTrue(transaction.is_transfer)
+        self.assertFalse(transaction.is_deposit)
+        self.assertFalse(transaction.is_withdrawal)
 
 
-class TransferTransactionValidationTests(TestCase):
+class TransactionConstraintsTests(TestCase):
 
     def setUp(self) -> None:
-        self.alice = UserFactory()
-        self.bob = UserFactory()
+        self.user = UserFactory()
 
-    def test_transfer_transaction_has_both_sender_and_recipient(self) -> None:
-        transaction = Transaction(
-            sender=self.alice,
-            recipient=self.bob,
-            amount=100,
-            source=Transaction.Source.TRANSFER,
+    def test_transaction_has_neither_sender_nor_recipient(self):
+        with self.assertRaises(ValidationError) as error:
+            Transaction(sender=None, recipient=None, amount=100).full_clean()
+        self.assertEqual(
+            'Transaction must have at least either sender or recipient',
+            error.exception.messages[0],
         )
-        transaction.full_clean()
-        transaction.save()
 
-        self.assertTrue(Transaction.objects.filter(id=transaction.id).exists())
+    def test_transaction_to_self(self):
+        with self.assertRaises(ValidationError) as error:
+            Transaction(
+                sender=self.user,
+                recipient=self.user,
+                amount=100,
+            ).full_clean()
 
-    def test_transfer_transaction_has_no_sender(self) -> None:
-        transaction = Transaction(
-            recipient=self.bob,
-            amount=100,
-            source=Transaction.Source.TRANSFER,
+        self.assertEqual(
+            'Sender and recipient must not be equal',
+            error.exception.messages[0],
         )
-        with self.assertRaisesMessage(
-                expected_exception=ValidationError,
-                expected_message=(
-                        'Transfer transaction must have'
-                        ' both sender and recipient'
-                ),
-        ):
-            transaction.full_clean()
-
-    def test_transfer_transaction_has_no_recipient(self) -> None:
-        transaction = Transaction(
-            sender=self.alice,
-            amount=100,
-            source=Transaction.Source.TRANSFER,
-        )
-        with self.assertRaisesMessage(
-                expected_exception=ValidationError,
-                expected_message=(
-                        'Transfer transaction must have'
-                        ' both sender and recipient'
-                ),
-        ):
-            transaction.full_clean()
-
-    def test_transaction_transaction_has_not_sender_nor_recipient(self) -> None:
-        transaction = Transaction(
-            amount=100,
-            source=Transaction.Source.TRANSFER,
-        )
-        with self.assertRaisesMessage(
-                expected_exception=ValidationError,
-                expected_message=(
-                        'Transfer transaction must have'
-                        ' both sender and recipient'
-                ),
-        ):
-            transaction.full_clean()

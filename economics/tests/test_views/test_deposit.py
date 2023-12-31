@@ -38,7 +38,6 @@ class DepositCreateApiTests(APITestCase):
                 },
                 'amount': 100,
                 'description': 'test',
-                'source': Transaction.Source.SYSTEM.value,
             }
         )
 
@@ -96,10 +95,7 @@ class DepositCreateApiTests(APITestCase):
                 },
                 'amount': 150,
                 'description': 'deposit',
-                'source': Transaction.Source.SYSTEM.value,
-                'created_at': deposit.created_at.strftime(
-                    '%Y-%m-%dT%H:%M:%S.%fZ',
-                ),
+                'created_at': f'{deposit.created_at:%Y-%m-%dT%H:%M:%S.%fZ}'
             }
         )
 

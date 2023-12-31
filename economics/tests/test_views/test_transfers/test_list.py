@@ -40,7 +40,6 @@ class TransactionListApiTests(APITestCase):
                         },
                         'amount': deposit.amount,
                         'description': deposit.description,
-                        'source': Transaction.Source.SYSTEM.value,
                         'created_at': f'{deposit.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                 ],
@@ -76,7 +75,6 @@ class TransactionListApiTests(APITestCase):
                         'recipient': None,
                         'amount': withdrawal.amount,
                         'description': withdrawal.description,
-                        'source': Transaction.Source.SYSTEM.value,
                         'created_at': f'{withdrawal.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                     {
@@ -89,7 +87,6 @@ class TransactionListApiTests(APITestCase):
                         },
                         'amount': deposit.amount,
                         'description': deposit.description,
-                        'source': Transaction.Source.SYSTEM.value,
                         'created_at': f'{deposit.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                 ],
@@ -138,7 +135,6 @@ class TransactionListApiTests(APITestCase):
                         },
                         'amount': received_transfer.amount,
                         'description': received_transfer.description,
-                        'source': Transaction.Source.TRANSFER.value,
                         'created_at': f'{received_transfer.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                     {
@@ -155,7 +151,6 @@ class TransactionListApiTests(APITestCase):
                         },
                         'amount': sent_transfer.amount,
                         'description': sent_transfer.description,
-                        'source': Transaction.Source.TRANSFER.value,
                         'created_at': f'{sent_transfer.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                     {
@@ -168,7 +163,6 @@ class TransactionListApiTests(APITestCase):
                         },
                         'amount': deposit.amount,
                         'description': deposit.description,
-                        'source': Transaction.Source.SYSTEM.value,
                         'created_at': f'{deposit.created_at:%Y-%m-%dT%H:%M:%S.%fZ}',
                     },
                 ],

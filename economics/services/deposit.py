@@ -24,7 +24,6 @@ def create_system_deposit(
         recipient=user,
         amount=amount,
         description=description,
-        source=Transaction.Source.SYSTEM,
     )
 
     transaction.full_clean()

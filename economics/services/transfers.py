@@ -39,7 +39,6 @@ def create_transfer(
         recipient=recipient,
         amount=amount,
         description=description,
-        source=Transaction.Source.TRANSFER,
     )
 
     transaction.full_clean()

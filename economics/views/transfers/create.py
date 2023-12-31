@@ -33,7 +33,6 @@ class TransferCreateApi(APIView):
         recipient = UserPartialSerializer()
         amount = serializers.IntegerField()
         description = serializers.CharField(max_length=255, allow_null=True)
-        source = serializers.ChoiceField(choices=Transaction.Source.choices)
         created_at = serializers.DateTimeField()
 
     def post(self, request: Request):

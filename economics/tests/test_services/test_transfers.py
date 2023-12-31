@@ -25,7 +25,6 @@ class TransferCreateServicesTests(TestCase):
         self.assertEqual(transfer.sender, self.alice)
         self.assertEqual(transfer.recipient, self.bob)
         self.assertEqual(transfer.amount, 800)
-        self.assertEqual(transfer.source, transfer.Source.TRANSFER)
 
     def test_create_transfer_with_insufficient_balance(self):
         with self.assertRaises(InsufficientFundsForTransferError):

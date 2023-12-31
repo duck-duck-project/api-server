@@ -44,7 +44,6 @@ class WithdrawalCreateApiTests(APITestCase):
                 },
                 'amount': 100,
                 'description': 'test',
-                'source': Transaction.Source.SYSTEM.value,
             },
         )
 
@@ -102,7 +101,6 @@ class WithdrawalCreateApiTests(APITestCase):
                 },
                 'amount': 150,
                 'description': 'withdrawal',
-                'source': Transaction.Source.SYSTEM.value,
                 'created_at': withdrawal.created_at.strftime(
                     '%Y-%m-%dT%H:%M:%S.%fZ',
                 ),

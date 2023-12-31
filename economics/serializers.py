@@ -25,5 +25,4 @@ class SystemTransactionOutputSerializer(serializers.Serializer):
     user = UserPartialSerializer()
     amount = serializers.IntegerField()
     description = serializers.CharField(max_length=255, allow_null=True)
-    source = serializers.ChoiceField(choices=Transaction.Source.choices)
     created_at = serializers.DateTimeField()
