@@ -36,7 +36,6 @@ def create_system_withdrawal(
         sender=user,
         amount=amount,
         description=description,
-        source=Transaction.Source.SYSTEM,
     )
 
     transaction.full_clean()

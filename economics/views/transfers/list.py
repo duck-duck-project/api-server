@@ -22,7 +22,6 @@ class TransactionListApi(APIView):
         recipient = UserPartialSerializer(allow_null=True)
         amount = serializers.IntegerField()
         description = serializers.CharField(max_length=255, allow_null=True)
-        source = serializers.ChoiceField(choices=Transaction.Source.choices)
         created_at = serializers.DateTimeField()
 
     def get(self, request: Request, user_id: int):
