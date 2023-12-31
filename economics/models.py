@@ -35,7 +35,7 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints = [
+        constraints = (
             models.CheckConstraint(
                 check=(
                         models.Q(sender__isnull=False)
@@ -43,10 +43,17 @@ class Transaction(models.Model):
                 ),
                 name='either_sender_or_recipient',
                 violation_error_message=(
-                    'Transaction must have at least either sender or recipient',
-                )
-            )
-        ]
+                    'Transaction must have at least either sender or recipient'
+                ),
+            ),
+            models.CheckConstraint(
+                check=~models.Q(sender=models.F('recipient')),
+                name='sender_not_equal_recipient',
+                violation_error_message=(
+                    'Sender and recipient must not be equal'
+                ),
+            ),
+        )
 
     @property
     def is_transfer(self) -> bool:
