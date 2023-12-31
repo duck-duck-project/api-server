@@ -44,7 +44,6 @@ class TransferCreateApiTests(APITestCase):
                 },
                 'amount': 100,
                 'description': 'Test transfer',
-                'source': Transaction.Source.TRANSFER.value,
                 'created_at': response.data['created_at'],
             },
         )
