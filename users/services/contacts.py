@@ -1,13 +1,10 @@
-from django.conf import settings
-from django.db import transaction, IntegrityError
+from django.db import transaction
+from fast_depends import Depends
 
+from economics.dependencies import get_transaction_notifier
 from economics.models import OperationPrice
 from economics.services import create_system_withdrawal
-from telegram.services import (
-    TransactionNotifier,
-    TelegramBotService,
-    closing_telegram_http_client_factory,
-)
+from telegram.services import TransactionNotifier
 from users.exceptions import ContactAlreadyExistsError
 from users.models import User, Contact
 
@@ -25,6 +22,9 @@ def create_contact(
         to_user: User,
         private_name: str,
         public_name: str,
+        transaction_notifier: TransactionNotifier = (
+                Depends(get_transaction_notifier)
+        ),
 ) -> Contact:
     """Create contact. If soft deleted, mark it as not deleted.
     Withdraw funds from user for contact creation.
@@ -63,13 +63,7 @@ def create_contact(
         amount=OperationPrice.CREATE_CONTACT,
         description='Добавление в контакты контакта'
     )
-
-    with closing_telegram_http_client_factory(
-            token=settings.TELEGRAM_BOT_TOKEN,
-    ) as telegram_http_client:
-        telegram_bot_service = TelegramBotService(telegram_http_client)
-        transaction_notifier = TransactionNotifier(telegram_bot_service)
-        transaction_notifier.notify_withdrawal(withdrawal)
+    transaction_notifier.notify_withdrawal(withdrawal)
 
     return contact
 
