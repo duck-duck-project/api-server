@@ -2,7 +2,8 @@ from django.db import transaction, IntegrityError
 
 from users.exceptions import (
     TeamMemberAlreadyExistsError,
-    TeamDoesNotExistError, TeamMemberDoesNotExistError
+    TeamDoesNotExistError,
+    TeamMemberDoesNotExistError,
 )
 from users.models import Team, TeamMember
 
