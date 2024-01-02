@@ -1,3 +1,4 @@
+from fast_depends import inject
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, APIException
 from rest_framework.request import Request

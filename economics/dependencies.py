@@ -1,4 +1,4 @@
-from fast_depends import Depends
+from fast_depends import Depends, inject
 
 from telegram.dependencies import get_telegram_bot_service
 from telegram.services import TransactionNotifier, TelegramBotService
