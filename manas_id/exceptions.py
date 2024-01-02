@@ -1,0 +1,2 @@
+class ManasIdDoesNotExistError(Exception):
+    pass

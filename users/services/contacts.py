@@ -16,16 +16,12 @@ __all__ = (
 
 
 @transaction.atomic
-@inject
 def create_contact(
         *,
         of_user: User,
         to_user: User,
         private_name: str,
         public_name: str,
-        transaction_notifier: TransactionNotifier = (
-                Depends(get_transaction_notifier)
-        ),
 ) -> Contact:
     """Create contact. If soft deleted, mark it as not deleted.
     Withdraw funds from user for contact creation.
@@ -59,12 +55,11 @@ def create_contact(
         else:
             raise ContactAlreadyExistsError
 
-    withdrawal = create_system_withdrawal(
+    create_system_withdrawal(
         user=of_user,
         amount=OperationPrice.CREATE_CONTACT,
         description='Добавление в контакты контакта'
     )
-    transaction_notifier.notify_withdrawal(withdrawal)
 
     return contact
 
