@@ -1,5 +1,5 @@
 from django.db import transaction
-from fast_depends import Depends
+from fast_depends import Depends, inject
 
 from economics.dependencies import get_transaction_notifier
 from economics.models import OperationPrice
@@ -16,6 +16,7 @@ __all__ = (
 
 
 @transaction.atomic
+@inject
 def create_contact(
         *,
         of_user: User,
