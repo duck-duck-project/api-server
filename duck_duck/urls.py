@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('secret_messages.urls')),
     path('economics/', include('economics.urls')),
     path('', include('food_menu.urls')),
+    path('manas-id/', include('manas_id.urls')),
 ]
 
 if settings.DEBUG:
