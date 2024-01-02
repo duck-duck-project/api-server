@@ -25,3 +25,4 @@ class ManasIdAdmin(admin.ModelAdmin):
         'department',
     )
     list_filter = ('department', 'course', 'gender')
+    autocomplete_fields = ('user', 'department')
