@@ -15,6 +15,7 @@ class DepartmentResource(resources.ModelResource):
 class DepartmentAdmin(ImportExportModelAdmin):
     resource_class = DepartmentResource
     list_display = ('name',)
+    search_fields = ('name',)
 
 
 @admin.register(ManasId)
