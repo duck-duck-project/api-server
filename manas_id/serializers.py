@@ -27,4 +27,5 @@ class ManasIdSerializer(serializers.ModelSerializer):
             'gender',
             'student_id',
             'obis_password',
+            'created_at',
         )

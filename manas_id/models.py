@@ -35,7 +35,6 @@ class ManasId(models.Model):
     born_at = models.DateField()
     course = models.PositiveSmallIntegerField(choices=Course.choices)
     gender = models.PositiveSmallIntegerField(choices=Gender.choices)
-
     student_id = models.CharField(
         max_length=10,
         unique=True,
@@ -44,6 +43,7 @@ class ManasId(models.Model):
         db_index=True,
     )
     obis_password = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
