@@ -44,6 +44,7 @@ class ManasId(models.Model):
     )
     obis_password = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    personality_type = models.CharField(max_length=6, blank=True, null=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
