@@ -23,7 +23,7 @@ class ManasIdSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
     country = serializers.CharField(
-        source='region.country.name',
+        source='region.country.__str__',
         allow_null=True,
     )
 
