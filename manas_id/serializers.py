@@ -14,6 +14,18 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class ManasIdSerializer(serializers.ModelSerializer):
     department = DepartmentSerializer()
+    nationality = serializers.CharField(
+        source='nationality.name',
+        allow_null=True,
+    )
+    region = serializers.CharField(
+        source='region.name',
+        allow_null=True,
+    )
+    country = serializers.CharField(
+        source='region.country.name',
+        allow_null=True,
+    )
 
     class Meta:
         model = ManasId
@@ -31,4 +43,7 @@ class ManasIdSerializer(serializers.ModelSerializer):
             'created_at',
             'personality_type',
             'document_number',
+            'nationality',
+            'region',
+            'country',
         )

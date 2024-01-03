@@ -5,7 +5,39 @@ from users.models import User
 __all__ = (
     'Department',
     'ManasId',
+    'Country',
+    'Nationality',
+    'Region',
 )
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    emoji = models.CharField(max_length=8)
+
+    class Meta:
+        verbose_name_plural = 'countries'
+
+    def __str__(self):
+        return f'{self.emoji} {self.name}'
+
+
+class Region(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    country = models.ForeignKey(to=Country, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.country} | {self.name}'
+
+
+class Nationality(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+
+    class Meta:
+        verbose_name_plural = 'nationalities'
+
+    def __str__(self):
+        return self.name
 
 
 class Department(models.Model):
@@ -83,6 +115,22 @@ class ManasId(models.Model):
         null=True,
         blank=True,
     )
+    nationality = models.ForeignKey(
+        to=Nationality,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    region = models.ForeignKey(
+        to=Region,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Manas ID'
+        verbose_name_plural = 'Manas IDs'
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
