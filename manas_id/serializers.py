@@ -22,6 +22,7 @@ class ManasIdSerializer(serializers.ModelSerializer):
             'department',
             'first_name',
             'last_name',
+            'patronymic',
             'born_at',
             'course',
             'gender',
@@ -29,4 +30,5 @@ class ManasIdSerializer(serializers.ModelSerializer):
             'obis_password',
             'created_at',
             'personality_type',
+            'document_number',
         )

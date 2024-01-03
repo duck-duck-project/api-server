@@ -14,8 +14,9 @@ class DepartmentResource(resources.ModelResource):
 @admin.register(Department)
 class DepartmentAdmin(ImportExportModelAdmin):
     resource_class = DepartmentResource
-    list_display = ('name',)
+    list_display = ('__str__', 'code')
     search_fields = ('name',)
+    ordering = ('name',)
 
 
 @admin.register(ManasId)
@@ -24,6 +25,11 @@ class ManasIdAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'department',
+        'created_at',
     )
     list_filter = ('department', 'course', 'gender')
     autocomplete_fields = ('user', 'department')
+    ordering = ('-created_at',)
+    list_select_related = ('department',)
+    search_fields = ('first_name', 'last_name', 'student_id', 'user_id')
+    search_help_text = 'Search by name, student ID, user ID'
