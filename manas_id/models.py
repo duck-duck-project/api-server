@@ -1,5 +1,6 @@
 from django.db import models
 
+from manas_id.services import get_full_name_abbreviation
 from users.models import User
 
 __all__ = (
@@ -152,9 +153,7 @@ class ManasId(models.Model):
 
     @property
     def document_number(self) -> str:
-        abbreviated_full_name = (
-            ''.join(name[0] for name in self.full_name.upper().split(' '))
-        )
+        abbreviated_full_name = get_full_name_abbreviation(self.full_name)
         born_at = f'{self.born_at:%d%m%y}'
         department_code = self.department.code or 'XXX'
         return (
