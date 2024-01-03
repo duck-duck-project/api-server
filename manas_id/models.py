@@ -10,7 +10,7 @@ __all__ = (
 
 class Department(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    code = models.CharField(max_length=3, unique=True)
+    code = models.CharField(max_length=3)
 
     def __str__(self):
         return self.name
