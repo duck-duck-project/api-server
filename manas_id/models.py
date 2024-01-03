@@ -11,8 +11,11 @@ __all__ = (
 class Department(models.Model):
     name = models.CharField(max_length=64, unique=True)
     code = models.CharField(max_length=3)
+    emoji = models.CharField(max_length=8, blank=True, null=True)
 
     def __str__(self):
+        if self.emoji is not None:
+            return f'{self.emoji} {self.name}'
         return self.name
 
 
