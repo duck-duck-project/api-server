@@ -58,6 +58,7 @@ class ManasId(models.Model):
     department = models.ForeignKey(to=Department, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
+    patronymic = models.CharField(max_length=64, blank=True, null=True)
     born_at = models.DateField()
     course = models.PositiveSmallIntegerField(choices=Course.choices)
     gender = models.PositiveSmallIntegerField(choices=Gender.choices)
@@ -93,3 +94,24 @@ class ManasId(models.Model):
         if not is_prefix_exists and not is_suffix_exists:
             return None
         return f'{self.personality_type_prefix}-{self.personality_type_suffix}'
+
+    @property
+    def full_name(self) -> str:
+        full_name = f'{self.first_name} {self.last_name}'
+        if self.patronymic is not None:
+            full_name = f'{full_name} {self.patronymic}'
+        return full_name
+
+    @property
+    def document_number(self) -> str:
+        abbreviated_full_name = (
+            ''.join(name[0] for name in self.full_name.upper().split(' '))
+        )
+        born_at = f'{self.born_at:%d%m%y}'
+        department_code = self.department.code or 'XXX'
+        return (
+            f'{self.gender}'
+            f'{abbreviated_full_name}'
+            f'{born_at}'
+            f'{department_code}'
+        )
