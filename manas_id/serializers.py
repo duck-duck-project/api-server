@@ -46,4 +46,5 @@ class ManasIdSerializer(serializers.ModelSerializer):
             'nationality',
             'region',
             'country',
+            'extra_preferences',
         )
