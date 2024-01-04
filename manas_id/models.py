@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from manas_id.services import get_full_name_abbreviation
@@ -10,6 +11,17 @@ __all__ = (
     'Nationality',
     'Region',
 )
+
+
+def validate_extra_preferences(list_of_dicts: list[dict]):
+    required_fields = ('name', 'value')
+    for value in list_of_dicts:
+        for required_field in required_fields:
+            if required_field not in value:
+                raise ValidationError(
+                    message=f'Invalid dict structure',
+                    params={'value': value},
+                )
 
 
 class Country(models.Model):
@@ -127,6 +139,10 @@ class ManasId(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+    )
+    extra_preferences = models.JSONField(
+        default=list,
+        validators=(validate_extra_preferences,),
     )
 
     class Meta:
