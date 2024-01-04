@@ -142,6 +142,7 @@ class ManasId(models.Model):
     )
     extra_preferences = models.JSONField(
         default=list,
+        blank=True,
         validators=(validate_extra_preferences,),
     )
 
