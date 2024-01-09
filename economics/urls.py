@@ -2,7 +2,7 @@ from django.urls import path
 
 from economics.views import (
     TransactionListApi,
-    TransferCreateApi,
+    TransferCreateDeleteApi,
     BalanceRetrieveApi,
     SystemDepositCreateApi,
     SystemWithdrawalCreateApi,
@@ -24,8 +24,8 @@ urlpatterns = [
     ),
     path(
         r'transfers/',
-        TransferCreateApi.as_view(),
-        name='transfers-create',
+        TransferCreateDeleteApi.as_view(),
+        name='transfers-create-delete',
     ),
     path(
         r'balance/users/<int:user_id>/',

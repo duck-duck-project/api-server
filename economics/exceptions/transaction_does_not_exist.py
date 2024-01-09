@@ -1,0 +1,2 @@
+class TransactionDoesNotExistError(Exception):
+    pass
