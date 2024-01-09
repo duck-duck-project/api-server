@@ -1,9 +1,13 @@
-from economics.exceptions import InsufficientFundsForTransferError
+from economics.exceptions import (
+    InsufficientFundsForTransferError,
+    TransferSenderDoesNotMatchError,
+    TransactionIsNotTransferError,
+)
 from economics.models import Transaction
 from economics.services.balance import compute_user_balance
 from users.models import User
 
-__all__ = ('create_transfer',)
+__all__ = ('create_transfer', 'delete_user_transaction')
 
 
 def create_transfer(
@@ -45,3 +49,31 @@ def create_transfer(
     transaction.save()
 
     return transaction
+
+
+def delete_user_transaction(
+        *,
+        transaction: Transaction,
+        user_id: int,
+) -> None:
+    """Delete a user's transaction.
+
+    Keyword Args:
+        transaction: Transaction to delete.
+        user_id: ID of the user who owns the transaction.
+
+    Raises:
+        TransactionIsNotTransferError: If the transaction is not a transfer.
+        TransferSenderDoesNotMatchError: If the transaction's sender does not
+                                         match the user.
+    """
+    if not transaction.is_transfer:
+        raise TransactionIsNotTransferError(
+            transaction_id=transaction.id,
+        )
+    if transaction.sender_id != user_id:
+        raise TransferSenderDoesNotMatchError(
+            transaction_id=transaction.id,
+            sender_id=transaction.sender_id,
+        )
+    transaction.delete()
