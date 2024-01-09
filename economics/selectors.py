@@ -1,8 +1,11 @@
+from uuid import UUID
+
 from django.db.models import QuerySet, Q
 
+from economics.exceptions import TransactionDoesNotExistError
 from economics.models import Transaction
 
-__all__ = ('get_latest_user_transactions',)
+__all__ = ('get_latest_user_transactions', 'get_transaction_by_id')
 
 
 def filter_user_transactions(
@@ -39,3 +42,22 @@ def get_latest_user_transactions(
         'description',
         'created_at',
     )
+
+
+def get_transaction_by_id(transaction_id: UUID) -> Transaction:
+    """
+    Get transaction by id.
+
+    Args:
+        transaction_id: Transaction id.
+
+    Raises:
+        TransactionDoesNotExistError: If transaction with given id
+                                      does not exist.
+    """
+    try:
+        return Transaction.objects.get(id=transaction_id)
+    except Transaction.DoesNotExist:
+        raise TransactionDoesNotExistError(
+            f'Transaction with id {transaction_id} does not exist',
+        )
