@@ -1,22 +1,33 @@
+from uuid import UUID
+
 from rest_framework import serializers, status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from economics.exceptions import InsufficientFundsForTransferError
-from economics.models import Transaction
-from economics.services import create_transfer
+from economics.exceptions import (
+    InsufficientFundsForTransferError,
+    TransactionDoesNotExistError,
+    TransactionIsNotTransferError,
+    TransferSenderDoesNotMatchError,
+)
+from economics.selectors import get_transaction_by_id
+from economics.services import create_transfer, delete_user_transaction
 from users.exceptions import UserDoesNotExistsError
 from users.selectors.users import get_user_by_id
 from users.serializers import UserPartialSerializer
 
-__all__ = ('TransferCreateApi',)
+__all__ = ('TransferCreateDeleteApi',)
 
 
-class TransferCreateApi(APIView):
+class TransferCreateDeleteApi(APIView):
 
-    class InputSerializer(serializers.Serializer):
+    class InputDeleteSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField()
+        transaction_id = serializers.UUIDField()
+
+    class InputCreateSerializer(serializers.Serializer):
         sender_id = serializers.IntegerField()
         recipient_id = serializers.IntegerField()
         amount = serializers.IntegerField(
@@ -27,7 +38,7 @@ class TransferCreateApi(APIView):
         )
         description = serializers.CharField(max_length=255, allow_null=True)
 
-    class OutputSerializer(serializers.Serializer):
+    class OutputCreateSerializer(serializers.Serializer):
         id = serializers.UUIDField()
         sender = UserPartialSerializer()
         recipient = UserPartialSerializer()
@@ -36,7 +47,7 @@ class TransferCreateApi(APIView):
         created_at = serializers.DateTimeField()
 
     def post(self, request: Request):
-        serializer = self.InputSerializer(data=request.data)
+        serializer = self.InputCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.validated_data
 
@@ -61,5 +72,35 @@ class TransferCreateApi(APIView):
         except InsufficientFundsForTransferError:
             raise ValidationError('Insufficient funds for transfer')
 
-        serializer = self.OutputSerializer(transfer)
+        serializer = self.OutputCreateSerializer(transfer)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request: Request):
+        """
+        Delete transfer by id.
+        Only transfer sender can delete transaction.
+        """
+        serializer = self.InputDeleteSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        serialized_data = serializer.data
+        user_id: int = serialized_data['user_id']
+        transaction_id: UUID = serialized_data['transaction_id']
+
+        try:
+            transaction = get_transaction_by_id(transaction_id)
+        except TransactionDoesNotExistError:
+            raise NotFound(detail='Transaction does not exist')
+
+        try:
+            delete_user_transaction(
+                transaction=transaction,
+                user_id=user_id,
+            )
+        except (
+                TransferSenderDoesNotMatchError,
+                TransactionIsNotTransferError,
+        ) as error:
+            raise ValidationError(detail=str(error))
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
