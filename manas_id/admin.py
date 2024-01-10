@@ -78,10 +78,17 @@ class ManasIdAdmin(admin.ModelAdmin):
         'department',
         'created_at',
     )
-    list_filter = ('department', 'course', 'gender')
+    list_filter = (
+        'department',
+        'course',
+        'gender',
+        'region',
+        'nationality',
+        'region__country',
+    )
     autocomplete_fields = ('user', 'department', 'region', 'nationality')
     ordering = ('-created_at',)
-    list_select_related = ('department',)
+    list_select_related = ('department', 'region', 'region__country')
     search_fields = ('first_name', 'last_name', 'student_id', 'user_id')
     search_help_text = 'Search by name, student ID, user ID'
 

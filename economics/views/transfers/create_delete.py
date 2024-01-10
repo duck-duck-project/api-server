@@ -10,7 +10,8 @@ from economics.exceptions import (
     InsufficientFundsForTransferError,
     TransactionDoesNotExistError,
     TransactionIsNotTransferError,
-    TransferSenderDoesNotMatchError,
+    TransferSenderDoesNotMatchError, TransferRollbackTimeExpiredError,
+    InsufficientFundsForTransferRollbackError,
 )
 from economics.selectors import get_transaction_by_id
 from economics.services import create_transfer, rollback_transfer
@@ -100,6 +101,8 @@ class TransferCreateDeleteApi(APIView):
         except (
                 TransferSenderDoesNotMatchError,
                 TransactionIsNotTransferError,
+                TransferRollbackTimeExpiredError,
+                InsufficientFundsForTransferRollbackError,
         ) as error:
             raise ValidationError(detail=str(error))
 
