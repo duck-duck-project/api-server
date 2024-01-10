@@ -13,7 +13,7 @@ from economics.exceptions import (
     TransferSenderDoesNotMatchError,
 )
 from economics.selectors import get_transaction_by_id
-from economics.services import create_transfer, delete_user_transaction
+from economics.services import create_transfer, rollback_transfer
 from users.exceptions import UserDoesNotExistsError
 from users.selectors.users import get_user_by_id
 from users.serializers import UserPartialSerializer
@@ -93,7 +93,7 @@ class TransferCreateDeleteApi(APIView):
             raise NotFound(detail='Transaction does not exist')
 
         try:
-            delete_user_transaction(
+            rollback_transfer(
                 transaction=transaction,
                 user_id=user_id,
             )
