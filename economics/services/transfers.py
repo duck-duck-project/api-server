@@ -106,6 +106,9 @@ def rollback_transfer(*, transaction: Transaction, user_id: int) -> None:
                                          match the user.
         TransferRollbackTimeExpiredError: If the transaction rollback time
                                           expired.
+        InsufficientFundsForTransferRollbackError: If the user has insufficient
+                                                  funds to rollback the
+                                                  transfer.
     """
     validate_transaction_is_transfer(transaction)
     validate_transfer_sender_matches_user(
