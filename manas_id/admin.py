@@ -1,8 +1,14 @@
 from django.contrib import admin
+from django.forms import ModelForm
+from django.http import HttpRequest
+from fast_depends import Depends, inject
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
+from economics.dependencies import get_transaction_notifier
+from economics.services import create_system_deposit
 from manas_id.models import ManasId, Department, Country, Region, Nationality
+from telegram.services import TransactionNotifier
 
 
 class NationalityResource(resources.ModelResource):
@@ -78,3 +84,25 @@ class ManasIdAdmin(admin.ModelAdmin):
     list_select_related = ('department',)
     search_fields = ('first_name', 'last_name', 'student_id', 'user_id')
     search_help_text = 'Search by name, student ID, user ID'
+
+    @inject
+    def save_model(
+            self,
+            request: HttpRequest,
+            obj: ManasId,
+            form: ModelForm,
+            change: bool,
+            transaction_notifier: TransactionNotifier = Depends(
+                get_transaction_notifier,
+            ),
+    ):
+        super().save_model(request, obj, form, change)
+
+        is_created = not change
+        if is_created:
+            deposit = create_system_deposit(
+                user=obj.user,
+                amount=50000,
+                description='Регистрация Manas ID',
+            )
+            transaction_notifier.notify_deposit(deposit)

@@ -56,7 +56,11 @@ def get_transaction_by_id(transaction_id: UUID) -> Transaction:
                                       does not exist.
     """
     try:
-        return Transaction.objects.get(id=transaction_id)
+        return (
+            Transaction.objects
+            .select_related('sender')
+            .get(id=transaction_id)
+        )
     except Transaction.DoesNotExist:
         raise TransactionDoesNotExistError(
             f'Transaction with id {transaction_id} does not exist',
