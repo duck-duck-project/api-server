@@ -37,7 +37,7 @@ class ManasIdListApi(APIView):
         limit: int = serialized_data['limit']
         offset: int = serialized_data['offset']
 
-        manas_ids = ManasId.objects.order_by('-born_at')
+        manas_ids = ManasId.objects.order_by('born_at')
         manas_ids = manas_ids[offset:offset + limit + 1]
 
         is_end_of_list_reached = len(manas_ids) <= limit
