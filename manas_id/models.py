@@ -94,6 +94,7 @@ class ManasId(models.Model):
         BACHELOR_SECOND = 3
         BACHELOR_THIRD = 4
         BACHELOR_FOURTH = 5
+        APPLICANT = 6
 
     class Gender(models.IntegerChoices):
         FEMALE = 1
