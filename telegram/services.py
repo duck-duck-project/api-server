@@ -1,9 +1,10 @@
 import contextlib
+import json
 from typing import NewType
 
 import httpx
 
-from economics.models import Transaction, OperationPrice
+from economics.models import OperationPrice, Transaction
 
 __all__ = (
     'TelegramHttpClient',
@@ -30,14 +31,21 @@ class TelegramBotService:
     def __init__(self, telegram_http_client: TelegramHttpClient):
         self.__telegram_http_client = telegram_http_client
 
-    def send_message(self, chat_id: int | str, text: str) -> None:
+    def send_message(self, chat_id: int, text: str) -> bool:
         request_data = {
             'chat_id': chat_id,
             'text': text,
         }
         url = '/sendMessage'
-        response = self.__telegram_http_client.post(url, json=request_data)
-        return response.json()
+        try:
+            response = self.__telegram_http_client.post(url, json=request_data)
+        except httpx.HTTPError:
+            return False
+        try:
+            response_data = response.json()
+        except json.JSONDecodeError:
+            return False
+        return response_data.get('ok', False)
 
 
 class TransactionNotifier:
@@ -56,13 +64,13 @@ class TransactionNotifier:
             text=text,
         )
 
-    def notify_deposit(self, deposit: Transaction) -> None:
+    def notify_deposit(self, deposit: Transaction) -> bool:
         text = f'✅ Пополнение на сумму {deposit.amount} дак-дак коинов\n'
 
         if deposit.description is not None:
             text += f'ℹ {deposit.description}'
 
-        self.__telegram_bot_service.send_message(
+        return self.__telegram_bot_service.send_message(
             chat_id=deposit.recipient.id,
             text=text,
         )

@@ -1,31 +1,21 @@
-import random
+import contextlib
 
 from celery import shared_task
 from django.utils import timezone
 from fast_depends import inject, Depends
 
-from economics.dependencies import get_transaction_notifier
-from economics.services import create_system_deposit
+from economics.services.allowance import create_stipend
 from manas_id.selectors import iter_manas_ids
-from telegram.dependencies import get_telegram_bot_service
-from telegram.services import TransactionNotifier, TelegramBotService
 
 
 @shared_task
 @inject
 def give_away_stipends(
-        transaction_notifier: TransactionNotifier = Depends(
-            get_transaction_notifier,
-        )
 ) -> None:
     for manas_ids in iter_manas_ids():
         for manas_id in manas_ids:
-            deposit = create_system_deposit(
-                user=manas_id.user,
-                amount=random.randint(1000, 5000),
-                description='Стипендия'
-            )
-            transaction_notifier.notify_deposit(deposit)
+            with contextlib.suppress(Exception):
+                create_stipend(user=manas_id.user)
 
 
 @shared_task
