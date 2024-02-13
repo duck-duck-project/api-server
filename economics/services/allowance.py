@@ -1,7 +1,7 @@
 import random
 
 from django.db import transaction
-from fast_depends import Depends
+from fast_depends import Depends, inject
 
 from economics.dependencies import get_transaction_notifier
 from economics.models import Transaction
@@ -25,6 +25,7 @@ def create_allowance(*, user: User, balance: int) -> Transaction:
 
 
 @transaction.atomic
+@inject
 def create_stipend(
         user: User,
         transaction_notifier: TransactionNotifier = Depends(
