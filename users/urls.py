@@ -1,15 +1,9 @@
 from django.urls import path
 
 from users.views import (
-    UserRetrieveUpdateApi,
-    UserCreateApi,
-    UserContactListApi,
-    ContactRetrieveUpdateDeleteApi,
-    ContactCreateApi,
-    TeamListCreateApi,
-    TeamRetrieveDeleteApi,
-    TeamMemberListCreateApi,
-    TeamMemberRetrieveDeleteApi,
+    ContactCreateApi, ContactRetrieveUpdateDeleteApi, TeamListCreateApi,
+    TeamMemberListCreateApi, TeamMemberRetrieveDeleteApi, TeamRetrieveDeleteApi,
+    UserContactListApi, UserCreateUpdateApi, UserRetrieveApi,
 )
 
 app_name = 'users'
@@ -36,13 +30,13 @@ urlpatterns = [
     ),
     path(
         r'users/<int:user_id>/',
-        UserRetrieveUpdateApi.as_view(),
-        name='retrieve-update',
+        UserRetrieveApi.as_view(),
+        name='retrieve',
     ),
     path(
         r'users/',
-        UserCreateApi.as_view(),
-        name='create',
+        UserCreateUpdateApi.as_view(),
+        name='create-update',
     ),
     path(
         r'contacts/',
