@@ -48,15 +48,9 @@ class UserCreateUpdateApi(APIView):
         fullname = serializers.CharField()
         username = serializers.CharField(allow_null=True)
         can_be_added_to_contacts = serializers.BooleanField(required=False)
-        secret_message_theme_id = serializers.IntegerField(
-            allow_null=True,
-            required=False,
-        )
+        secret_message_theme_id = serializers.IntegerField(required=False)
         can_receive_notifications = serializers.BooleanField(required=False)
-        profile_photo_url = serializers.URLField(
-            allow_null=True,
-            required=False,
-        )
+        profile_photo_url = serializers.URLField(required=False)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
