@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 from secret_messages.models.secret_message_themes import SecretMessageTheme
 
@@ -7,7 +6,6 @@ __all__ = ('User', 'Contact', 'Team', 'TeamMember')
 
 
 class User(models.Model):
-    """User model."""
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,7 +19,6 @@ class User(models.Model):
     profile_photo_url = models.URLField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
     can_receive_notifications = models.BooleanField(default=True)
-    born_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname
