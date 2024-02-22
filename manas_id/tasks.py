@@ -48,3 +48,6 @@ def congratulate_users_with_birthday(
                     chat_id='@studmanas',
                     text=text,
                 )
+                def create_system_deposit(
+        *,
+                
