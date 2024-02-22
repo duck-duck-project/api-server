@@ -14,9 +14,8 @@ from telegram.services import TelegramBotService
 def give_away_stipends(
 ) -> None:
     for manas_ids in iter_manas_ids():
-        for manas_id in manas_ids:
-            with contextlib.suppress(Exception):
-                create_stipend(user=manas_id.user)
+        
+        
 
 
 @shared_task
@@ -48,3 +47,12 @@ def congratulate_users_with_birthday(
                     chat_id='@studmanas',
                     text=text,
                 )
+@shared_task
+def give_awaya_presents(
+) -> None:
+    now = timezone.now() 
+
+for manas_ids in  iter_manas_ids():
+    for manas_id in manas_ids:
+            with contextlib.suppress(Exception):
+                create_presents(user=manas_id.user)
