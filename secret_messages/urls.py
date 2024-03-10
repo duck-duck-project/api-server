@@ -1,7 +1,7 @@
 from django.urls import path
 
 from secret_messages.views import (
-    SecretMessageRetrieveApi,
+    SecretMessageRetrieveUpdateDeleteApi,
     SecretMessageCreateApi,
     SecretMediaRetrieveApi,
     SecretMediaCreateApi,
@@ -17,8 +17,8 @@ urlpatterns = [
     ),
     path(
         'secret-messages/<uuid:secret_message_id>/',
-        SecretMessageRetrieveApi.as_view(),
-        name='secret-messages-retrieve',
+        SecretMessageRetrieveUpdateDeleteApi.as_view(),
+        name='secret-messages-retrieve-update-delete',
     ),
     path(
         r'secret-medias/<uuid:secret_media_id>/',

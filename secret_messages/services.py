@@ -17,12 +17,16 @@ def create_secret_message(
         *,
         secret_message_id: UUID,
         text: str,
+        sender_id: int,
+        recipient_id: int,
 ) -> SecretMessage:
     """Create secret message.
 
     Args:
         secret_message_id: ID of the secret message.
         text: Text of the secret message.
+        sender_id: Telegram ID of the sender user.
+        recipient_id: Telegram ID of the recipient user.
 
     Returns:
         Created SecretMessage object.
@@ -30,6 +34,8 @@ def create_secret_message(
     return SecretMessage.objects.create(
         id=secret_message_id,
         text=text,
+        sender_id=sender_id,
+        recipient_id=recipient_id,
     )
 
 
