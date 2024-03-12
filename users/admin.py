@@ -6,24 +6,36 @@ from import_export.admin import ImportExportModelAdmin
 
 from economics.models import Transaction
 from economics.services import compute_user_balance
-from users.models import User, Contact, Team, TeamMember
+from users.models import Contact, Team, TeamMember, Theme, User
 
 __all__ = (
     'UserAdmin',
     'ContactAdmin',
+    'Theme',
 )
 
 
-class UserResource(resources.ModelResource):
+class ThemeResource(resources.ModelResource):
+    class Meta:
+        model = Theme
 
+
+class UserResource(resources.ModelResource):
     class Meta:
         model = User
 
 
 class ContactResource(resources.ModelResource):
-
     class Meta:
         model = Contact
+
+
+@admin.register(Theme)
+class ThemeAdmin(ImportExportModelAdmin):
+    resource_class = ThemeResource
+    ordering = ('-created_at',)
+    list_display = ('__str__',)
+    list_filter = ('is_hidden',)
 
 
 @admin.register(User)
