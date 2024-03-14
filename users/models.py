@@ -88,16 +88,16 @@ class User(models.Model):
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    secret_message_theme = models.ForeignKey(
-        to=SecretMessageTheme,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
     can_be_added_to_contacts = models.BooleanField(default=True)
     profile_photo_url = models.URLField(null=True, blank=True)
     is_banned = models.BooleanField(default=False)
     can_receive_notifications = models.BooleanField(default=True)
+    theme = models.ForeignKey(
+        to=Theme,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.username or self.fullname

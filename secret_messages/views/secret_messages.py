@@ -10,14 +10,14 @@ from rest_framework.views import APIView
 from secret_messages.exceptions import SecretMessageDoesNotExistError
 from secret_messages.selectors import get_secret_message_by_id
 from secret_messages.services import create_secret_message
-from users.views.users import UserOutputSerializer
+from users.serializers import UserSerializer
 
 
 class SecretMessageSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     text = serializers.CharField()
-    sender = UserOutputSerializer()
-    recipient = UserOutputSerializer()
+    sender = UserSerializer()
+    recipient = UserSerializer()
     is_seen = serializers.BooleanField()
     is_deleted = serializers.BooleanField()
     created_at = serializers.DateTimeField()
