@@ -1,6 +1,5 @@
-from fast_depends import inject
 from rest_framework import serializers, status
-from rest_framework.exceptions import NotFound, APIException
+from rest_framework.exceptions import APIException, NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,19 +7,16 @@ from rest_framework.views import APIView
 from economics.exceptions import InsufficientFundsForSystemWithdrawalError
 from economics.models import OperationPrice
 from users.exceptions import (
-    UserDoesNotExistsError, ContactDoesNotExistError,
-    ContactAlreadyExistsError
+    ContactAlreadyExistsError, ContactDoesNotExistError, UserDoesNotExistsError,
 )
 from users.selectors.contacts import (
-    get_not_deleted_contacts_by_user_id,
-    get_not_deleted_contact_by_id,
+    get_not_deleted_contact_by_id, get_not_deleted_contacts_by_user_id,
 )
 from users.selectors.users import get_user_by_id
+from users.serializers import UserSerializer
 from users.services.contacts import (
-    update_contact, create_contact,
-    delete_contact_by_id
+    create_contact, delete_contact_by_id, update_contact,
 )
-from users.views.users import UserOutputSerializer
 
 __all__ = (
     'UserContactListApi',
@@ -30,10 +26,9 @@ __all__ = (
 
 
 class ContactSerializer(serializers.Serializer):
-
     id = serializers.IntegerField()
-    of_user = UserOutputSerializer()
-    to_user = UserOutputSerializer()
+    of_user = UserSerializer()
+    to_user = UserSerializer()
     private_name = serializers.CharField()
     public_name = serializers.CharField()
     created_at = serializers.DateTimeField()
@@ -49,7 +44,6 @@ class UserContactListApi(APIView):
 
 
 class ContactCreateApi(APIView):
-
     class InputSerializer(serializers.Serializer):
         of_user_id = serializers.IntegerField()
         to_user_id = serializers.IntegerField()
@@ -98,7 +92,6 @@ class ContactCreateApi(APIView):
 
 
 class ContactRetrieveUpdateDeleteApi(APIView):
-
     class InputSerializer(serializers.Serializer):
         private_name = serializers.CharField(max_length=64)
         public_name = serializers.CharField(max_length=64)

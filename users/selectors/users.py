@@ -22,7 +22,7 @@ def get_user_by_id(user_id: int) -> User:
         return (
             User
             .objects
-            .select_related('secret_message_theme')
+            .select_related('theme')
             .get(id=user_id)
         )
     except User.DoesNotExist:

@@ -27,8 +27,8 @@ def get_not_deleted_contact_by_id(contact_id: int) -> Contact:
             .select_related(
                 'of_user',
                 'to_user',
-                'of_user__secret_message_theme',
-                'to_user__secret_message_theme',
+                'of_user__theme_id',
+                'to_user__theme_id',
             )
             .get(id=contact_id, is_deleted=False)
         )
@@ -50,8 +50,8 @@ def get_not_deleted_contacts_by_user_id(user_id: int) -> QuerySet[Contact]:
         .select_related(
             'of_user',
             'to_user',
-            'of_user__secret_message_theme',
-            'to_user__secret_message_theme',
+            'of_user__theme',
+            'to_user__theme',
         )
         .filter(of_user_id=user_id, is_deleted=False)
     )
