@@ -2,9 +2,7 @@ from uuid import uuid4
 
 from django.db import models
 
-from secret_messages.models.secret_message_themes import SecretMessageTheme
-
-__all__ = ('User', 'Contact', 'Team', 'TeamMember', 'Theme')
+__all__ = ('User', 'Contact', 'Theme')
 
 
 class Theme(models.Model):
@@ -73,8 +71,10 @@ class Theme(models.Model):
                     '_contains_name_and_text'
                 ),
                 check=(
-                        models.Q(secret_message_read_confirmation_text__contains='{name}')
-                        & models.Q(secret_message_read_confirmation_text__contains='{text}')
+                        models.Q(
+                            secret_message_read_confirmation_text__contains='{name}')
+                        & models.Q(
+                    secret_message_read_confirmation_text__contains='{text}')
                 ),
                 violation_error_message=(
                     'Secret message read confirmation text'
@@ -101,29 +101,6 @@ class User(models.Model):
 
     def __str__(self):
         return self.username or self.fullname
-
-
-class Team(models.Model):
-    name = models.CharField(max_length=64)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-
-
-class TeamMember(models.Model):
-    class Status(models.IntegerChoices):
-        MEMBER = 1
-        OWNER = 2
-
-    team = models.ForeignKey(to=Team, on_delete=models.CASCADE)
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    status = models.PositiveSmallIntegerField(choices=Status.choices)
-    is_hidden = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('team', 'user')
 
 
 class Contact(models.Model):
