@@ -9,6 +9,7 @@ urlpatterns = [
     path('economics/', include('economics.urls')),
     path('', include('food_menu.urls')),
     path('manas-id/', include('manas_id.urls')),
+    path('holidays/', include('holidays.urls')),
 ]
 
 if settings.DEBUG:
