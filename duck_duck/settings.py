@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'economics',
     'food_menu',
     'manas_id',
+    'holidays',
 ]
 
 MIDDLEWARE = [
