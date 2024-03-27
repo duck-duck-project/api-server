@@ -15,3 +15,6 @@ class HolidayResource(ModelResource):
 @admin.register(Holiday)
 class HolidayAdmin(ImportExportModelAdmin):
     resource_class = HolidayResource
+    search_fields = ('name',)
+    list_display = ('name',)
+    list_filter = ('month', 'day')
