@@ -98,6 +98,7 @@ class User(models.Model):
         null=True,
         blank=True
     )
+    is_blocked_bot = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username or self.fullname
