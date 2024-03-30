@@ -50,7 +50,7 @@ class UserCreateUpdateApi(APIView):
             serialized_data.pop('is_from_private_chat')
         )
         if is_from_private_chat:
-            serialized_data['is_banned_bot'] = False
+            serialized_data['is_blocked_bot'] = False
 
         user, is_created = upsert_user(
             user_id=user_id,
