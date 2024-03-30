@@ -31,7 +31,7 @@ class TelegramBotService:
     def __init__(self, telegram_http_client: TelegramHttpClient):
         self.__telegram_http_client = telegram_http_client
 
-    def send_message(self, chat_id: int, text: str) -> bool:
+    def send_message(self, chat_id: int | str, text: str) -> bool:
         request_data = {
             'chat_id': chat_id,
             'text': text,

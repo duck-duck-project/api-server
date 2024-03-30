@@ -42,3 +42,5 @@ def create_stipend(
     )
     if not is_notification_delivered:
         transaction.rollback()
+        user.is_blocked_bot = True
+        user.save()
