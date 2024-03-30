@@ -38,6 +38,7 @@ class UserCreateUpdateApi(APIView):
         theme_id = serializers.UUIDField(required=False)
         can_receive_notifications = serializers.BooleanField(required=False)
         profile_photo_url = serializers.URLField(required=False)
+        is_from_private_chat = serializers.BooleanField(default=None)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
@@ -45,6 +46,11 @@ class UserCreateUpdateApi(APIView):
         serialized_data = serializer.data
 
         user_id: int = serialized_data.pop('id')
+        is_from_private_chat: bool | None = (
+            serialized_data.pop('is_from_private_chat')
+        )
+        if is_from_private_chat:
+            serialized_data['is_banned_bot'] = False
 
         user, is_created = upsert_user(
             user_id=user_id,

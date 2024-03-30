@@ -15,6 +15,8 @@ def give_away_stipends(
 ) -> None:
     for manas_ids in iter_manas_ids():
         for manas_id in manas_ids:
+            if manas_id.user.is_blocked_bot:
+                continue
             with contextlib.suppress(Exception):
                 create_stipend(user=manas_id.user)
 
