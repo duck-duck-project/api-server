@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from manas_id.services import get_full_name_abbreviation
 from users.models import User
@@ -65,7 +66,6 @@ class Department(models.Model):
 
 
 class ManasId(models.Model):
-
     class PersonalityTypeSuffix(models.TextChoices):
         ASSERTIVE = 'A', 'Assertive'
         TURBULENT = 'T', 'Turbulent'
@@ -180,3 +180,8 @@ class ManasId(models.Model):
             f'{born_at}'
             f'{department_code}'
         )
+
+    @property
+    def lifetime_in_days(self) -> int:
+        now = timezone.now()
+        return (now - self.born_at).total_seconds() // 86400
