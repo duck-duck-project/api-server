@@ -72,6 +72,6 @@ def send_beautiful_lifetime_date_notifications(
             )
             if should_send_notification:
                 telegram_bot_service.send_message(
-                    chat_id='@studmanas',
+                    chat_id=manas_id.user.id,
                     text=text,
                 )

@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
 
 from manas_id.services import get_full_name_abbreviation
 from users.models import User
@@ -183,5 +182,6 @@ class ManasId(models.Model):
 
     @property
     def lifetime_in_days(self) -> int:
-        now = timezone.now()
-        return (now - self.born_at).total_seconds() // 86400
+        lifetime_in_seconds = (
+                    self.born_at.today() - self.born_at).total_seconds()
+        return int(lifetime_in_seconds / 86400)
