@@ -54,7 +54,7 @@ class User(models.Model):
         null=True,
         blank=True,
     )
-    born_at = models.DateField(null=True, blank=True)
+    born_on = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname
@@ -69,7 +69,7 @@ class User(models.Model):
 
     @property
     def lifetime_in_days(self) -> int | None:
-        if self.born_at is None:
+        if self.born_on is None:
             return
-        lifetime_delta = self.born_at.today() - self.born_at
+        lifetime_delta = self.born_on.today() - self.born_on
         return int(lifetime_delta.total_seconds() / 86400)
