@@ -1,10 +1,10 @@
 from celery import shared_task
 from fast_depends import Depends, inject
 
-from manas_id.services import is_beautiful_number
 from telegram.dependencies import get_telegram_bot_context
 from telegram.services import TelegramBotContext
 from users.selectors.users import iter_users_with_birthdays
+from users.services.birthdays import is_beautiful_number
 
 __all__ = ('send_beautiful_lifetime_date_notifications',)
 

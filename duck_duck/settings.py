@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'secret_messages',
     'economics',
     'food_menu',
-    'manas_id',
     'holidays',
 ]
 

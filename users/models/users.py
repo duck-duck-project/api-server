@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models.nationalities import Nationality
+from users.models.regions import Region
 from users.models.themes import Theme
 
 __all__ = ('User',)
@@ -28,6 +30,11 @@ class User(models.Model):
         ENTREPRENEUR = 'ESTP', 'Делец (ESTP)'
         ENTERTAINER = 'ESFP', 'Развлекатель (ESFP)'
 
+    class Gender(models.IntegerChoices):
+        FEMALE = 1
+        MALE = 2
+        OTHER = 3
+
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -55,6 +62,26 @@ class User(models.Model):
         blank=True,
     )
     born_on = models.DateField(null=True, blank=True)
+    real_first_name = models.CharField(max_length=64, null=True, blank=True)
+    real_last_name = models.CharField(max_length=64, null=True, blank=True)
+    patronymic = models.CharField(max_length=64, blank=True, null=True)
+    gender = models.PositiveSmallIntegerField(
+        choices=Gender.choices,
+        null=True,
+        blank=True,
+    )
+    nationality = models.ForeignKey(
+        to=Nationality,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    region = models.ForeignKey(
+        to=Region,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return self.username or self.fullname
