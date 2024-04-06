@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from rest_framework import serializers, status
+from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -11,13 +11,14 @@ from economics.services import (
     get_user_balances,
     sort_richest_users,
 )
-from economics.tasks import send_richest_users
 from users.exceptions import UserDoesNotExistsError
 from users.selectors.users import get_user_by_id
 
 __all__ = (
-    'BalanceRetrieveApi', 'RichestUsersStatisticsApi',
-    'RichestUsersStatisticsView')
+    'BalanceRetrieveApi',
+    'RichestUsersStatisticsApi',
+    'RichestUsersStatisticsView',
+)
 
 
 class BalanceRetrieveApi(APIView):
@@ -38,25 +39,29 @@ class BalanceRetrieveApi(APIView):
 class RichestUsersStatisticsApi(APIView):
 
     class InputSerializer(serializers.Serializer):
-        limit = serializers.IntegerField(required=False, default=10)
-        chat_id = serializers.IntegerField()
-        user_id = serializers.IntegerField()
+        limit = serializers.IntegerField(default=10)
 
-    def post(self, request: Request):
-        serializer = self.InputSerializer(data=request.data)
+    class OutputSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField()
+        user_fullname = serializers.CharField()
+        user_username = serializers.CharField(allow_null=True)
+        balance = serializers.IntegerField()
+
+    def get(self, request: Request):
+        serializer = self.InputSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        limit: int | None = serialized_data['limit']
-        chat_id: int = serialized_data['chat_id']
-        user_id: int = serialized_data['user_id']
+        limit: int = serialized_data['limit']
 
-        send_richest_users.delay(
-            called_by_user_id=user_id,
-            chat_id=chat_id,
-            limit=limit,
-        )
-        return Response(status=status.HTTP_202_ACCEPTED)
+        user_balances = get_user_balances()
+        richest_users_top = sort_richest_users(user_balances)
+
+        richest_users = richest_users_top[:limit]
+
+        serialized_users = self.OutputSerializer(richest_users, many=True)
+        response_data = {'ok': True, 'result': serialized_users.data}
+        return Response(response_data)
 
 
 class RichestUsersStatisticsView(LoginRequiredMixin, TemplateView):

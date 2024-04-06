@@ -34,7 +34,7 @@ class UserUpdateApiTests(APITestCase):
         self.assertFalse(self.user.can_be_added_to_contacts, False)
         self.assertIsNone(self.user.secret_message_theme_id)
         self.assertFalse(self.user.can_receive_notifications)
-        self.assertEqual(self.user.born_at, date(2004, 10, 7))
+        self.assertEqual(self.user.born_on, date(2004, 10, 7))
 
     def test_update_user_not_found(self) -> None:
         url = reverse('users:retrieve-update', args=(12345,))
@@ -72,7 +72,7 @@ class UserRetrieveApiTests(APITestCase):
                 'profile_photo_url': self.user.profile_photo_url,
                 'is_banned': self.user.is_banned,
                 'can_receive_notifications': self.user.can_receive_notifications,
-                'born_at': self.user.born_at,
+                'born_at': self.user.born_on,
             },
         )
 

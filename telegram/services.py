@@ -5,12 +5,14 @@ from typing import NewType
 import httpx
 
 from economics.models import OperationPrice, Transaction
+from users.models import User
 
 __all__ = (
     'TelegramHttpClient',
     'closing_telegram_http_client_factory',
     'TelegramBotService',
     'TransactionNotifier',
+    'TelegramBotContext',
     'int_gaps',
 )
 
@@ -83,6 +85,21 @@ class TransactionNotifier:
 
         self.__telegram_bot_service.send_message(
             chat_id=chat_id,
+            text=text,
+        )
+
+
+class TelegramBotContext:
+
+    def __init__(self, telegram_bot_service: TelegramBotService):
+        self.__telegram_bot_service = telegram_bot_service
+
+    def send_if_not_blocked(self, *, user: User, text: str) -> bool:
+        if user.is_blocked_bot:
+            return False
+
+        return self.__telegram_bot_service.send_message(
+            chat_id=user.id,
             text=text,
         )
 

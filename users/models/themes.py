@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.db import models
 
-__all__ = ('User', 'Contact', 'Theme')
+__all__ = ('Theme',)
 
 
 class Theme(models.Model):
@@ -82,48 +82,3 @@ class Theme(models.Model):
                 ),
             ),
         )
-
-
-class User(models.Model):
-    fullname = models.CharField(max_length=64)
-    username = models.CharField(max_length=64, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    can_be_added_to_contacts = models.BooleanField(default=True)
-    profile_photo_url = models.URLField(null=True, blank=True)
-    is_banned = models.BooleanField(default=False)
-    can_receive_notifications = models.BooleanField(default=True)
-    theme = models.ForeignKey(
-        to=Theme,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-    is_blocked_bot = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username or self.fullname
-
-
-class Contact(models.Model):
-    """User contacts."""
-    of_user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        related_name='of_user',
-    )
-    to_user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        related_name='to_user',
-    )
-    private_name = models.CharField(max_length=32)
-    public_name = models.CharField(max_length=32)
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_hidden = models.BooleanField(default=False)
-    is_deleted = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = ('of_user', 'to_user')
-
-    def __str__(self):
-        return self.public_name
