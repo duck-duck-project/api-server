@@ -99,4 +99,4 @@ class User(models.Model):
         if self.born_on is None:
             return
         lifetime_delta = self.born_on.today() - self.born_on
-        return int(lifetime_delta.total_seconds() / 86400)
+        return lifetime_delta.days
