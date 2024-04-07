@@ -9,7 +9,7 @@ urlpatterns = [
     path('economics/', include('economics.urls')),
     path('', include('food_menu.urls')),
     path('holidays/', include('holidays.urls')),
-    path('wishes/', include('wishes.urls')),
+    path('quizzes/', include('quizzes.urls')),
 ]
 
 if settings.DEBUG:

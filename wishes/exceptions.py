@@ -1,2 +1,0 @@
-class NoWishesError(Exception):
-    pass
