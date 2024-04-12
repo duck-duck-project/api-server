@@ -50,6 +50,8 @@ class TagCreateApi(APIView):
         text = serializers.CharField(max_length=32)
         weight = serializers.ChoiceField(choices=Tag.Weight.choices)
         created_at = serializers.DateTimeField()
+        of_user_fullname = serializers.CharField(source='of_user.fullname')
+        of_user_username = serializers.CharField(allow_null=True, source='of_user.username')
 
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)
