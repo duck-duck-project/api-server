@@ -1,4 +1,5 @@
 from rest_framework import serializers, status
+from rest_framework.exceptions import APIException, NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,7 +17,8 @@ class TagListApi(APIView):
         weight = serializers.ChoiceField(choices=Tag.Weight.choices)
         created_at = serializers.DateTimeField()
         of_user_fullname = serializers.CharField(source='of_user__fullname')
-        of_user_username = serializers.CharField(allow_null=True, source='of_user__username')
+        of_user_username = serializers.CharField(allow_null=True,
+                                                 source='of_user__username')
 
     def get(self, request: Request, user_id: int) -> Response:
         tags = (
@@ -51,7 +53,8 @@ class TagCreateApi(APIView):
         weight = serializers.ChoiceField(choices=Tag.Weight.choices)
         created_at = serializers.DateTimeField()
         of_user_fullname = serializers.CharField(source='of_user.fullname')
-        of_user_username = serializers.CharField(allow_null=True, source='of_user.username')
+        of_user_username = serializers.CharField(allow_null=True,
+                                                 source='of_user.username')
 
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)
@@ -80,12 +83,13 @@ class TagCreateApi(APIView):
 
 class TagDeleteApi(APIView):
 
-    def delete(self, request: Request, tag_id: int) -> Response:
-        _, count = Tag.objects.filter(id=tag_id).delete()
-        if count:
-            status_code = status.HTTP_200_OK
-            ok = True
-        else:
-            status_code = status.HTTP_404_NOT_FOUND
-            ok = False
-        return Response({'ok': ok}, status=status_code)
+    def delete(self, request: Request, user_id: int, tag_id: int) -> Response:
+        try:
+            tag = Tag.objects.get(id=tag_id)
+        except Tag.DoesNotExist:
+            raise NotFound('Tag not found')
+        if tag.to_user_id != user_id:
+            error = APIException('Only owner can remove tag')
+            error.status_code = status.HTTP_403_FORBIDDEN
+            raise error
+        return Response({'ok': True})

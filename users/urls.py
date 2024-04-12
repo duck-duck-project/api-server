@@ -21,7 +21,7 @@ urlpatterns = [
         name='tags-create',
     ),
     path(
-        r'users/tags/<int:tag_id>/',
+        r'users/<int:user_id>/tags/<int:tag_id>/',
         TagDeleteApi.as_view(),
         name='tags-delete',
     ),
