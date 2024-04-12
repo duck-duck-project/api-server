@@ -3,6 +3,9 @@ from django.urls import path
 from users.views import (
     ContactCreateApi,
     ContactRetrieveUpdateDeleteApi,
+    TagDeleteApi,
+    TagListApi,
+    TagCreateApi,
     ThemeListApi,
     ThemeRetrieveApi,
     UserContactListApi,
@@ -12,6 +15,21 @@ from users.views import (
 
 app_name = 'users'
 urlpatterns = [
+    path(
+        r'users/tags/',
+        TagCreateApi.as_view(),
+        name='tags-create',
+    ),
+    path(
+        r'users/tags/<int:tag_id>/',
+        TagDeleteApi.as_view(),
+        name='tags-delete',
+    ),
+    path(
+        r'users/<int:user_id>/tags/',
+        TagListApi.as_view(),
+        name='tags-list',
+    ),
     path(
         r'users/<int:user_id>/',
         UserRetrieveApi.as_view(),

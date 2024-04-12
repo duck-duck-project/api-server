@@ -35,7 +35,7 @@ class User(models.Model):
         MALE = 2
         OTHER = 3
 
-    fullname = models.CharField(max_length=64)
+    fullname = models.CharField(max_length=64, default='Anonymous')
     username = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     can_be_added_to_contacts = models.BooleanField(default=True)
