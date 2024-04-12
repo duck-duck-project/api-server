@@ -6,7 +6,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from economics.models import Transaction
 from economics.services import compute_user_balance
-from users.models import Contact, Theme, User
+from users.models import Contact, Tag, Theme, User
 
 __all__ = (
     'UserAdmin',
@@ -80,3 +80,10 @@ class ContactAdmin(ImportExportModelAdmin):
     list_select_related = ('of_user', 'to_user')
     list_display = ('of_user', 'to_user', 'private_name', 'public_name')
     list_display_links = ('of_user', 'to_user')
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_filter = ('weight',)
+    list_display = ('text', 'weight', 'of_user', 'to_user')
+    list_select_related = ('of_user', 'to_user')
