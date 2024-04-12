@@ -33,7 +33,7 @@ class TagListApi(APIView):
                 'of_user__fullname',
                 'of_user__username',
             )
-            .order_by('-created_at')
+            .order_by('weight', '-created_at')
         )
         serializer = self.OutputSerializer(tags, many=True)
         response_data = {'ok': True, 'result': serializer.data}
