@@ -92,4 +92,5 @@ class TagDeleteApi(APIView):
             error = APIException('Only owner can remove tag')
             error.status_code = status.HTTP_403_FORBIDDEN
             raise error
+        tag.delete()
         return Response({'ok': True})
