@@ -39,6 +39,7 @@ class UserCreateUpdateApi(APIView):
         can_receive_notifications = serializers.BooleanField(required=False)
         profile_photo_url = serializers.URLField(required=False)
         is_from_private_chat = serializers.BooleanField(default=None)
+        born_on = serializers.DateField(required=False)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
