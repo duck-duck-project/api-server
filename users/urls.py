@@ -11,10 +11,16 @@ from users.views import (
     UserContactListApi,
     UserCreateUpdateApi,
     UserRetrieveApi,
+    UserContactBirthdayListApi,
 )
 
 app_name = 'users'
 urlpatterns = [
+    path(
+        r'users/<int:user_id>/contact-birthdays/',
+        UserContactBirthdayListApi.as_view(),
+        name='contact-birthdays-list',
+    ),
     path(
         r'users/tags/',
         TagCreateApi.as_view(),
