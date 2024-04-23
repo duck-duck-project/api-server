@@ -15,7 +15,7 @@ class ContactBirthday:
 
 
 def get_user_contact_birthdays(user_id: int) -> list[ContactBirthday]:
-    user_contacts = Contact.objects.filter(of_user_id=user_id)
+    user_contacts = Contact.objects.filter(of_user_id=user_id, is_deleted=False)
     contacts_with_birthdays = (
         user_contacts
         .select_related('to_user')
