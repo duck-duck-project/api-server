@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.exceptions import UserDoesNotExistsError
+from users.models import User
 from users.selectors.users import get_user_by_id
 from users.serializers import UserSerializer
 from users.services.users import upsert_user
@@ -40,6 +41,21 @@ class UserCreateUpdateApi(APIView):
         profile_photo_url = serializers.URLField(required=False)
         is_from_private_chat = serializers.BooleanField(default=None)
         born_on = serializers.DateField(required=False)
+        personality_type_prefix = serializers.ChoiceField(
+            choices=User.PersonalityTypePrefix.choices,
+            required=False,
+        )
+        personality_type_suffix = serializers.ChoiceField(
+            choices=User.PersonalityTypeSuffix.choices,
+            required=False,
+        )
+        real_first_name = serializers.CharField(max_length=64, required=False)
+        real_last_name = serializers.CharField(max_length=64, required=False)
+        patronymic = serializers.CharField(max_length=64, required=False)
+        gender = serializers.ChoiceField(
+            choices=User.Gender.choices,
+            required=False,
+        )
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
