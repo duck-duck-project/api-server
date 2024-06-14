@@ -35,6 +35,11 @@ class User(models.Model):
         MALE = 2
         OTHER = 3
 
+    class ContactsSortingStrategy(models.IntegerChoices):
+        CREATION_TIME = 1
+        PUBLIC_NAME = 2
+        PRIVATE_NAME = 3
+
     fullname = models.CharField(max_length=64, default='Anonymous')
     username = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -82,6 +87,11 @@ class User(models.Model):
         null=True,
         blank=True,
     )
+    contacts_sorting_strategy = models.PositiveSmallIntegerField(
+        choices=ContactsSortingStrategy.choices,
+        default=ContactsSortingStrategy.CREATION_TIME,
+    )
+    is_contacts_sorting_reversed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username or self.fullname

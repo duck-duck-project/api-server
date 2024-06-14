@@ -56,6 +56,11 @@ class UserCreateUpdateApi(APIView):
             choices=User.Gender.choices,
             required=False,
         )
+        contacts_sorting_strategy = serializers.ChoiceField(
+            choices=User.ContactsSortingStrategy.choices,
+            required=False,
+        )
+        is_contacts_sorting_reversed = serializers.BooleanField(required=False)
 
     def post(self, request: Request):
         serializer = self.InputSerializer(data=request.data)
