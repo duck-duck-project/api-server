@@ -53,3 +53,8 @@ class UserSerializer(serializers.Serializer):
         allow_null=True,
         source='region.country.flag_emoji',
     )
+    contacts_sorting_strategy = serializers.ChoiceField(
+        choices=User.ContactsSortingStrategy.choices,
+        required=False,
+    )
+    is_contacts_sorting_reversed = serializers.BooleanField(required=False)

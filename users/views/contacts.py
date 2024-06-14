@@ -24,6 +24,8 @@ __all__ = (
     'ContactRetrieveUpdateDeleteApi',
 )
 
+from users.services.users import get_or_create_user
+
 
 class ContactSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -38,7 +40,8 @@ class ContactSerializer(serializers.Serializer):
 class UserContactListApi(APIView):
 
     def get(self, request: Request, user_id: int):
-        contacts = get_not_deleted_contacts_by_user_id(user_id)
+        user, _ = get_or_create_user(user_id)
+        contacts = get_not_deleted_contacts_by_user_id(user)
         serializer = ContactSerializer(contacts, many=True)
         return Response(serializer.data)
 
