@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'food_menu',
     'holidays',
     'quizzes',
+    'mining',
 ]
 
 MIDDLEWARE = [

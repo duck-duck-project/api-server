@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include('food_menu.urls')),
     path('holidays/', include('holidays.urls')),
     path('quizzes/', include('quizzes.urls')),
+    path('mining/', include('mining.urls')),
 ]
 
 if settings.DEBUG:
