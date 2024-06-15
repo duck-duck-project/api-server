@@ -18,4 +18,4 @@ class MiningAction(models.Model):
 
     @property
     def next_mining_at(self) -> datetime:
-        return self.created_at + timedelta(hours=4)
+        return self.created_at + timedelta(hours=3)
