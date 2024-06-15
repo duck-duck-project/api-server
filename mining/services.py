@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TypeAlias
 
 from django.db import transaction
+from django.db.models import Count, Sum
 from django.utils import timezone
 
 from economics.services import create_system_deposit
@@ -17,9 +18,25 @@ __all__ = (
     'MiningResource',
     'ResourceAndProbability',
     'MINING_RESOURCES_AND_PROBABILITIES',
+    'get_mining_statistics',
+    'MiningStatistics',
+    'ResourceStatistics',
 )
 
 from users.models import User
+
+
+@dataclass(frozen=True, slots=True)
+class ResourceStatistics:
+    name: str
+    total_wealth: int
+    total_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class MiningStatistics:
+    user_id: int
+    resources: list[ResourceStatistics]
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,3 +117,24 @@ def create_mining_action(*, user: User) -> MiningAction:
         amount=mining_action.wealth,
     )
     return mining_action
+
+
+def get_mining_statistics(*, user_id: int) -> MiningStatistics:
+    resources_statistics = (
+        MiningAction.objects
+        .filter(user_id=user_id)
+        .values('resource_name')
+        .annotate(total_wealth=Sum('wealth'), total_count=Count('id'))
+        .order_by('-total_wealth')
+    )
+    return MiningStatistics(
+        user_id=user_id,
+        resources=[
+            ResourceStatistics(
+                name=resource['resource_name'],
+                total_wealth=resource['total_wealth'],
+                total_count=resource['total_count'],
+            )
+            for resource in resources_statistics
+        ]
+    )
