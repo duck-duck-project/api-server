@@ -58,3 +58,4 @@ class UserSerializer(serializers.Serializer):
         required=False,
     )
     is_contacts_sorting_reversed = serializers.BooleanField(required=False)
+    energy = serializers.IntegerField()

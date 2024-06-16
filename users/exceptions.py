@@ -5,6 +5,7 @@ __all__ = (
     'ContactAlreadyExistsError',
     'UserDoesNotExistsError',
     'UserAlreadyExistsError',
+    'NotEnoughEnergyError',
 )
 
 
@@ -23,3 +24,10 @@ class ContactDoesNotExistError(Exception):
 
 class ContactAlreadyExistsError(Exception):
     pass
+
+
+class NotEnoughEnergyError(Exception):
+
+    def __init__(self, cost: int):
+        super().__init__('Not enough energy')
+        self.cost = cost

@@ -1,7 +1,7 @@
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TypeAlias
+from typing import Final, TypeAlias
 
 from django.db import transaction
 from django.db.models import Count, Sum
@@ -9,7 +9,9 @@ from django.utils import timezone
 
 from economics.services import create_system_deposit
 from mining.exceptions import MiningActionThrottledError
+from users.exceptions import NotEnoughEnergyError
 from mining.models import MiningAction
+from users.models import User
 
 __all__ = (
     'get_last_mining_action',
@@ -23,7 +25,7 @@ __all__ = (
     'ResourceStatistics',
 )
 
-from users.models import User
+from users.services.users import decrease_user_energy
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,6 +50,8 @@ class MiningResource:
     def compute_wealth(self) -> int:
         return random.randint(self.min_wealth, self.max_wealth)
 
+
+ENERGY_COST: Final[int] = 1350
 
 ResourceAndProbability: TypeAlias = tuple[MiningResource, int]
 
@@ -106,6 +110,7 @@ def create_mining_action(*, user: User) -> MiningAction:
     if last_mining_action is not None:
         validate_mining_time(last_mining_action.next_mining_at)
 
+    decrease_user_energy(user, ENERGY_COST)
     mining_action = MiningAction.objects.create(
         user_id=user.id,
         resource_name=mined_resource.name,
