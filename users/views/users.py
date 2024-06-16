@@ -8,11 +8,16 @@ from users.exceptions import UserDoesNotExistsError
 from users.models import User
 from users.selectors.users import get_user_by_id
 from users.serializers import UserSerializer
-from users.services.users import upsert_user
+from users.services.users import (
+    get_or_create_user,
+    increase_user_energy,
+    upsert_user,
+)
 
 __all__ = (
     'UserRetrieveApi',
     'UserCreateUpdateApi',
+    'UserEnergyRefillApi',
 )
 
 
@@ -86,3 +91,28 @@ class UserCreateUpdateApi(APIView):
             if is_created else status.HTTP_200_OK
         )
         return Response(response_data, status=status_code)
+
+
+class UserEnergyRefillApi(APIView):
+    class InputSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField()
+        energy = serializers.IntegerField(min_value=1, max_value=10000)
+
+    class OutputSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField(source='id')
+        energy = serializers.IntegerField()
+
+    def post(self, request: Request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        user_id: int = serialized_data['user_id']
+        energy: int = serialized_data['energy']
+
+        user, _ = get_or_create_user(user_id=user_id)
+        user = increase_user_energy(user, increase=energy)
+
+        serializer = self.OutputSerializer(user)
+        response_data = {'ok': True, 'result': serializer.data}
+        return Response(response_data)

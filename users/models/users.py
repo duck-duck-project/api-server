@@ -1,10 +1,15 @@
+from typing import Final
+
+from django.core.validators import MaxValueValidator
 from django.db import models
 
 from users.models.nationalities import Nationality
 from users.models.regions import Region
 from users.models.themes import Theme
 
-__all__ = ('User',)
+__all__ = ('User', 'USER_MAX_ENERGY')
+
+USER_MAX_ENERGY: Final[int] = 10000
 
 
 class User(models.Model):
@@ -92,6 +97,10 @@ class User(models.Model):
         default=ContactsSortingStrategy.CREATION_TIME,
     )
     is_contacts_sorting_reversed = models.BooleanField(default=False)
+    energy = models.PositiveSmallIntegerField(
+        default=USER_MAX_ENERGY // 2,
+        validators=(MaxValueValidator(USER_MAX_ENERGY),),
+    )
 
     def __str__(self):
         return self.username or self.fullname

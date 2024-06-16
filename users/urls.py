@@ -1,17 +1,10 @@
 from django.urls import path
 
 from users.views import (
-    ContactCreateApi,
-    ContactRetrieveUpdateDeleteApi,
-    TagDeleteApi,
-    TagListApi,
-    TagCreateApi,
-    ThemeListApi,
-    ThemeRetrieveApi,
-    UserContactListApi,
-    UserCreateUpdateApi,
-    UserRetrieveApi,
-    UserContactBirthdayListApi,
+    ContactCreateApi, ContactRetrieveUpdateDeleteApi, TagCreateApi,
+    TagDeleteApi, TagListApi, ThemeListApi, ThemeRetrieveApi,
+    UserContactBirthdayListApi, UserContactListApi, UserCreateUpdateApi,
+    UserEnergyRefillApi, UserRetrieveApi,
 )
 
 app_name = 'users'
@@ -40,6 +33,11 @@ urlpatterns = [
         r'users/<int:user_id>/',
         UserRetrieveApi.as_view(),
         name='retrieve',
+    ),
+    path(
+        'users/energy-refill/',
+        UserEnergyRefillApi.as_view(),
+        name='energy-refill',
     ),
     path(
         r'users/',
