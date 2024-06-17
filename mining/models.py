@@ -13,7 +13,7 @@ class MiningAction(models.Model):
         on_delete=models.CASCADE,
     )
     resource_name = models.CharField(max_length=64)
-    wealth = models.PositiveIntegerField()
+    value = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
