@@ -8,9 +8,8 @@ class MiningActionAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'resource_name',
-        'wealth',
+        'value',
         'created_at',
-        'next_mining_at',
     )
     list_filter = ('resource_name',)
     list_select_related = ('user',)
