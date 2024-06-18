@@ -29,7 +29,7 @@ def get_mining_statistics(*, user_id: int) -> MiningStatistics:
         MiningAction.objects
         .filter(user_id=user_id)
         .values('resource_name')
-        .annotate(total_wealth=Sum('value'), total_count=Count('id'))
+        .annotate(total_value=Sum('value'), total_count=Count('id'))
         .order_by('-total_value')
     )
     return MiningStatistics(
