@@ -106,6 +106,7 @@ class User(models.Model):
         default=USER_MAX_HEALTH,
         validators=(MaxValueValidator(USER_MAX_HEALTH),),
     )
+    did_sports_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname

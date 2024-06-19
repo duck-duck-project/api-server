@@ -7,6 +7,7 @@ __all__ = (
     'UserAlreadyExistsError',
     'NotEnoughEnergyError',
     'NotEnoughHealthError',
+    'UserSportsThrottledError',
 )
 
 
@@ -39,3 +40,10 @@ class NotEnoughHealthError(Exception):
     def __init__(self, cost: int):
         super().__init__('Not enough health')
         self.cost = cost
+
+
+class UserSportsThrottledError(Exception):
+
+    def __init__(self, next_sports_in_seconds: int):
+        super().__init__(f'Next sports in {next_sports_in_seconds} seconds')
+        self.next_sports_in_seconds = next_sports_in_seconds

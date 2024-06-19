@@ -1,14 +1,15 @@
 from rest_framework import serializers, status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import APIException, NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.exceptions import UserDoesNotExistsError
+from users.exceptions import UserDoesNotExistsError, UserSportsThrottledError
 from users.models import User
 from users.selectors.users import get_user_by_id
 from users.serializers import UserSerializer
 from users.services.users import (
+    do_sport_activity,
     get_or_create_user,
     increase_user_energy,
     upsert_user,
@@ -18,6 +19,7 @@ __all__ = (
     'UserRetrieveApi',
     'UserCreateUpdateApi',
     'UserEnergyRefillApi',
+    'UserDoSportsApi',
 )
 
 
@@ -112,6 +114,45 @@ class UserEnergyRefillApi(APIView):
 
         user, _ = get_or_create_user(user_id=user_id)
         user = increase_user_energy(user, increase=energy)
+
+        serializer = self.OutputSerializer(user)
+        response_data = {'ok': True, 'result': serializer.data}
+        return Response(response_data)
+
+
+class UserDoSportsApi(APIView):
+    class InputSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField()
+        health_benefit_value = serializers.IntegerField(
+            min_value=1,
+            max_value=10000,
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField(source='id')
+        health = serializers.IntegerField()
+
+    def post(self, request: Request) -> Response:
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        user_id: int = serialized_data['user_id']
+        health_benefit_value: int = serialized_data['health_benefit_value']
+
+        user, _ = get_or_create_user(user_id=user_id)
+
+        try:
+            user = do_sport_activity(user, health_benefit_value)
+        except UserSportsThrottledError as error:
+            error = APIException(
+                detail={
+                    'detail': str(error),
+                    'next_sports_in_seconds': error.next_sports_in_seconds,
+                },
+            )
+            error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
 
         serializer = self.OutputSerializer(user)
         response_data = {'ok': True, 'result': serializer.data}

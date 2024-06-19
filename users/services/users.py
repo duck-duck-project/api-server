@@ -1,8 +1,13 @@
+from datetime import datetime, timedelta
 from typing import Any
 
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
-from users.exceptions import NotEnoughEnergyError, NotEnoughHealthError
+from users.exceptions import (
+    NotEnoughEnergyError, NotEnoughHealthError,
+    UserSportsThrottledError,
+)
 from users.models import USER_MAX_ENERGY, USER_MAX_HEALTH, User
 
 __all__ = (
@@ -12,6 +17,8 @@ __all__ = (
     'decrease_user_energy',
     'increase_user_health',
     'decrease_user_health',
+    'do_sport_activity',
+    'validate_last_sports_time',
 )
 
 
@@ -72,3 +79,22 @@ def decrease_user_health(user: User, decrease: int) -> User:
         raise
 
     return user
+
+
+def compute_next_sports_time(last_sports_time: datetime) -> datetime:
+    return last_sports_time + timedelta(hours=24)
+
+
+def validate_last_sports_time(last_sports_time: datetime | None) -> None:
+    if last_sports_time is None:
+        return
+    now = timezone.now()
+    next_sports_time = compute_next_sports_time(last_sports_time)
+    if next_sports_time > now:
+        next_sports_in_seconds = int((next_sports_time - now).total_seconds())
+        raise UserSportsThrottledError(next_sports_in_seconds)
+
+
+def do_sport_activity(user: User, health_benefit_value: int) -> User:
+    validate_last_sports_time(user.did_sports_at)
+    return increase_user_health(user=user, increase=health_benefit_value)

@@ -6,6 +6,7 @@ from users.views import (
     UserContactBirthdayListApi, UserContactListApi, UserCreateUpdateApi,
     UserEnergyRefillApi, UserRetrieveApi,
 )
+from users.views.users import UserDoSportsApi
 
 app_name = 'users'
 urlpatterns = [
@@ -38,6 +39,11 @@ urlpatterns = [
         'users/energy-refill/',
         UserEnergyRefillApi.as_view(),
         name='energy-refill',
+    ),
+    path(
+        r'users/sports/',
+        UserDoSportsApi.as_view(),
+        name='do-sports',
     ),
     path(
         r'users/',
