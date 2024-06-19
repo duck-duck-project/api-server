@@ -5,6 +5,7 @@ from typing import Final, TypedDict
 __all__ = (
     'ResourceStrategy',
     'ENERGY_COST',
+    'HEALTH_COST',
     'MINING_RESOURCES_STRATEGIES',
     'MinedResource',
     'get_random_resource_strategy',
@@ -121,6 +122,7 @@ class MinedResource:
 
 
 ENERGY_COST: Final[int] = 1350
+HEALTH_COST: Final[int] = 150
 
 
 def get_random_resource_strategy() -> ResourceStrategy:

@@ -5,10 +5,14 @@ from django.db import transaction
 from economics.services import create_system_deposit
 from mining.models import MiningAction
 from mining.selectors import get_last_mining_action
-from mining.services.domain import ENERGY_COST, get_random_mined_resource
+from mining.services.domain import (
+    ENERGY_COST,
+    HEALTH_COST,
+    get_random_mined_resource,
+)
 from mining.services.validation import validate_mining_time
 from users.models import User
-from users.services.users import decrease_user_energy
+from users.services.users import decrease_user_energy, decrease_user_health
 
 __all__ = ('create_mining_action',)
 
@@ -34,6 +38,7 @@ def create_mining_action(*, user: User) -> MiningActionResult:
         validate_mining_time(last_mining_action.created_at)
 
     decrease_user_energy(user, ENERGY_COST)
+    decrease_user_health(user, HEALTH_COST)
     mining_action = MiningAction.objects.create(
         user_id=user.id,
         resource_name=mined_resource.name,
