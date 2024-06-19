@@ -2,14 +2,16 @@ from typing import Any
 
 from django.core.exceptions import ValidationError
 
-from users.exceptions import NotEnoughEnergyError
-from users.models import USER_MAX_ENERGY, User
+from users.exceptions import NotEnoughEnergyError, NotEnoughHealthError
+from users.models import USER_MAX_ENERGY, USER_MAX_HEALTH, User
 
 __all__ = (
     'upsert_user',
     'get_or_create_user',
     'increase_user_energy',
     'decrease_user_energy',
+    'increase_user_health',
+    'decrease_user_health',
 )
 
 
@@ -43,4 +45,30 @@ def decrease_user_energy(user: User, decrease: int) -> User:
         if 'Ensure this value is greater than or equal to 0.' in error.messages:
             raise NotEnoughEnergyError(cost=decrease)
         raise
+    return user
+
+
+def increase_user_health(user: User, increase: int) -> User:
+    """
+    Increase the health of a user by N, ensuring it doesn't exceed the max limit.
+    """
+    user.health = min(user.health + increase, USER_MAX_HEALTH)
+    user.full_clean()
+    user.save(update_fields=['health'])
+    return user
+
+
+def decrease_user_health(user: User, decrease: int) -> User:
+    """
+    Decrease the health of a user by N.
+    """
+    try:
+        user.health -= decrease
+        user.full_clean()
+        user.save(update_fields=['health'])
+    except ValidationError as error:
+        if 'Ensure this value is greater than or equal to 0.' in error.messages:
+            raise NotEnoughHealthError(cost=decrease)
+        raise
+
     return user

@@ -6,6 +6,7 @@ __all__ = (
     'UserDoesNotExistsError',
     'UserAlreadyExistsError',
     'NotEnoughEnergyError',
+    'NotEnoughHealthError',
 )
 
 
@@ -30,4 +31,11 @@ class NotEnoughEnergyError(Exception):
 
     def __init__(self, cost: int):
         super().__init__('Not enough energy')
+        self.cost = cost
+
+
+class NotEnoughHealthError(Exception):
+
+    def __init__(self, cost: int):
+        super().__init__('Not enough health')
         self.cost = cost
