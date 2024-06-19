@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from users.exceptions import (
-    NotEnoughEnergyError, NotEnoughHealthError,
+    NotEnoughEnergyError,
+    NotEnoughHealthError,
     UserSportsThrottledError,
 )
 from users.models import USER_MAX_ENERGY, USER_MAX_HEALTH, User
@@ -95,6 +96,11 @@ def validate_last_sports_time(last_sports_time: datetime | None) -> None:
         raise UserSportsThrottledError(next_sports_in_seconds)
 
 
-def do_sport_activity(user: User, health_benefit_value: int) -> User:
+def do_sport_activity(
+        user: User,
+        health_benefit_value: int,
+        energy_cost_value: int,
+) -> User:
     validate_last_sports_time(user.did_sports_at)
+    user = decrease_user_energy(user, energy_cost_value)
     return increase_user_health(user=user, increase=health_benefit_value)

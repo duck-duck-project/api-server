@@ -4,7 +4,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.exceptions import UserDoesNotExistsError, UserSportsThrottledError
+from users.exceptions import (
+    NotEnoughEnergyError, UserDoesNotExistsError,
+    UserSportsThrottledError,
+)
 from users.models import User
 from users.selectors.users import get_user_by_id
 from users.serializers import UserSerializer
@@ -127,6 +130,10 @@ class UserDoSportsApi(APIView):
             min_value=1,
             max_value=10000,
         )
+        energy_cost_value = serializers.IntegerField(
+            min_value=1,
+            max_value=10000,
+        )
 
     class OutputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField(source='id')
@@ -138,12 +145,24 @@ class UserDoSportsApi(APIView):
         serialized_data = serializer.data
 
         user_id: int = serialized_data['user_id']
+        energy_cost_value: int = serialized_data['energy_cost_value']
         health_benefit_value: int = serialized_data['health_benefit_value']
 
         user, _ = get_or_create_user(user_id=user_id)
 
         try:
-            user = do_sport_activity(user, health_benefit_value)
+            user = do_sport_activity(
+                user=user,
+                health_benefit_value=health_benefit_value,
+                energy_cost_value=energy_cost_value,
+            )
+        except NotEnoughEnergyError as error:
+            error = APIException({
+                'detail': str(error),
+                'required_energy': error.cost,
+            })
+            error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
         except UserSportsThrottledError as error:
             error = APIException(
                 detail={
