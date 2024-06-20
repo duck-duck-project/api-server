@@ -21,9 +21,12 @@ class FoodItemConsumeApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
-        medicine_name = serializers.CharField()
+        food_item_name = serializers.CharField()
+        food_item_emoji = serializers.CharField(allow_null=True)
         price = serializers.IntegerField()
-        health_benefit_value = serializers.IntegerField()
+        energy_benefit_value = serializers.IntegerField()
+        user_energy = serializers.IntegerField()
+        health_impact_value = serializers.IntegerField()
         user_health = serializers.IntegerField()
 
     def post(self, request: Request) -> Response:
@@ -32,7 +35,7 @@ class FoodItemConsumeApi(APIView):
         serialized_data = serializer.data
 
         user_id: int = serialized_data['user_id']
-        food_item_name: str = serialized_data['medicine_name']
+        food_item_name: str = serialized_data['food_item_name']
 
         user, _ = get_or_create_user(user_id)
 
