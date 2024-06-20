@@ -18,10 +18,12 @@ __all__ = ('consume_food_item',)
 class FoodItemConsumptionResult:
     user_id: int
     food_item_name: str
+    food_item_emoji: str | None
     price: int
     energy_benefit_value: int
     user_energy: int
     health_impact_value: int
+    user_health: int
 
 
 @transaction.atomic
@@ -54,8 +56,10 @@ def consume_food_item(
     return FoodItemConsumptionResult(
         user_id=user.id,
         food_item_name=food_item.name,
+        food_item_emoji=food_item.emoji,
         price=food_item.price,
         energy_benefit_value=food_item.energy_benefit_value,
         user_energy=user.energy,
         health_impact_value=food_item.health_impact_value,
+        user_health=user.health,
     )
