@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Зарядка",
+    "emoji": "🤸",
+    "energy_cost_value": 500,
+    "health_benefit_value": 100,
+    "cooldown_in_seconds": 1500
+  },
+  {
+    "name": "Пробежка",
+    "emoji": "🏃",
+    "energy_cost_value": 1500,
+    "health_benefit_value": 300,
+    "cooldown_in_seconds": 9000
+  },
+  {
+    "name": "Тягать железо",
+    "emoji": "🏋️",
+    "energy_cost_value": 5500,
+    "health_benefit_value": 1100,
+    "cooldown_in_seconds": 36000
+  },
+  {
+    "name": "Плавание",
+    "emoji": "🏊",
+    "energy_cost_value": 4500,
+    "health_benefit_value": 900,
+    "cooldown_in_seconds": 27000
+  },
+  {
+    "name": "Йога",
+    "emoji": "🧘",
+    "energy_cost_value": 1000,
+    "health_benefit_value": 200,
+    "cooldown_in_seconds": 6000
+  },
+  {
+    "name": "Велосипед",
+    "emoji": "🚴",
+    "energy_cost_value": 2500,
+    "health_benefit_value": 500,
+    "cooldown_in_seconds": 12000
+  },
+  {
+    "name": "Аэробика",
+    "emoji": "💃",
+    "energy_cost_value": 3500,
+    "health_benefit_value": 700,
+    "cooldown_in_seconds": 18000
+  },
+  {
+    "name": "Танцы",
+    "emoji": "🕺",
+    "energy_cost_value": 2000,
+    "health_benefit_value": 400,
+    "cooldown_in_seconds": 9000
+  },
+  {
+    "name": "Ходьба",
+    "emoji": "🚶",
+    "energy_cost_value": 1000,
+    "health_benefit_value": 200,
+    "cooldown_in_seconds": 3000
+  },
+  {
+    "name": "Бокс",
+    "emoji": "🥊",
+    "energy_cost_value": 6000,
+    "health_benefit_value": 1200,
+    "cooldown_in_seconds": 36000
+  }
+]
