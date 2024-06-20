@@ -66,12 +66,14 @@ class SportActivityActionCreateApi(APIView):
                 'cooldown_in_seconds': error.cooldown_in_seconds,
                 'next_activity_in_seconds': error.next_activity_in_seconds,
             })
+            api_error.status_code = status.HTTP_400_BAD_REQUEST
             raise api_error
         except NotEnoughEnergyError as error:
             api_error = APIException({
                 'detail': 'Not enough energy',
                 'required_energy_value': error.cost,
             })
+            api_error.status_code = status.HTTP_400_BAD_REQUEST
             raise api_error
 
         serializer = self.OutputSerializer(sport_activity_action_result)
