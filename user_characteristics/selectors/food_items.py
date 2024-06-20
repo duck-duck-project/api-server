@@ -31,6 +31,6 @@ def get_food_items() -> tuple[FoodItemTypedDict, ...]:
 
 def get_food_item_by_name(food_item_name: str) -> FoodItem:
     try:
-        return FoodItem.objects.get(name=food_item_name)
+        return FoodItem.objects.get(name__iexact=food_item_name)
     except FoodItem.DoesNotExist:
         raise FoodItemDoesNotExistError(food_item_name)

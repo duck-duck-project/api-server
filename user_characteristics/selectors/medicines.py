@@ -27,6 +27,6 @@ def get_medicines() -> tuple[MedicineTypedDict, ...]:
 
 def get_medicine_by_name(medicine_name: str) -> Medicine:
     try:
-        return Medicine.objects.get(name=medicine_name)
+        return Medicine.objects.get(name__iexact=medicine_name)
     except Medicine.DoesNotExist:
         raise MedicineDoesNotExistError(medicine_name)
