@@ -21,5 +21,5 @@ class FoodItemListApi(APIView):
     def get(self, request: Request) -> Response:
         food_items = get_food_items()
         serializer = self.OutputSerializer(food_items, many=True)
-        response_data = {'ok': True, 'data': serializer.data}
+        response_data = {'ok': True, 'result': serializer.data}
         return Response(response_data)
