@@ -43,7 +43,7 @@ class FoodItemConsumeApi(APIView):
             food_item = get_food_item_by_name(food_item_name)
         except FoodItemDoesNotExistError as error:
             api_error = APIException({
-                'detail': 'Medicine does not exist',
+                'detail': 'Food item does not exist',
                 'food_item_name': error.food_item_name,
             })
             api_error.status_code = status.HTTP_404_NOT_FOUND
