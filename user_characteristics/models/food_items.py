@@ -29,3 +29,8 @@ class FoodItem(models.Model):
             MaxValueValidator(USER_MAX_HEALTH),
         )
     )
+
+    def __str__(self) -> str:
+        if self.emoji is not None:
+            return f'{self.emoji} {self.name}'
+        return self.name
