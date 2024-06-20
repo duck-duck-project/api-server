@@ -15,6 +15,6 @@ def get_sport_activities() -> QuerySet[SportActivity]:
 
 def get_sport_activity_by_name(sport_activity_name: str) -> SportActivity:
     try:
-        return SportActivity.objects.get(name=sport_activity_name)
+        return SportActivity.objects.get(name__iexact=sport_activity_name)
     except SportActivity.DoesNotExist:
         raise SportActivityDoesNotExistError(sport_activity_name)
