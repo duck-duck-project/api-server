@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils import timezone
 
 from users.exceptions import (
@@ -20,6 +21,7 @@ __all__ = (
     'decrease_user_health',
     'do_sport_activity',
     'validate_last_sports_time',
+    'consume_food',
 )
 
 
@@ -96,6 +98,7 @@ def validate_last_sports_time(last_sports_time: datetime | None) -> None:
         raise UserSportsThrottledError(next_sports_in_seconds)
 
 
+@transaction.atomic
 def do_sport_activity(
         user: User,
         health_benefit_value: int,
@@ -103,4 +106,20 @@ def do_sport_activity(
 ) -> User:
     validate_last_sports_time(user.did_sports_at)
     user = decrease_user_energy(user, energy_cost_value)
+    user.did_sports_at = timezone.now()
+    user.save(update_fields=['did_sports_at'])
     return increase_user_health(user=user, increase=health_benefit_value)
+
+
+@transaction.atomic
+def consume_food(
+        user: User,
+        health_impact_value: int,
+        energy: int,
+) -> User:
+    if health_impact_value > 0:
+        user = increase_user_health(user, health_impact_value)
+    elif health_impact_value < 0:
+        user = decrease_user_health(user, abs(health_impact_value))
+    user = increase_user_energy(user, energy)
+    return user

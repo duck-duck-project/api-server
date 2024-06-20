@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.exceptions import (
-    NotEnoughEnergyError, UserDoesNotExistsError,
+    NotEnoughEnergyError, NotEnoughHealthError, UserDoesNotExistsError,
     UserSportsThrottledError,
 )
 from users.models import User
 from users.selectors.users import get_user_by_id
 from users.serializers import UserSerializer
 from users.services.users import (
-    do_sport_activity,
+    consume_food, do_sport_activity,
     get_or_create_user,
     increase_user_energy,
     upsert_user,
@@ -21,7 +21,7 @@ from users.services.users import (
 __all__ = (
     'UserRetrieveApi',
     'UserCreateUpdateApi',
-    'UserEnergyRefillApi',
+    'UserFoodConsumeApi',
     'UserDoSportsApi',
 )
 
@@ -98,10 +98,11 @@ class UserCreateUpdateApi(APIView):
         return Response(response_data, status=status_code)
 
 
-class UserEnergyRefillApi(APIView):
+class UserFoodConsumeApi(APIView):
     class InputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
         energy = serializers.IntegerField(min_value=1, max_value=10000)
+        health_impact_value = serializers.IntegerField()
 
     class OutputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField(source='id')
@@ -114,9 +115,19 @@ class UserEnergyRefillApi(APIView):
 
         user_id: int = serialized_data['user_id']
         energy: int = serialized_data['energy']
+        health_impact_value: int = serialized_data['health_impact_value']
 
         user, _ = get_or_create_user(user_id=user_id)
-        user = increase_user_energy(user, increase=energy)
+
+        try:
+            consume_food(user, health_impact_value=health_impact_value)
+        except NotEnoughHealthError as error:
+            error = APIException({
+                'detail': str(error),
+                'required_health': error.cost,
+            })
+            error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
 
         serializer = self.OutputSerializer(user)
         response_data = {'ok': True, 'result': serializer.data}
