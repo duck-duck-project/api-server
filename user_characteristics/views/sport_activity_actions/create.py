@@ -4,12 +4,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-__all__ = ('SportActivityActionCreateApi',)
-
 from user_characteristics.exceptions import SportActivityDoesNotExistError
-from user_characteristics.selectors.sport_activities import \
+from user_characteristics.selectors.sport_activities import (
     get_sport_activity_by_name
+)
 from users.services.users import get_or_create_user
+
+__all__ = ('SportActivityActionCreateApi',)
 
 
 class SportActivityActionCreateApi(APIView):
@@ -36,7 +37,5 @@ class SportActivityActionCreateApi(APIView):
             })
             error.status_code = status.HTTP_404_NOT_FOUND
             raise error
-
-
 
         return Response()
