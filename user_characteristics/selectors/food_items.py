@@ -1,8 +1,9 @@
 from typing import TypedDict
 
+from user_characteristics.exceptions import FoodItemDoesNotExistError
 from user_characteristics.models import FoodItem
 
-__all__ = ('FoodItemTypedDict', 'get_food_items')
+__all__ = ('FoodItemTypedDict', 'get_food_items', 'get_food_item_by_name')
 
 
 class FoodItemTypedDict(TypedDict):
@@ -26,3 +27,10 @@ def get_food_items() -> tuple[FoodItemTypedDict, ...]:
             'health_impact_value',
         )
     )
+
+
+def get_food_item_by_name(food_item_name: str) -> FoodItem:
+    try:
+        return FoodItem.objects.get(name=food_item_name)
+    except FoodItem.DoesNotExist:
+        raise FoodItemDoesNotExistError(food_item_name)

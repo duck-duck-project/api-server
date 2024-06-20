@@ -1,13 +1,22 @@
 from django.urls import path
 
-from user_characteristics.views.food_items import FoodItemListApi
+from user_characteristics.views.food_items import (
+    FoodItemConsumeApi,
+    FoodItemListApi,
+)
 from user_characteristics.views.medicines import (
-    MedicineConsumeApi, MedicineListApi,
+    MedicineConsumeApi,
+    MedicineListApi,
 )
 from user_characteristics.views.sport_activities import SportActivityListApi
 
 urlpatterns = [
     path(r'food-items/', FoodItemListApi.as_view(), name='food-items'),
+    path(
+        r'food-items/consume/',
+        FoodItemConsumeApi.as_view(),
+        name='food-items-consume',
+    ),
     path(
         r'sport-activities/',
         SportActivityListApi.as_view(),
