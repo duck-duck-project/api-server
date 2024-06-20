@@ -1,8 +1,9 @@
 from typing import TypedDict
 
+from user_characteristics.exceptions import MedicineDoesNotExistError
 from user_characteristics.models import Medicine
 
-__all__ = ('MedicineTypedDict', 'get_medicines')
+__all__ = ('MedicineTypedDict', 'get_medicines', 'get_medicine_by_name')
 
 
 class MedicineTypedDict(TypedDict):
@@ -22,3 +23,10 @@ def get_medicines() -> tuple[MedicineTypedDict, ...]:
             'price',
         )
     )
+
+
+def get_medicine_by_name(medicine_name: str) -> Medicine:
+    try:
+        return Medicine.objects.get(name=medicine_name)
+    except Medicine.DoesNotExist:
+        raise MedicineDoesNotExistError(medicine_name)

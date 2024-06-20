@@ -17,7 +17,6 @@ class SportActivityActionCreateApi(APIView):
         user_id = serializers.IntegerField()
         sport_activity_name = serializers.CharField(max_length=64)
 
-
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
