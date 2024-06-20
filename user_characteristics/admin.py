@@ -1,0 +1,44 @@
+from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+
+from user_characteristics.models import (
+    FoodItem, Medicine, SportActivity, SportActivityAction,
+)
+
+
+@admin.register(SportActivity)
+class SportActivityAdmin(ImportExportModelAdmin):
+    list_display = (
+        'name',
+        'emoji',
+        'energy_cost_value',
+        'health_benefit_value',
+        'cooldown_in_seconds',
+    )
+
+
+@admin.register(FoodItem)
+class FoodItemAdmin(ImportExportModelAdmin):
+    list_display = (
+        'name',
+        'emoji',
+        'type',
+        'price',
+        'energy_benefit_value',
+        'health_impact_value',
+    )
+    list_filter = ('type',)
+    search_fields = ('name',)
+    search_help_text = 'Search by name'
+
+
+@admin.register(Medicine)
+class MedicineAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'emoji', 'price', 'health_benefit_value')
+    search_fields = ('name',)
+    search_help_text = 'Search by name'
+
+
+@admin.register(SportActivityAction)
+class SportActivityActionAdmin(ImportExportModelAdmin):
+    pass

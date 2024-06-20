@@ -4,8 +4,9 @@ from users.views import (
     ContactCreateApi, ContactRetrieveUpdateDeleteApi, TagCreateApi,
     TagDeleteApi, TagListApi, ThemeListApi, ThemeRetrieveApi,
     UserContactBirthdayListApi, UserContactListApi, UserCreateUpdateApi,
-    UserEnergyRefillApi, UserRetrieveApi,
+    UserFoodConsumeApi, UserRetrieveApi,
 )
+from users.views.users import UserDoSportsApi
 
 app_name = 'users'
 urlpatterns = [
@@ -35,9 +36,14 @@ urlpatterns = [
         name='retrieve',
     ),
     path(
-        'users/energy-refill/',
-        UserEnergyRefillApi.as_view(),
-        name='energy-refill',
+        'users/consume-food/',
+        UserFoodConsumeApi.as_view(),
+        name='consume-food',
+    ),
+    path(
+        r'users/sports/',
+        UserDoSportsApi.as_view(),
+        name='do-sports',
     ),
     path(
         r'users/',

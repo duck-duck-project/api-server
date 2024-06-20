@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from mining.exceptions import MiningActionThrottledError
 from mining.services.mining_actions import create_mining_action
 from mining.services.statistics import get_mining_statistics
-from users.exceptions import NotEnoughEnergyError
+from users.exceptions import NotEnoughEnergyError, NotEnoughHealthError
 from users.services.users import get_or_create_user
 
 __all__ = ('MiningActionCreateApi', 'MiningUserStatisticsApi')
@@ -39,6 +39,13 @@ class MiningActionCreateApi(APIView):
             error = APIException({
                 'detail': str(error),
                 'next_mining_in_seconds': error.next_mining_in_seconds,
+            })
+            error.status_code = status.HTTP_400_BAD_REQUEST
+            raise error
+        except NotEnoughHealthError as error:
+            error = APIException({
+                'detail': str(error),
+                'required_health': error.cost,
             })
             error.status_code = status.HTTP_400_BAD_REQUEST
             raise error

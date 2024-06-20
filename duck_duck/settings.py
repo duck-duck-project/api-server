@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'holidays',
     'quizzes',
     'mining',
+    'user_characteristics',
 ]
 
 MIDDLEWARE = [

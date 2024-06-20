@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Аспирин",
+    "emoji": "💊",
+    "price": 5000,
+    "health_benefit_value": 500
+  },
+  {
+    "name": "Парацетамол",
+    "emoji": "💊",
+    "price": 8000,
+    "health_benefit_value": 800
+  },
+  {
+    "name": "Амоксициллин",
+    "emoji": "💊",
+    "price": 16000,
+    "health_benefit_value": 1600
+  },
+  {
+    "name": "Ибупрофен",
+    "emoji": "💊",
+    "price": 20000,
+    "health_benefit_value": 2000
+  },
+  {
+    "name": "Цефтриаксон",
+    "emoji": "💊",
+    "price": 24000,
+    "health_benefit_value": 2400
+  },
+  {
+    "name": "Метформин",
+    "emoji": "💊",
+    "price": 30000,
+    "health_benefit_value": 3000
+  },
+  {
+    "name": "Аторвастатин",
+    "emoji": "💊",
+    "price": 38000,
+    "health_benefit_value": 3800
+  },
+  {
+    "name": "Омепразол",
+    "emoji": "💊",
+    "price": 40000,
+    "health_benefit_value": 4000
+  },
+  {
+    "name": "Лизиноприл",
+    "emoji": "💊",
+    "price": 45000,
+    "health_benefit_value": 4500
+  },
+  {
+    "name": "Рамиприл",
+    "emoji": "💊",
+    "price": 50000,
+    "health_benefit_value": 5000
+  },
+  {
+    "name": "Инсулин",
+    "emoji": "💉",
+    "price": 60000,
+    "health_benefit_value": 6000
+  }
+]

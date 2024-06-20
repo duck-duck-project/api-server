@@ -7,9 +7,10 @@ from users.models.nationalities import Nationality
 from users.models.regions import Region
 from users.models.themes import Theme
 
-__all__ = ('User', 'USER_MAX_ENERGY')
+__all__ = ('User', 'USER_MAX_ENERGY', 'USER_MAX_HEALTH')
 
 USER_MAX_ENERGY: Final[int] = 10000
+USER_MAX_HEALTH: Final[int] = 10000
 
 
 class User(models.Model):
@@ -101,6 +102,11 @@ class User(models.Model):
         default=USER_MAX_ENERGY // 2,
         validators=(MaxValueValidator(USER_MAX_ENERGY),),
     )
+    health = models.PositiveSmallIntegerField(
+        default=USER_MAX_HEALTH,
+        validators=(MaxValueValidator(USER_MAX_HEALTH),),
+    )
+    did_sports_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname

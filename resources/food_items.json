@@ -1,0 +1,482 @@
+[
+  {
+    "name": "Пицца",
+    "emoji": "🍕",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 3500,
+    "health_impact_value": -50
+  },
+  {
+    "name": "Суши",
+    "emoji": "🍣",
+    "type": 1,
+    "price": 2000,
+    "energy_benefit_value": 2500,
+    "health_impact_value": 60
+  },
+  {
+    "name": "Бургер",
+    "emoji": "🍔",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Паста",
+    "emoji": "🍝",
+    "type": 1,
+    "price": 900,
+    "energy_benefit_value": 3000,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Плов",
+    "emoji": "🍲",
+    "type": 1,
+    "price": 1600,
+    "energy_benefit_value": 2800,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Шашлык",
+    "emoji": "🍢",
+    "type": 1,
+    "price": 2000,
+    "energy_benefit_value": 3500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Тако",
+    "emoji": "🌮",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 1750,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Фалафель",
+    "emoji": "🧆",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 50
+  },
+  {
+    "name": "Карри",
+    "emoji": "🍛",
+    "type": 1,
+    "price": 1800,
+    "energy_benefit_value": 3000,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Пельмени",
+    "emoji": "🥟",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Чизкейк",
+    "emoji": "🍰",
+    "type": 1,
+    "price": 400,
+    "energy_benefit_value": 1500,
+    "health_impact_value": -70
+  },
+  {
+    "name": "Борщ",
+    "emoji": "🥣",
+    "type": 1,
+    "price": 1000,
+    "energy_benefit_value": 2000,
+    "health_impact_value": 30
+  },
+  {
+    "name": "Лагман",
+    "emoji": "🍜",
+    "type": 1,
+    "price": 1400,
+    "energy_benefit_value": 2500,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Хумус",
+    "emoji": "🥙",
+    "type": 1,
+    "price": 1000,
+    "energy_benefit_value": 2000,
+    "health_impact_value": 40
+  },
+  {
+    "name": "Лазанья",
+    "emoji": "🍝",
+    "type": 1,
+    "price": 900,
+    "energy_benefit_value": 3250,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Тортилья",
+    "emoji": "🌯",
+    "type": 1,
+    "price": 750.0,
+    "energy_benefit_value": 2000,
+    "health_impact_value": 0
+  },
+  {
+    "name": "Шакшука",
+    "emoji": "🍳",
+    "type": 1,
+    "price": 1000,
+    "energy_benefit_value": 2000,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Блинчики",
+    "emoji": "🥞",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -10
+  },
+  {
+    "name": "Тирамису",
+    "emoji": "🍰",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -60
+  },
+  {
+    "name": "Куриные крылышки",
+    "emoji": "🍗",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Картофель фри",
+    "emoji": "🍟",
+    "type": 1,
+    "price": 300,
+    "energy_benefit_value": 1250,
+    "health_impact_value": -50
+  },
+  {
+    "name": "Салат Цезарь",
+    "emoji": "🥗",
+    "type": 1,
+    "price": 1200,
+    "energy_benefit_value": 2250,
+    "health_impact_value": 30
+  },
+  {
+    "name": "Греческий салат",
+    "emoji": "🥗",
+    "type": 1,
+    "price": 1200,
+    "energy_benefit_value": 2250,
+    "health_impact_value": 40
+  },
+  {
+    "name": "Фахитас",
+    "emoji": "🌯",
+    "type": 1,
+    "price": 1400,
+    "energy_benefit_value": 2500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Паста Болоньезе",
+    "emoji": "🍝",
+    "type": 1,
+    "price": 900,
+    "energy_benefit_value": 3250,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Сэндвич",
+    "emoji": "🥪",
+    "type": 1,
+    "price": 700,
+    "energy_benefit_value": 2500,
+    "health_impact_value": -10
+  },
+  {
+    "name": "Пирог с мясом",
+    "emoji": "🥧",
+    "type": 1,
+    "price": 700,
+    "energy_benefit_value": 2500,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Печеный картофель",
+    "emoji": "🥔",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Кимчи",
+    "emoji": "🥬",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 50
+  },
+  {
+    "name": "Омлет",
+    "emoji": "🍳",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Горячий дог",
+    "emoji": "🌭",
+    "type": 1,
+    "price": 400,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Наггетсы",
+    "emoji": "🍗",
+    "type": 1,
+    "price": 400,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Бекон",
+    "emoji": "🥓",
+    "type": 1,
+    "price": 300,
+    "energy_benefit_value": 1500,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Кукурузный хлеб",
+    "emoji": "🍞",
+    "type": 1,
+    "price": 450.0,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 0
+  },
+  {
+    "name": "Фиш-энд-чипс",
+    "emoji": "🍟",
+    "type": 1,
+    "price": 700,
+    "energy_benefit_value": 2500,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Чили дог",
+    "emoji": "🌭",
+    "type": 1,
+    "price": 500,
+    "energy_benefit_value": 2250,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Чикен Сэндвич",
+    "emoji": "🥪",
+    "type": 1,
+    "price": 600,
+    "energy_benefit_value": 2500,
+    "health_impact_value": -10
+  },
+  {
+    "name": "Маффин",
+    "emoji": "🧁",
+    "type": 1,
+    "price": 300,
+    "energy_benefit_value": 1500,
+    "health_impact_value": -50
+  },
+  {
+    "name": "Донат",
+    "emoji": "🍩",
+    "type": 1,
+    "price": 300,
+    "energy_benefit_value": 1500,
+    "health_impact_value": -60
+  },
+  {
+    "name": "Попкорн",
+    "emoji": "🍿",
+    "type": 1,
+    "price": 200,
+    "energy_benefit_value": 1000,
+    "health_impact_value": -10
+  },
+  {
+    "name": "Кукурузная собака",
+    "emoji": "🌭",
+    "type": 1,
+    "price": 400,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Картофельные оладьи",
+    "emoji": "🥔",
+    "type": 1,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Пирог с яблоками",
+    "emoji": "🍏",
+    "type": 1,
+    "price": 1000,
+    "energy_benefit_value": 2000,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Мороженое",
+    "emoji": "🍦",
+    "type": 1,
+    "price": 300,
+    "energy_benefit_value": 1000,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Смузи",
+    "emoji": "🥤",
+    "type": 2,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 40
+  },
+  {
+    "name": "Кофе",
+    "emoji": "☕",
+    "type": 2,
+    "price": 600,
+    "energy_benefit_value": 1000,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Чай",
+    "emoji": "🍵",
+    "type": 2,
+    "price": 400,
+    "energy_benefit_value": 500,
+    "health_impact_value": 30
+  },
+  {
+    "name": "Кока-Кола",
+    "emoji": "🥤",
+    "type": 2,
+    "price": 300,
+    "energy_benefit_value": 1250,
+    "health_impact_value": -50
+  },
+  {
+    "name": "Сок апельсиновый",
+    "emoji": "🍊",
+    "type": 2,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Молочный коктейль",
+    "emoji": "🥤",
+    "type": 2,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Лимонад",
+    "emoji": "🍋",
+    "type": 2,
+    "price": 300,
+    "energy_benefit_value": 1250,
+    "health_impact_value": -20
+  },
+  {
+    "name": "Вода",
+    "emoji": "💧",
+    "type": 2,
+    "price": 200,
+    "energy_benefit_value": 100,
+    "health_impact_value": 50
+  },
+  {
+    "name": "Фруктовый сок",
+    "emoji": "🍎",
+    "type": 2,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Энергетический напиток",
+    "emoji": "⚡",
+    "type": 2,
+    "price": 600,
+    "energy_benefit_value": 3000,
+    "health_impact_value": -70
+  },
+  {
+    "name": "Чай с молоком",
+    "emoji": "🍼",
+    "type": 2,
+    "price": 600,
+    "energy_benefit_value": 1000,
+    "health_impact_value": 10
+  },
+  {
+    "name": "Фраппе",
+    "emoji": "🥤",
+    "type": 2,
+    "price": 500,
+    "energy_benefit_value": 2000,
+    "health_impact_value": -30
+  },
+  {
+    "name": "Сода",
+    "emoji": "🥤",
+    "type": 2,
+    "price": 200,
+    "energy_benefit_value": 750,
+    "health_impact_value": -40
+  },
+  {
+    "name": "Какао",
+    "emoji": "🍫",
+    "type": 2,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Виноградный сок",
+    "emoji": "🍇",
+    "type": 2,
+    "price": 800,
+    "energy_benefit_value": 1500,
+    "health_impact_value": 20
+  },
+  {
+    "name": "Кокосовая вода",
+    "emoji": "🥥",
+    "type": 2,
+    "price": 600,
+    "energy_benefit_value": 1000,
+    "health_impact_value": 30
+  }
+]
