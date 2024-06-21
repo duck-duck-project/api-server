@@ -2,8 +2,21 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
 from user_characteristics.models import (
-    FoodItem, Medicine, SportActivity, SportActivityAction,
+    FoodItem,
+    FoodItemAlias,
+    Medicine,
+    SportActivity,
+    SportActivityAction,
 )
+
+
+@admin.register(FoodItemAlias)
+class FoodItemAliasAdmin(ImportExportModelAdmin):
+    list_display = ('food_item', 'name',)
+    list_select_related = ('food_item',)
+    search_fields = ('name', 'food_item__name')
+    search_help_text = 'Search by food item name or alias name'
+    autocomplete_fields = ('food_item',)
 
 
 @admin.register(SportActivity)
