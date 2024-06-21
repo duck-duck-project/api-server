@@ -10,6 +10,13 @@ from user_characteristics.models import (
 )
 
 
+class FoodItemAliasInline(admin.TabularInline):
+    model = FoodItemAlias
+    autocomplete_fields = ('food_item',)
+    fields = ('name', 'food_item')
+    show_change_link = True
+
+
 @admin.register(FoodItemAlias)
 class FoodItemAliasAdmin(ImportExportModelAdmin):
     list_display = ('food_item', 'name',)
@@ -43,6 +50,7 @@ class FoodItemAdmin(ImportExportModelAdmin):
     list_filter = ('type',)
     search_fields = ('name',)
     search_help_text = 'Search by name'
+    inlines = (FoodItemAliasInline,)
 
 
 @admin.register(Medicine)
