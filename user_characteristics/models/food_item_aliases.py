@@ -15,3 +15,12 @@ class FoodItemAlias(models.Model):
 
     def __str__(self):
         return self.name
+
+    def full_clean(
+            self,
+            exclude=None,
+            validate_unique=True,
+            validate_constraints=True,
+    ):
+        self.name = self.name.lower()
+        super().full_clean(exclude, validate_unique, validate_constraints)
