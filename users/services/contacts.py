@@ -55,12 +55,6 @@ def create_contact(
         else:
             raise ContactAlreadyExistsError
 
-    create_system_withdrawal(
-        user=of_user,
-        amount=OperationPrice.CREATE_CONTACT,
-        description='Добавление в контакты контакта'
-    )
-
     return contact
 
 
