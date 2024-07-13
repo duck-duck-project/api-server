@@ -1,13 +1,21 @@
 from django.contrib import admin
 from fast_depends import inject, Depends
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from economics.dependencies import get_transaction_notifier
 from economics.models import Transaction
 from telegram.services import TransactionNotifier
 
 
+class TransactionResource(resources.ModelResource):
+    class Meta:
+        model = Transaction
+
+
 @admin.register(Transaction)
-class TransactionAdmin(admin.ModelAdmin):
+class TransactionAdmin(ImportExportModelAdmin):
+    resource_class = TransactionResource
     search_fields = ('id',)
     search_help_text = 'Search by ID'
     sortable_by = ('amount', 'created_at')
