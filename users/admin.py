@@ -30,6 +30,11 @@ class ContactResource(resources.ModelResource):
         model = Contact
 
 
+class TagResource(ModelResource):
+    class Meta:
+        model = Tag
+
+
 @admin.register(Theme)
 class ThemeAdmin(ImportExportModelAdmin):
     resource_class = ThemeResource
@@ -83,7 +88,8 @@ class ContactAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(ImportExportModelAdmin):
+    resource_class = TagResource
     list_filter = ('weight',)
     list_display = ('text', 'weight', 'of_user', 'to_user')
     list_select_related = ('of_user', 'to_user')
