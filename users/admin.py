@@ -30,7 +30,7 @@ class ContactResource(resources.ModelResource):
         model = Contact
 
 
-class TagResource(ModelResource):
+class TagResource(resources.ModelResource):
     class Meta:
         model = Tag
 
