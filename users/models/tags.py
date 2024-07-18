@@ -23,7 +23,7 @@ class Tag(models.Model):
         on_delete=models.CASCADE,
         related_name='received_tag',
     )
-    text = models.CharField(max_length=32)
+    text = models.CharField(max_length=64)
     weight = models.PositiveSmallIntegerField(choices=Weight.choices)
     created_at = models.DateTimeField(auto_now_add=True)
 
