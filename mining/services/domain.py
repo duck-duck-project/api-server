@@ -121,8 +121,8 @@ class MinedResource:
         return computed_value if computed_value != 0 else 1
 
 
-ENERGY_COST: Final[int] = 1350
-HEALTH_COST: Final[int] = 150
+ENERGY_COST: Final[int] = 950
+HEALTH_COST: Final[int] = 100
 
 
 def get_random_resource_strategy() -> ResourceStrategy:
