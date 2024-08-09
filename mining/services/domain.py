@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Final, TypedDict
+from typing import Final, Literal, TypedDict
 
 __all__ = (
     'ResourceStrategy',
@@ -10,6 +10,8 @@ __all__ = (
     'MinedResource',
     'get_random_resource_strategy',
     'get_random_mined_resource',
+    'get_energy_cost',
+    'get_health_cost',
 )
 
 
@@ -18,6 +20,7 @@ class ResourceStrategy(TypedDict):
     min_weight_in_grams: int
     max_weight_in_grams: int
     probability: int
+    premium_probability: int
     value_per_gram: int | float
 
 
@@ -28,6 +31,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 80000,
         'probability': 2500,
         'value_per_gram': 0.02,
+        'premium_probability': 2125,
     },
     {
         'name': 'Железо',
@@ -35,6 +39,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 40000,
         'probability': 1600,
         'value_per_gram': 0.065,
+        'premium_probability': 1360,
     },
     {
         'name': 'Медь',
@@ -42,6 +47,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 50000,
         'probability': 1300,
         'value_per_gram': 0.03,
+        'premium_probability': 1105,
     },
     {
         'name': 'Олово',
@@ -49,6 +55,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 5000,
         'probability': 1100,
         'value_per_gram': 0.2,
+        'premium_probability': 935,
     },
     {
         'name': 'Никель',
@@ -56,6 +63,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 10000,
         'probability': 900,
         'value_per_gram': 0.35,
+        'premium_probability': 855,
     },
     {
         'name': 'Серебро',
@@ -63,6 +71,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 3500,
         'probability': 700,
         'value_per_gram': 0.85,
+        'premium_probability': 735,
     },
     {
         'name': 'Литий',
@@ -70,6 +79,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 2000,
         'probability': 500,
         'value_per_gram': 2.25,
+        'premium_probability': 875,
     },
     {
         'name': 'Золото',
@@ -77,6 +87,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 70,
         'probability': 300,
         'value_per_gram': 85,
+        'premium_probability': 445,
     },
     {
         'name': 'Алмаз',
@@ -84,6 +95,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 20,
         'probability': 100,
         'value_per_gram': 550,
+        'premium_probability': 165,
     },
     {
         'name': 'Уран',
@@ -91,6 +103,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 500,
         'probability': 500,
         'value_per_gram': 6.5,
+        'premium_probability': 675,
     },
     {
         'name': 'Платина',
@@ -98,6 +111,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 100,
         'probability': 300,
         'value_per_gram': 70,
+        'premium_probability': 395,
     },
     {
         'name': 'Редкоземельные металлы',
@@ -105,6 +119,7 @@ MINING_RESOURCES_STRATEGIES: Final[tuple[ResourceStrategy, ...]] = (
         'max_weight_in_grams': 200,
         'probability': 200,
         'value_per_gram': 15,
+        'premium_probability': 330,
     },
 )
 
@@ -125,19 +140,31 @@ ENERGY_COST: Final[int] = 950
 HEALTH_COST: Final[int] = 100
 
 
-def get_random_resource_strategy() -> ResourceStrategy:
-    probabilities = [
-        strategy['probability']
-        for strategy in MINING_RESOURCES_STRATEGIES
-    ]
+def get_energy_cost(is_premium: bool) -> int:
+    if is_premium:
+        return int(ENERGY_COST * 0.75)
+    return ENERGY_COST
+
+
+def get_health_cost(is_premium: bool) -> int:
+    if is_premium:
+        return int(HEALTH_COST * 0.8)
+    return ENERGY_COST
+
+
+def get_random_resource_strategy(is_premium: bool) -> ResourceStrategy:
+    key: Literal['premium_probability', 'probability'] = (
+        'premium_probability' if is_premium else 'probability'
+    )
+    probabilities = [strategy[key] for strategy in MINING_RESOURCES_STRATEGIES]
     return random.choices(
         MINING_RESOURCES_STRATEGIES,
         weights=probabilities,
     )[0]
 
 
-def get_random_mined_resource() -> MinedResource:
-    resource_strategy = get_random_resource_strategy()
+def get_random_mined_resource(is_premium: bool) -> MinedResource:
+    resource_strategy = get_random_resource_strategy(is_premium)
     mined_resource = MinedResource(
         name=resource_strategy['name'],
         weight_in_grams=random.randint(

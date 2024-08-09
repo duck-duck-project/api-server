@@ -6,9 +6,7 @@ from economics.services import create_system_deposit
 from mining.models import MiningAction
 from mining.selectors import get_last_mining_action
 from mining.services.domain import (
-    ENERGY_COST,
-    HEALTH_COST,
-    get_random_mined_resource,
+    get_energy_cost, get_health_cost, get_random_mined_resource,
 )
 from mining.services.validation import validate_mining_time
 from users.models import User
@@ -30,15 +28,20 @@ class MiningActionResult:
 
 @transaction.atomic
 def create_mining_action(*, user: User) -> MiningActionResult:
-    mined_resource = get_random_mined_resource()
+    mined_resource = get_random_mined_resource(user.is_premium)
 
     last_mining_action = get_last_mining_action(user_id=user.id)
 
     if last_mining_action is not None:
-        validate_mining_time(last_mining_action.created_at)
+        validate_mining_time(
+            last_mining_at=last_mining_action.created_at,
+            is_premium=user.is_premium,
+        )
 
-    decrease_user_energy(user, ENERGY_COST)
-    decrease_user_health(user, HEALTH_COST)
+    energy_cost = get_energy_cost(user.is_premium)
+
+    decrease_user_energy(user, energy_cost)
+    decrease_user_health(user, get_health_cost(user.is_premium))
     mining_action = MiningAction.objects.create(
         user_id=user.id,
         resource_name=mined_resource.name,
@@ -53,7 +56,7 @@ def create_mining_action(*, user: User) -> MiningActionResult:
         user_id=user.id,
         resource_name=mined_resource.name,
         value=mined_resource.value,
-        spent_energy=ENERGY_COST,
+        spent_energy=energy_cost,
         remaining_energy=user.energy,
         weight_in_grams=mined_resource.weight_in_grams,
         value_per_gram=mined_resource.value_per_gram,
