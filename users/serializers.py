@@ -61,3 +61,4 @@ class UserSerializer(serializers.Serializer):
     energy = serializers.IntegerField()
     health = serializers.IntegerField()
     did_sports_at = serializers.DateTimeField(allow_null=True)
+    is_premium = serializers.BooleanField()

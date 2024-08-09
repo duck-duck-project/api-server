@@ -2,6 +2,7 @@ from typing import Final
 
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.utils import timezone
 
 from users.models.nationalities import Nationality
 from users.models.regions import Region
@@ -107,6 +108,7 @@ class User(models.Model):
         validators=(MaxValueValidator(USER_MAX_HEALTH),),
     )
     did_sports_at = models.DateTimeField(null=True, blank=True)
+    premium_expires_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.username or self.fullname
@@ -125,3 +127,9 @@ class User(models.Model):
             return
         lifetime_delta = self.born_on.today() - self.born_on
         return lifetime_delta.days
+
+    @property
+    def is_premium(self) -> bool:
+        if self.premium_expires_at is None:
+            return False
+        return timezone.now() < self.premium_expires_at
