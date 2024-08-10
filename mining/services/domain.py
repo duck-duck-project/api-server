@@ -149,7 +149,7 @@ def get_energy_cost(is_premium: bool) -> int:
 def get_health_cost(is_premium: bool) -> int:
     if is_premium:
         return int(HEALTH_COST * 0.8)
-    return ENERGY_COST
+    return HEALTH_COST
 
 
 def get_random_resource_strategy(is_premium: bool) -> ResourceStrategy:
