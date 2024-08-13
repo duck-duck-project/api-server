@@ -7,26 +7,28 @@ from rest_framework.views import APIView
 from economics.exceptions import InsufficientFundsForSystemWithdrawalError
 from user_characteristics.exceptions import FoodItemDoesNotExistError
 from user_characteristics.selectors.food_items import get_food_item_by_name
-from user_characteristics.services.food_items import consume_food_item
+from user_characteristics.services.food_items import feed_user
 from users.exceptions import NotEnoughHealthError
 from users.services.users import get_or_create_user
 
-__all__ = ('FoodItemConsumeApi',)
+__all__ = ('FoodItemFeedApi',)
 
 
-class FoodItemConsumeApi(APIView):
+class FoodItemFeedApi(APIView):
     class InputSerializer(serializers.Serializer):
-        user_id = serializers.IntegerField()
+        from_user_id = serializers.IntegerField()
+        to_user_id = serializers.IntegerField()
         food_item_name = serializers.CharField(max_length=64)
 
     class OutputSerializer(serializers.Serializer):
-        user_id = serializers.IntegerField()
+        from_user_id = serializers.IntegerField()
+        to_user_id = serializers.IntegerField()
         food_item_name = serializers.CharField()
         food_item_emoji = serializers.CharField(allow_null=True)
         price = serializers.IntegerField()
         energy_benefit_value = serializers.IntegerField()
-        user_energy = serializers.IntegerField()
         health_impact_value = serializers.IntegerField()
+        user_energy = serializers.IntegerField()
         user_health = serializers.IntegerField()
 
     def post(self, request: Request) -> Response:
@@ -34,10 +36,12 @@ class FoodItemConsumeApi(APIView):
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
-        user_id: int = serialized_data['user_id']
+        from_user_id: int = serialized_data['from_user_id']
+        to_user_id: int = serialized_data['to_user_id']
         food_item_name: str = serialized_data['food_item_name']
 
-        user, _ = get_or_create_user(user_id)
+        from_user, _ = get_or_create_user(from_user_id)
+        to_user, _ = get_or_create_user(to_user_id)
 
         try:
             food_item = get_food_item_by_name(food_item_name)
@@ -50,8 +54,9 @@ class FoodItemConsumeApi(APIView):
             raise api_error
 
         try:
-            consumption_result = consume_food_item(
-                user=user,
+            user_feed_result = feed_user(
+                from_user=from_user,
+                to_user=to_user,
                 food_item=food_item,
             )
         except InsufficientFundsForSystemWithdrawalError as error:
@@ -60,6 +65,7 @@ class FoodItemConsumeApi(APIView):
                 'price': error.amount,
                 'food_item_name': food_item_name,
             })
+            api_error.status_code = status.HTTP_400_BAD_REQUEST
             raise api_error
         except NotEnoughHealthError as error:
             api_error = APIException({
@@ -67,8 +73,9 @@ class FoodItemConsumeApi(APIView):
                 'required_health_value': error.cost,
                 'food_item_name': food_item_name,
             })
+            api_error.status_code = status.HTTP_400_BAD_REQUEST
             raise api_error
 
-        serializer = self.OutputSerializer(consumption_result)
+        serializer = self.OutputSerializer(user_feed_result)
         response_data = {'ok': True, 'result': serializer.data}
         return Response(response_data)

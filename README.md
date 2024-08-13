@@ -8,6 +8,10 @@
 
 ---
 
+REST API Documentation: https://documenter.getpostman.com/view/21224600/2sA3s4mqUB
+
+---
+
 ### Run postgresql in docker
 
 ```shell

@@ -1,2 +1,2 @@
-from .consume import *
+from .feed import *
 from .list import *
