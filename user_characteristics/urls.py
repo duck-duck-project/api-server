@@ -1,7 +1,7 @@
 from django.urls import path
 
 from user_characteristics.views.food_items import (
-    FoodItemConsumeApi,
+    FoodItemFeedApi,
     FoodItemListApi,
 )
 from user_characteristics.views.medicines import (
@@ -15,9 +15,9 @@ from user_characteristics.views.sport_activity_actions.create import \
 urlpatterns = [
     path(r'food-items/', FoodItemListApi.as_view(), name='food-items'),
     path(
-        r'food-items/consume/',
-        FoodItemConsumeApi.as_view(),
-        name='food-items-consume',
+        r'food-items/feed/',
+        FoodItemFeedApi.as_view(),
+        name='food-items-feed',
     ),
     path(
         r'sport-activities/',
