@@ -1,0 +1,1663 @@
+{
+	"info": {
+		"_postman_id": "4a073789-1ebf-4d20-8d18-54b67efa9def",
+		"name": "Duck Duck API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21224600"
+	},
+	"item": [
+		{
+			"name": "Economics",
+			"item": [
+				{
+					"name": "Get user balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/economics/balance/users/:user-id/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"economics",
+								"balance",
+								"users",
+								":user-id",
+								""
+							],
+							"variable": [
+								{
+									"key": "user-id",
+									"value": "12345",
+									"description": "User ID"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/balance/users/:user-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"balance",
+										"users",
+										":user-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "user-id",
+											"value": "12345",
+											"description": "User ID"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"user_id\": 12345,\n    \"balance\": 10000\n}"
+						},
+						{
+							"name": "User is not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/balance/users/:user-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"balance",
+										"users",
+										":user-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "user-id",
+											"value": "12345",
+											"description": "User ID"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Top up balance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 12345,\n    \"amount\": 1000,\n    \"description\": \"Reward\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/economics/deposit/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"economics",
+								"deposit",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/deposit/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"deposit",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"user\": {\n    \"id\": 12345,\n    \"fullname\": \"Join\",\n    \"username\": \"@john_doe\"\n  },\n  \"amount\": 1000,\n  \"description\": \"Reward\",\n  \"created_at\": \"2024-07-21T12:34:56Z\"\n}\n"
+						},
+						{
+							"name": "Negative top up amount",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": -1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/deposit/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"deposit",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"amount\": [\n        \"Amount must be greater than 0\"\n    ]\n}"
+						},
+						{
+							"name": "User is not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 1234689,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/deposit/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"deposit",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Write-off balance",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 12345,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/economics/withdraw/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"economics",
+								"withdraw",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/withdraw/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"withdraw",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"user\": {\n    \"id\": 12345,\n    \"fullname\": \"Join\",\n    \"username\": \"@john_doe\"\n  },\n  \"amount\": 1000,\n  \"description\": \"Food consumption\",\n  \"created_at\": \"2024-07-21T12:34:56Z\"\n}\n"
+						},
+						{
+							"name": "Negative write-off amount",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": -1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/withdraw/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"withdraw",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"amount\": [\n        \"Amount must be greater than 0\"\n    ]\n}"
+						},
+						{
+							"name": "User is not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 1234689,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/withdraw/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"withdraw",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						},
+						{
+							"name": "Insufficient funds",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": 1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/withdraw/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"withdraw",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"Insufficient funds for withdrawal\"\n]"
+						}
+					]
+				},
+				{
+					"name": "Create transfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sender_id\": 12345,\n    \"recipient_id\": 23456,\n    \"amount\": 1000,\n    \"description\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/economics/transfers/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"economics",
+								"transfers",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"sender_id\": 12345,\n    \"recipient_id\": 23456,\n    \"amount\": 1000,\n    \"description\": \"Transfer from Alex\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/transfers/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"transfers",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"91586e84-90ce-4b80-9aa1-d8d270b970da\",\n    \"sender\": {\n        \"id\": 12345,\n        \"fullname\": \"Alex\",\n        \"username\": \"pushkin\"\n    },\n    \"recipient\": {\n        \"id\": 23456,\n        \"fullname\": \"Lev\",\n        \"username\": \"tolstoy\"\n    },\n    \"amount\": 1000,\n    \"description\": \"Transfer from Alex\",\n    \"created_at\": \"2024-07-22T12:31:20Z\"\n}"
+						},
+						{
+							"name": "Negative write-off amount Copy",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": 12345,\n    \"amount\": -1000,\n    \"description\": \"Food consumption\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/withdraw/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"withdraw",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"amount\": [\n        \"Amount must be greater than 0\"\n    ]\n}"
+						},
+						{
+							"name": "User is not found",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"sender_id\": 12345,\n    \"recipient_id\": 23456,\n    \"amount\": 1000,\n    \"description\": null\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/economics/deposit/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"economics",
+										"deposit",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"User does not exists\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Contacts",
+			"item": [
+				{
+					"name": "Create contact",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/contacts/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"contacts",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful create",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 13423,\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"created_at\": \"2024-07-21T12:34:56Z\",\n    \"is_hidden\": false\n}"
+						},
+						{
+							"name": "User does not exist",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"f'User by ID \\\"234567\\\" does not exist\"\n}"
+						},
+						{
+							"name": "Contact already exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										""
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Contact already exists\""
+						}
+					]
+				},
+				{
+					"name": "Get contact",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"contacts",
+								":contact-id",
+								""
+							],
+							"variable": [
+								{
+									"key": "contact-id",
+									"value": "43243",
+									"description": "Contact ID"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 43243,\n    \"of_user_id\": 123456,\n    \"to_user_id\": 234567,\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"created_at\": \"2024-07-21T12:34:56Z\",\n    \"is_hidden\": false\n}"
+						},
+						{
+							"name": "Contact is not found",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Contact does not exist\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update contact",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"contacts",
+								":contact-id",
+								""
+							],
+							"variable": [
+								{
+									"key": "contact-id",
+									"value": "43243",
+									"description": "Contact ID"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful update",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Contact is not found",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Delete contact",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"contacts",
+								":contact-id",
+								""
+							],
+							"variable": [
+								{
+									"key": "contact-id",
+									"value": "43243",
+									"description": "Contact ID"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful delete",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Contact is not found",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"private_name\": \"Sanya\",\n    \"public_name\": \"Alex\",\n    \"is_hidden\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/contacts/:contact-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"contacts",
+										":contact-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "contact-id",
+											"value": "43243",
+											"description": "Contact ID"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Themes",
+			"item": [
+				{
+					"name": "Get all themes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/themes/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"themes",
+								""
+							]
+						},
+						"description": "Get all **not hidden** themes."
+					},
+					"response": [
+						{
+							"name": "Get all themes",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{$BASE_URL}}/themes/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"themes",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"result\": [\n        {\n            \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n            \"is_hidden\": false,\n            \"secret_message_template_text\": \"📩 Секретное сообщение для <b>{name}</b>\",\n            \"secret_media_template_text\": \"📩 Секретное медиа-сообщение для <b>{name}</b>\",\n            \"secret_message_view_button_text\": \"👀 Прочитать\",\n            \"secret_message_delete_button_text\": \"Передумать\",\n            \"secret_message_read_confirmation_text\": \"📩 Секретное сообщение для <b>{name}</b> прочитано\\n\\n{text}\",\n            \"secret_message_deleted_confirmation_text\": \"✅ Секретное сообщение удалено\",\n            \"secret_message_deleted_text\": \"Секретное сообщение было удалено отправителем\",\n            \"secret_message_missing_text\": \"😔 Сообщение не найдено. Возможно оно ещё не загружено на наши сервера. Попробуйте через пару секунд\",\n            \"created_at\": \"2024-07-21T12:34:56Z\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get a theme",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/themes/:theme-id/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"themes",
+								":theme-id",
+								""
+							],
+							"variable": [
+								{
+									"key": "theme-id",
+									"value": "b8ec33b6-81a4-4f0a-a07c-5139c22c08fa",
+									"description": "Theme identifier in UUID format. It must be in UUID format otherwise path won't even match."
+								}
+							]
+						},
+						"description": "Get any theme by ID."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{$BASE_URL}}/themes/:theme-id/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"themes",
+										":theme-id",
+										""
+									],
+									"variable": [
+										{
+											"key": "theme-id",
+											"value": "b8ec33b6-81a4-4f0a-a07c-5139c22c08fa",
+											"description": "Theme identifier in UUID format"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"result\": {\n        \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n        \"is_hidden\": false,\n        \"secret_message_template_text\": \"📩 Секретное сообщение для <b>{name}</b>\",\n        \"secret_media_template_text\": \"📩 Секретное медиа-сообщение для <b>{name}</b>\",\n        \"secret_message_view_button_text\": \"👀 Прочитать\",\n        \"secret_message_delete_button_text\": \"Передумать\",\n        \"secret_message_read_confirmation_text\": \"📩 Секретное сообщение для <b>{name}</b> прочитано\\n\\n{text}\",\n        \"secret_message_deleted_confirmation_text\": \"✅ Секретное сообщение удалено\",\n        \"secret_message_deleted_text\": \"Секретное сообщение было удалено отправителем\",\n        \"secret_message_missing_text\": \"😔 Сообщение не найдено. Возможно оно ещё не загружено на наши сервера. Попробуйте через пару секунд\",\n        \"created_at\": \"2024-07-21T12:34:56Z\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Food items",
+			"item": [
+				{
+					"name": "Get all food items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{$BASE_URL}}/food-items/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"food-items",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{$BASE_URL}}/food-items/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"food-items",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 13 Aug 2024 04:20:17 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.11.8"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "7177"
+								},
+								{
+									"key": "Vary",
+									"value": "origin, Cookie"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"result\": [\n        {\n            \"name\": \"Пицца\",\n            \"emoji\": \"🍕\",\n            \"type\": 1,\n            \"price\": 800,\n            \"energy_benefit_value\": 3500,\n            \"health_impact_value\": -50\n        },\n        {\n            \"name\": \"Суши\",\n            \"emoji\": \"🍣\",\n            \"type\": 1,\n            \"price\": 1000,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": 60\n        },\n        {\n            \"name\": \"Бургер\",\n            \"emoji\": \"🍔\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Паста\",\n            \"emoji\": \"🍝\",\n            \"type\": 1,\n            \"price\": 900,\n            \"energy_benefit_value\": 3000,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Плов\",\n            \"emoji\": \"🍲\",\n            \"type\": 1,\n            \"price\": 800,\n            \"energy_benefit_value\": 2800,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Шашлык\",\n            \"emoji\": \"🍢\",\n            \"type\": 1,\n            \"price\": 1000,\n            \"energy_benefit_value\": 3500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Тако\",\n            \"emoji\": \"🌮\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 1750,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Фалафель\",\n            \"emoji\": \"🧆\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 50\n        },\n        {\n            \"name\": \"Карри\",\n            \"emoji\": \"🍛\",\n            \"type\": 1,\n            \"price\": 900,\n            \"energy_benefit_value\": 3000,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Пельмени\",\n            \"emoji\": \"🥟\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Чизкейк\",\n            \"emoji\": \"🍰\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": -70\n        },\n        {\n            \"name\": \"Борщ\",\n            \"emoji\": \"🥣\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": 30\n        },\n        {\n            \"name\": \"Лагман\",\n            \"emoji\": \"🍜\",\n            \"type\": 1,\n            \"price\": 700,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Хумус\",\n            \"emoji\": \"🥙\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": 40\n        },\n        {\n            \"name\": \"Лазанья\",\n            \"emoji\": \"🍝\",\n            \"type\": 1,\n            \"price\": 900,\n            \"energy_benefit_value\": 3250,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Тортилья\",\n            \"emoji\": \"🌯\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": 0\n        },\n        {\n            \"name\": \"Шакшука\",\n            \"emoji\": \"🍳\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Блинчики\",\n            \"emoji\": \"🥞\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -10\n        },\n        {\n            \"name\": \"Тирамису\",\n            \"emoji\": \"🍰\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -60\n        },\n        {\n            \"name\": \"Куриные крылышки\",\n            \"emoji\": \"🍗\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Картофель фри\",\n            \"emoji\": \"🍟\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1250,\n            \"health_impact_value\": -50\n        },\n        {\n            \"name\": \"Салат Цезарь\",\n            \"emoji\": \"🥗\",\n            \"type\": 1,\n            \"price\": 600,\n            \"energy_benefit_value\": 2250,\n            \"health_impact_value\": 30\n        },\n        {\n            \"name\": \"Греческий салат\",\n            \"emoji\": \"🥗\",\n            \"type\": 1,\n            \"price\": 600,\n            \"energy_benefit_value\": 2250,\n            \"health_impact_value\": 40\n        },\n        {\n            \"name\": \"Фахитас\",\n            \"emoji\": \"🌯\",\n            \"type\": 1,\n            \"price\": 700,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Паста Болоньезе\",\n            \"emoji\": \"🍝\",\n            \"type\": 1,\n            \"price\": 900,\n            \"energy_benefit_value\": 3250,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Сэндвич\",\n            \"emoji\": \"🥪\",\n            \"type\": 1,\n            \"price\": 700,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": -10\n        },\n        {\n            \"name\": \"Пирог с мясом\",\n            \"emoji\": \"🥧\",\n            \"type\": 1,\n            \"price\": 700,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Печеный картофель\",\n            \"emoji\": \"🥔\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Кимчи\",\n            \"emoji\": \"🥬\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 50\n        },\n        {\n            \"name\": \"Омлет\",\n            \"emoji\": \"🍳\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Горячий дог\",\n            \"emoji\": \"🌭\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Наггетсы\",\n            \"emoji\": \"🍗\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Бекон\",\n            \"emoji\": \"🥓\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Кукурузный хлеб\",\n            \"emoji\": \"🍞\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 0\n        },\n        {\n            \"name\": \"Фиш-энд-чипс\",\n            \"emoji\": \"🍟\",\n            \"type\": 1,\n            \"price\": 700,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Чили дог\",\n            \"emoji\": \"🌭\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2250,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Чикен Сэндвич\",\n            \"emoji\": \"🥪\",\n            \"type\": 1,\n            \"price\": 600,\n            \"energy_benefit_value\": 2500,\n            \"health_impact_value\": -10\n        },\n        {\n            \"name\": \"Маффин\",\n            \"emoji\": \"🧁\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": -50\n        },\n        {\n            \"name\": \"Донат\",\n            \"emoji\": \"🍩\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": -60\n        },\n        {\n            \"name\": \"Попкорн\",\n            \"emoji\": \"🍿\",\n            \"type\": 1,\n            \"price\": 200,\n            \"energy_benefit_value\": 1000,\n            \"health_impact_value\": -10\n        },\n        {\n            \"name\": \"Кукурузная собака\",\n            \"emoji\": \"🌭\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Картофельные оладьи\",\n            \"emoji\": \"🥔\",\n            \"type\": 1,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Пирог с яблоками\",\n            \"emoji\": \"🍏\",\n            \"type\": 1,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Мороженое\",\n            \"emoji\": \"🍦\",\n            \"type\": 1,\n            \"price\": 300,\n            \"energy_benefit_value\": 1000,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Смузи\",\n            \"emoji\": \"🥤\",\n            \"type\": 2,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 40\n        },\n        {\n            \"name\": \"Кофе\",\n            \"emoji\": \"☕\",\n            \"type\": 2,\n            \"price\": 300,\n            \"energy_benefit_value\": 1000,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Чай\",\n            \"emoji\": \"🍵\",\n            \"type\": 2,\n            \"price\": 200,\n            \"energy_benefit_value\": 500,\n            \"health_impact_value\": 30\n        },\n        {\n            \"name\": \"Кока-Кола\",\n            \"emoji\": \"🥤\",\n            \"type\": 2,\n            \"price\": 300,\n            \"energy_benefit_value\": 1250,\n            \"health_impact_value\": -50\n        },\n        {\n            \"name\": \"Сок апельсиновый\",\n            \"emoji\": \"🍊\",\n            \"type\": 2,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Молочный коктейль\",\n            \"emoji\": \"🥤\",\n            \"type\": 2,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Лимонад\",\n            \"emoji\": \"🍋\",\n            \"type\": 2,\n            \"price\": 300,\n            \"energy_benefit_value\": 1250,\n            \"health_impact_value\": -20\n        },\n        {\n            \"name\": \"Вода\",\n            \"emoji\": \"💧\",\n            \"type\": 2,\n            \"price\": 100,\n            \"energy_benefit_value\": 100,\n            \"health_impact_value\": 50\n        },\n        {\n            \"name\": \"Фруктовый сок\",\n            \"emoji\": \"🍎\",\n            \"type\": 2,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Энергетический напиток\",\n            \"emoji\": \"⚡\",\n            \"type\": 2,\n            \"price\": 600,\n            \"energy_benefit_value\": 3000,\n            \"health_impact_value\": -70\n        },\n        {\n            \"name\": \"Чай с молоком\",\n            \"emoji\": \"🍼\",\n            \"type\": 2,\n            \"price\": 300,\n            \"energy_benefit_value\": 1000,\n            \"health_impact_value\": 10\n        },\n        {\n            \"name\": \"Фраппе\",\n            \"emoji\": \"🥤\",\n            \"type\": 2,\n            \"price\": 500,\n            \"energy_benefit_value\": 2000,\n            \"health_impact_value\": -30\n        },\n        {\n            \"name\": \"Сода\",\n            \"emoji\": \"🥤\",\n            \"type\": 2,\n            \"price\": 200,\n            \"energy_benefit_value\": 750,\n            \"health_impact_value\": -40\n        },\n        {\n            \"name\": \"Какао\",\n            \"emoji\": \"🍫\",\n            \"type\": 2,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Виноградный сок\",\n            \"emoji\": \"🍇\",\n            \"type\": 2,\n            \"price\": 400,\n            \"energy_benefit_value\": 1500,\n            \"health_impact_value\": 20\n        },\n        {\n            \"name\": \"Кокосовая вода\",\n            \"emoji\": \"🥥\",\n            \"type\": 2,\n            \"price\": 300,\n            \"energy_benefit_value\": 1000,\n            \"health_impact_value\": 30\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Feed user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_user_id\": 12345,\n    \"to_user_id\": 23456,\n    \"food_item_name\": \"манты\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{$BASE_URL}}/food-items/feed/",
+							"host": [
+								"{{$BASE_URL}}"
+							],
+							"path": [
+								"food-items",
+								"feed",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"from_user_id\": 12345,\n    \"to_user_id\": 23456,\n    \"food_item_name\": \"плов\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/food-items/feed/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"food-items",
+										"feed",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 13 Aug 2024 04:47:12 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.11.8"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "219"
+								},
+								{
+									"key": "Vary",
+									"value": "origin, Cookie"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"ok\": true,\n    \"result\": {\n        \"from_user_id\": 12345,\n        \"to_user_id\": 23456,\n        \"food_item_name\": \"Плов\",\n        \"food_item_emoji\": \"🍲\",\n        \"price\": 800,\n        \"energy_benefit_value\": 2800,\n        \"health_impact_value\": 10,\n        \"user_energy\": 7800,\n        \"user_health\": 10000\n    }\n}"
+						},
+						{
+							"name": "Not enough health",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"from_user_id\": 12345,\n    \"to_user_id\": 23456,\n    \"food_item_name\": \"Энергетический напиток\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/food-items/feed/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"food-items",
+										"feed",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 13 Aug 2024 04:49:36 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.11.8"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "143"
+								},
+								{
+									"key": "Vary",
+									"value": "origin, Cookie"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Not enough health to consume food item\",\n    \"required_health_value\": \"70\",\n    \"food_item_name\": \"Энергетический напиток\"\n}"
+						},
+						{
+							"name": "Not enough balance",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"from_user_id\": 12345,\n    \"to_user_id\": 23456,\n    \"food_item_name\": \"Энергетический напиток\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/food-items/feed/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"food-items",
+										"feed",
+										""
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 13 Aug 2024 04:52:36 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.11.8"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "125"
+								},
+								{
+									"key": "Vary",
+									"value": "origin, Cookie"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Not enough balance to buy food item\",\n    \"price\": \"600\",\n    \"food_item_name\": \"Энергетический напиток\"\n}"
+						},
+						{
+							"name": "Food item does not exist",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"from_user_id\": 12345,\n    \"to_user_id\": 23456,\n    \"food_item_name\": \"манты\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{$BASE_URL}}/food-items/feed/",
+									"host": [
+										"{{$BASE_URL}}"
+									],
+									"path": [
+										"food-items",
+										"feed",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Tue, 13 Aug 2024 04:52:56 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.11.8"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "67"
+								},
+								{
+									"key": "Vary",
+									"value": "origin, Cookie"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": \"Food item does not exist\",\n    \"food_item_name\": \"манты\"\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
