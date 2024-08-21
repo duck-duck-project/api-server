@@ -43,6 +43,7 @@ class ContactSecretMessageListApi(APIView):
             sender_id = serializers.IntegerField()
             recipient_id = serializers.IntegerField()
             created_at = serializers.DateTimeField()
+            seen_at = serializers.DateTimeField(allow_null=True)
 
         contact = ContactPartialSerializer()
         secret_messages = SecretMessagePartialSerializer(many=True)

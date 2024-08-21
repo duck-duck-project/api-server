@@ -33,6 +33,7 @@ class ContactSecretMessage:
     sender_id: int
     recipient_id: int
     created_at: datetime
+    seen_at: datetime | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,7 +111,14 @@ def get_contact_secret_messages(contact: Contact) -> ContactSecretMessages:
     )
     secret_messages = (
         contact_secret_messages
-        .values('id', 'text', 'sender_id', 'recipient_id', 'created_at')
+        .values(
+            'id',
+            'text',
+            'sender_id',
+            'recipient_id',
+            'created_at',
+            'seen_at',
+        )
     )
     contact_secret_messages = [
         ContactSecretMessage(
@@ -119,6 +127,7 @@ def get_contact_secret_messages(contact: Contact) -> ContactSecretMessages:
             sender_id=secret_message['sender_id'],
             recipient_id=secret_message['recipient_id'],
             created_at=secret_message['created_at'],
+            seen_at=secret_message['seen_at'],
         )
         for secret_message in secret_messages
     ]
