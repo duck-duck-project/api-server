@@ -33,6 +33,7 @@ class ContactSecretMessageListApi(APIView):
     class OutputSerializer(serializers.Serializer):
 
         class ContactPartialSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
             of_user = UserPartialSerializer()
             to_user = UserPartialSerializer()
 
