@@ -37,6 +37,7 @@ class ContactSecretMessage:
 
 @dataclass(frozen=True, slots=True)
 class ContactPartial:
+    id: int
     of_user: UserPartial
     to_user: UserPartial
 
@@ -122,6 +123,7 @@ def get_contact_secret_messages(contact: Contact) -> ContactSecretMessages:
         for secret_message in secret_messages
     ]
     contact_partial = ContactPartial(
+        id=contact.id,
         of_user=UserPartial(
             id=contact.of_user.id,
             fullname=contact.of_user.fullname,
