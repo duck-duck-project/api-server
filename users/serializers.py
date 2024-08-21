@@ -7,7 +7,7 @@ __all__ = ('UserPartialSerializer', 'ThemeSerializer', 'UserSerializer')
 
 class UserPartialSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    username = serializers.CharField()
+    username = serializers.CharField(allow_null=True)
     fullname = serializers.CharField()
 
 

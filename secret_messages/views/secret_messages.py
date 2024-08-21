@@ -8,9 +8,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from secret_messages.exceptions import SecretMessageDoesNotExistError
-from secret_messages.selectors import get_secret_message_by_id
+from secret_messages.selectors import (
+    get_contact_secret_messages,
+    get_secret_message_by_id,
+)
 from secret_messages.services import create_secret_message
-from users.serializers import UserSerializer
+from users.exceptions import ContactDoesNotExistError
+from users.selectors.contacts import get_not_deleted_contact_by_id
+from users.serializers import UserPartialSerializer, UserSerializer
 
 
 class SecretMessageSerializer(serializers.Serializer):
@@ -21,6 +26,37 @@ class SecretMessageSerializer(serializers.Serializer):
     is_seen = serializers.BooleanField()
     is_deleted = serializers.BooleanField()
     created_at = serializers.DateTimeField()
+
+
+class ContactSecretMessageListApi(APIView):
+
+    class OutputSerializer(serializers.Serializer):
+
+        class ContactPartialSerializer(serializers.Serializer):
+            of_user = UserPartialSerializer()
+            to_user = UserPartialSerializer()
+
+        class SecretMessagePartialSerializer(serializers.Serializer):
+            id = serializers.UUIDField()
+            text = serializers.CharField()
+            sender_id = serializers.IntegerField()
+            recipient_id = serializers.IntegerField()
+            created_at = serializers.DateTimeField()
+
+        contact = ContactPartialSerializer()
+        secret_messages = SecretMessagePartialSerializer(many=True)
+
+    def get(self, request: Request, contact_id: int) -> Response:
+        try:
+            contact = get_not_deleted_contact_by_id(contact_id)
+        except ContactDoesNotExistError:
+            raise NotFound({'ok': False, 'error': 'Contact does not exist'})
+
+        contact_secret_messages = get_contact_secret_messages(contact)
+
+        serializer = self.OutputSerializer(contact_secret_messages)
+        response_data = {'ok': True, 'result': serializer.data}
+        return Response(response_data)
 
 
 class SecretMessageCreateApi(APIView):
