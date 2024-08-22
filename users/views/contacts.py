@@ -64,8 +64,8 @@ class ContactCreateApi(APIView):
         public_name: str = serialized_data['public_name']
 
         try:
-            of_user = get_user_by_id(of_user_id)
-            to_user = get_user_by_id(to_user_id)
+            of_user, _ = get_or_create_user(of_user_id)
+            to_user, _ = get_user_by_id(to_user_id)
         except UserDoesNotExistsError as error:
             raise NotFound(f'User by ID "{error.user_id}" does not exist')
 
