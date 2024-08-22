@@ -1,5 +1,6 @@
 from django.db import models
 
+from users.models.themes import Theme
 from users.models.users import User
 
 __all__ = ('Contact',)
@@ -21,6 +22,12 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_hidden = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    theme = models.ForeignKey(
+        to=Theme,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         unique_together = ('of_user', 'to_user')
