@@ -1,8 +1,28 @@
 from rest_framework import serializers
 
-from users.models import Theme, User
+from users.models import User
 
-__all__ = ('UserPartialSerializer', 'ThemeSerializer', 'UserSerializer')
+__all__ = (
+    'UserPartialSerializer',
+    'ThemeSerializer',
+    'UserSerializer',
+    'ContactSerializer',
+    'UserPartialWithThemeSerializer',
+    'UserPartialWithProfilePhotoSerializer',
+)
+
+
+class ThemeSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    secret_message_template_text = serializers.CharField()
+    secret_media_template_text = serializers.CharField()
+    secret_message_view_button_text = serializers.CharField()
+    secret_message_delete_button_text = serializers.CharField()
+    secret_message_read_confirmation_text = serializers.CharField()
+    secret_message_deleted_confirmation_text = serializers.CharField()
+    secret_message_deleted_text = serializers.CharField()
+    secret_message_missing_text = serializers.CharField()
+    created_at = serializers.DateTimeField()
 
 
 class UserPartialSerializer(serializers.Serializer):
@@ -11,10 +31,12 @@ class UserPartialSerializer(serializers.Serializer):
     fullname = serializers.CharField()
 
 
-class ThemeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Theme
-        fields = '__all__'
+class UserPartialWithProfilePhotoSerializer(UserPartialSerializer):
+    profile_photo_url = serializers.URLField(allow_null=True)
+
+
+class UserPartialWithThemeSerializer(UserPartialSerializer):
+    theme = ThemeSerializer(allow_null=True)
 
 
 class UserSerializer(serializers.Serializer):
@@ -62,3 +84,13 @@ class UserSerializer(serializers.Serializer):
     health = serializers.IntegerField()
     did_sports_at = serializers.DateTimeField(allow_null=True)
     is_premium = serializers.BooleanField()
+
+
+class ContactSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    user = UserPartialWithProfilePhotoSerializer()
+    public_name = serializers.CharField()
+    private_name = serializers.CharField()
+    is_hidden = serializers.BooleanField()
+    theme = ThemeSerializer(allow_null=True)
+    created_at = serializers.DateTimeField()

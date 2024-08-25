@@ -16,8 +16,8 @@ from secret_messages.selectors import (
 )
 from secret_messages.services import create_secret_media
 from users.exceptions import ContactDoesNotExistError
-from users.selectors.contacts import get_not_deleted_contact_by_id
-from users.views.contacts import ContactSerializer
+from users.selectors.contacts import get_user_contact_by_id
+from users.serializers import ContactSerializer
 
 
 class SecretMediaRetrieveApi(APIView):
@@ -66,7 +66,7 @@ class SecretMediaCreateApi(APIView):
         media_type: int = serialized_data['media_type']
 
         try:
-            contact = get_not_deleted_contact_by_id(contact_id)
+            contact = get_user_contact_by_id(contact_id)
         except ContactDoesNotExistError:
             raise NotFound('Contact does not exist')
 

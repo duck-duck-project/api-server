@@ -1,18 +1,34 @@
-from django.db import transaction
-from fast_depends import Depends, inject
+from dataclasses import dataclass
+from datetime import datetime
 
-from economics.dependencies import get_transaction_notifier
-from economics.models import OperationPrice
-from economics.services import create_system_withdrawal
-from telegram.services import TransactionNotifier
+from django.db import transaction
+
 from users.exceptions import ContactAlreadyExistsError
-from users.models import User, Contact
+from users.models import Contact, User
 
 __all__ = (
     'create_contact',
     'update_contact',
     'delete_contact_by_id',
 )
+
+
+@dataclass(frozen=True, slots=True)
+class UserPartialDTO:
+    id: int
+    fullname: str
+    username: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class ContactDTO:
+    id: int
+    user: UserPartialDTO
+    private_name: str
+    public_name: str
+    is_hidden: bool
+    theme: None
+    created_at: datetime
 
 
 @transaction.atomic
@@ -22,7 +38,7 @@ def create_contact(
         to_user: User,
         private_name: str,
         public_name: str,
-) -> Contact:
+) -> ContactDTO:
     """Create contact. If soft deleted, mark it as not deleted.
     Withdraw funds from user for contact creation.
 
@@ -34,10 +50,6 @@ def create_contact(
 
     Returns:
         Contact instance.
-
-    Raises:
-        InsufficientFundsForSystemWithdrawalError:
-            if user does not have enough funds for contact creation.
     """
     try:
         contact = Contact.objects.get(of_user=of_user, to_user=to_user)
@@ -55,7 +67,19 @@ def create_contact(
         else:
             raise ContactAlreadyExistsError
 
-    return contact
+    return ContactDTO(
+        id=contact.id,
+        user=UserPartialDTO(
+            id=to_user.id,
+            fullname=to_user.fullname,
+            username=to_user.username,
+        ),
+        private_name=contact.private_name,
+        public_name=contact.public_name,
+        is_hidden=contact.is_hidden,
+        theme=contact.theme,
+        created_at=contact.created_at,
+    )
 
 
 def update_contact(
@@ -93,7 +117,7 @@ def delete_contact_by_id(contact_id: int) -> bool:
     deleted_count = (
         Contact
         .objects
-        .filter(id=contact_id)
+        .filter(id=contact_id, is_deleted=False)
         .update(is_deleted=True)
     )
     return bool(deleted_count)

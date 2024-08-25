@@ -14,7 +14,7 @@ from secret_messages.selectors import (
 )
 from secret_messages.services import create_secret_message
 from users.exceptions import ContactDoesNotExistError
-from users.selectors.contacts import get_not_deleted_contact_by_id
+from users.selectors.contacts import get_user_contact_by_id
 from users.serializers import UserPartialSerializer, UserSerializer
 
 
@@ -50,7 +50,7 @@ class ContactSecretMessageListApi(APIView):
 
     def get(self, request: Request, contact_id: int) -> Response:
         try:
-            contact = get_not_deleted_contact_by_id(contact_id)
+            contact = get_user_contact_by_id(contact_id)
         except ContactDoesNotExistError:
             raise NotFound({'ok': False, 'error': 'Contact does not exist'})
 
