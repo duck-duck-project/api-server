@@ -31,6 +31,8 @@ class MiningActionCreateApi(APIView):
         weight_in_grams = serializers.IntegerField()
         spent_energy = serializers.IntegerField()
         remaining_energy = serializers.IntegerField()
+        spent_health = serializers.IntegerField()
+        remaining_health = serializers.IntegerField()
 
     def post(self, request: Request) -> Response:
         serializer = self.InputSerializer(data=request.data)

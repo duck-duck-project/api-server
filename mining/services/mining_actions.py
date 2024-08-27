@@ -25,6 +25,8 @@ class MiningActionResult:
     value: int
     spent_energy: int
     remaining_energy: int
+    spent_health: int
+    remaining_health: int
 
 
 @transaction.atomic
@@ -44,9 +46,10 @@ def create_mining_action(
         )
 
     energy_cost = get_energy_cost(user.is_premium)
+    health_cost = get_health_cost(user.is_premium)
 
     decrease_user_energy(user, energy_cost)
-    decrease_user_health(user, get_health_cost(user.is_premium))
+    decrease_user_health(user, health_cost)
     mining_action = MiningAction.objects.create(
         user_id=user.id,
         resource_name=mined_resource.name,
@@ -67,4 +70,6 @@ def create_mining_action(
         remaining_energy=user.energy,
         weight_in_grams=mined_resource.weight_in_grams,
         value_per_gram=mined_resource.value_per_gram,
+        spent_health=health_cost,
+        remaining_health=user.health,
     )
