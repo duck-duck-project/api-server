@@ -1,8 +1,11 @@
-from django.urls import path
+from django.urls import path, register_converter
 
+from core.converters import AnyIntConverter
 from mining.views import (
     MiningActionCreateApi, MiningChatStatisticsApi, MiningUserStatisticsApi,
 )
+
+register_converter(AnyIntConverter, 'any_int')
 
 urlpatterns = [
     path(r'', MiningActionCreateApi.as_view(), name='mining'),
@@ -12,7 +15,7 @@ urlpatterns = [
         name='user-statistics',
     ),
     path(
-        r'chats/<int:user_id>/statistics/',
+        r'chats/<any_int:user_id>/statistics/',
         MiningChatStatisticsApi.as_view(),
         name='chat-statistics',
     ),
