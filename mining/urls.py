@@ -15,7 +15,7 @@ urlpatterns = [
         name='user-statistics',
     ),
     path(
-        r'chats/<any_int:user_id>/statistics/',
+        r'chats/<any_int:chat_id>/statistics/',
         MiningChatStatisticsApi.as_view(),
         name='chat-statistics',
     ),
