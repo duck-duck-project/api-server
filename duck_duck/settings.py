@@ -138,6 +138,9 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
+DRF_STANDARDIZED_ERRORS = {
+    "EXCEPTION_FORMATTER_CLASS": "core.exceptions.CustomFormatter",
+}
 
 if DEBUG:
     INSTALLED_APPS.append('silk')
