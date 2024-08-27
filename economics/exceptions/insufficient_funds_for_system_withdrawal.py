@@ -1,19 +1,15 @@
-from dataclasses import dataclass
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 __all__ = ('InsufficientFundsForSystemWithdrawalError',)
 
 
-@dataclass(frozen=True, slots=True)
-class InsufficientFundsForSystemWithdrawalError(Exception):
-    user_id: int
-    amount: int
-    balance: int
-    description: str
+class InsufficientFundsForSystemWithdrawalError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('User has insufficient funds for write-off')
+    default_code = 'insufficient_funds'
 
-    def __str__(self) -> str:
-        return (
-            f'User {self.user_id} has insufficient funds'
-            f' for system withdrawal of {self.amount}.'
-            f' Balance: {self.balance}.'
-            f' Transaction: {self.description}.'
-        )
+    def __init__(self, amount: int):
+        super().__init__()
+        self.extra = {'amount': amount}

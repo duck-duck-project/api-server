@@ -19,6 +19,7 @@ class UserFeedResult:
     from_user_id: int
     to_user_id: int
     food_item_name: str
+    food_item_type: int
     food_item_emoji: str | None
     price: int
     energy_benefit_value: int
@@ -75,6 +76,7 @@ def feed_user(
         from_user_id=from_user.id,
         to_user_id=to_user.id,
         food_item_name=food_item.name,
+        food_item_type=food_item.type,
         food_item_emoji=food_item.emoji,
         price=food_item.price,
         energy_benefit_value=food_item.energy_benefit_value,
