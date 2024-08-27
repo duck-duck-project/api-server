@@ -42,7 +42,7 @@ class ContactDoesNotExistError(Exception):
     pass
 
 
-class NotEnoughEnergyError(Exception):
+class NotEnoughEnergyError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_code = 'not_enough_energy'
 

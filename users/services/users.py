@@ -53,7 +53,7 @@ def decrease_user_energy(user: User, decrease: int) -> User:
         user.save(update_fields=['energy'])
     except ValidationError as error:
         if 'Ensure this value is greater than or equal to 0.' in error.messages:
-            raise NotEnoughEnergyError(cost=decrease)
+            raise NotEnoughEnergyError(required_health_value=decrease)
         raise
     return user
 
@@ -78,7 +78,7 @@ def decrease_user_health(user: User, decrease: int) -> User:
         user.save(update_fields=['health'])
     except ValidationError as error:
         if 'Ensure this value is greater than or equal to 0.' in error.messages:
-            raise NotEnoughHealthError(cost=decrease)
+            raise NotEnoughHealthError(required_health_value=decrease)
         raise
 
     return user
