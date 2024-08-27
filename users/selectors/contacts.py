@@ -158,7 +158,7 @@ def map_contact_to_dto(contact: Contact) -> ContactDTO:
         public_name=contact.public_name,
         private_name=contact.private_name,
         is_hidden=contact.is_hidden,
-        theme=map_theme_to_dto(contact.to_user.theme),
+        theme=map_theme_to_dto(contact.theme),
         created_at=contact.created_at,
     )
 
