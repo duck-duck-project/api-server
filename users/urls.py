@@ -1,20 +1,43 @@
-from django.urls import path
+from django.urls import include, path
 
 from users.views import (
-    ContactCreateApi, ContactRetrieveUpdateDeleteApi, TagCreateApi,
-    TagDeleteApi, TagListApi, ThemeListApi, ThemeRetrieveApi,
-    UserContactBirthdayListApi, UserContactListApi, UserCreateUpdateApi,
-    UserFoodConsumeApi, UserRetrieveApi,
+    ContactCreateApi,
+    ContactRetrieveUpdateDeleteApi,
+    TagCreateApi,
+    TagDeleteApi,
+    TagListApi,
+    ThemeListApi,
+    ThemeRetrieveApi,
+    UserContactBirthdayListApi,
+    UserContactListApi,
+    UserCreateUpdateApi,
+    UserFoodConsumeApi,
+    UserRetrieveApi,
 )
 from users.views.users import UserDoSportsApi
 
+contacts_urlpatterns = [
+    path(r'', ContactCreateApi.as_view(), name='contact-create'),
+    path(
+        r'<int:contact_id>/',
+        ContactRetrieveUpdateDeleteApi.as_view(),
+        name='contact-retrieve-update-delete',
+    ),
+    path(
+        r'users/<int:user_id>/birthdays/',
+        UserContactBirthdayListApi.as_view(),
+        name='contacts-birthdays-list',
+    ),
+    path(
+        r'users/<int:user_id>/',
+        UserContactListApi.as_view(),
+        name='contacts-list',
+    ),
+]
+
 app_name = 'users'
 urlpatterns = [
-    path(
-        r'users/<int:user_id>/contact-birthdays/',
-        UserContactBirthdayListApi.as_view(),
-        name='contact-birthdays-list',
-    ),
+    path(r'contacts/', include(contacts_urlpatterns)),
     path(
         r'users/tags/',
         TagCreateApi.as_view(),
@@ -49,21 +72,6 @@ urlpatterns = [
         r'users/',
         UserCreateUpdateApi.as_view(),
         name='create-update',
-    ),
-    path(
-        r'contacts/',
-        ContactCreateApi.as_view(),
-        name='contacts-create',
-    ),
-    path(
-        r'contacts/<int:contact_id>/',
-        ContactRetrieveUpdateDeleteApi.as_view(),
-        name='contacts-retrieve-update-delete',
-    ),
-    path(
-        r'users/<int:user_id>/contacts/',
-        UserContactListApi.as_view(),
-        name='contacts-list',
     ),
     path(
         r'themes/',

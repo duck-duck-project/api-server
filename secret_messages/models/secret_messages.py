@@ -1,23 +1,16 @@
 from django.db import models
-from users.models import User
 
-__all__ = ('SecretMessage',)
+from users.models import Contact
+
+__all__ = ('SecretTextMessage',)
 
 
-class SecretMessage(models.Model):
+class SecretTextMessage(models.Model):
     id = models.UUIDField(primary_key=True)
-    text = models.CharField(max_length=4096)
-    sender = models.ForeignKey(
-        to=User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='sent_secret_message',
-    )
-    recipient = models.ForeignKey(
-        to=User,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='received_secret_message',
+    text = models.CharField(max_length=200)
+    contact = models.ForeignKey(
+        to=Contact,
+        on_delete=models.CASCADE,
     )
     deleted_at = models.DateTimeField(null=True, blank=True)
     seen_at = models.DateTimeField(null=True, blank=True)

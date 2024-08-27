@@ -1,14 +1,32 @@
 from dataclasses import dataclass
 
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
+
 __all__ = (
-    'ContactDoesNotExistError',
+    'ContactNotFoundError',
     'ContactAlreadyExistsError',
     'UserDoesNotExistsError',
     'UserAlreadyExistsError',
     'NotEnoughEnergyError',
     'NotEnoughHealthError',
     'UserSportsThrottledError',
+    'ContactDoesNotExistError',
+    'ContactAlreadyExistsError',
 )
+
+
+class ContactAlreadyExistsError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Contact already exists.')
+    default_code = 'contact_already_exists'
+
+
+class ContactNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Requested contact was not found.')
+    default_code = 'contact_not_found'
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,10 +39,6 @@ class UserAlreadyExistsError(Exception):
 
 
 class ContactDoesNotExistError(Exception):
-    pass
-
-
-class ContactAlreadyExistsError(Exception):
     pass
 
 

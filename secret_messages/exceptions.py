@@ -1,27 +1,27 @@
-from dataclasses import dataclass
-from uuid import UUID
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
 __all__ = (
-    'SecretMessageDoesNotExistError',
-    'SecretMediaAlreadyExistsError',
-    'SecretMediaDoesNotExistError',
-    'ThemeDoesNotExistError',
+    'SecretTextMessageIdConflictError',
+    'SecretTextMessageNotFoundError',
+    'SecretMediaMessageNotFoundError',
 )
 
 
-@dataclass(frozen=True, slots=True)
-class SecretMessageDoesNotExistError(Exception):
-    secret_message_id: UUID
+class SecretMediaMessageNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Secret media message not found.')
+    default_code = 'secret_media_message_not_found'
 
 
-@dataclass(frozen=True, slots=True)
-class SecretMediaDoesNotExistError(Exception):
-    secret_media_id: UUID
+class SecretTextMessageNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Secret text message not found.')
+    default_code = 'secret_text_message_not_found'
 
 
-class SecretMediaAlreadyExistsError(Exception):
-    pass
-
-
-class ThemeDoesNotExistError(Exception):
-    pass
+class SecretTextMessageIdConflictError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Secret text message with this ID already exists.')
+    default_code = 'secret_text_message_id_conflict'

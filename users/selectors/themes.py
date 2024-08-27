@@ -12,4 +12,4 @@ def get_visible_themes() -> QuerySet[Theme]:
 
 
 def get_theme_by_id(theme_id: UUID) -> Theme:
-    return Theme.objects.get(id=theme_id)
+    return Theme.objects.get(id=theme_id, is_hidden=False)
