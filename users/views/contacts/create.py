@@ -3,8 +3,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.exceptions import create_api_error
-from users.exceptions import ContactAlreadyExistsError
 from users.serializers import ContactSerializer
 from users.services.contacts import create_contact
 from users.services.users import get_or_create_user
@@ -32,19 +30,12 @@ class ContactCreateApi(APIView):
         of_user, _ = get_or_create_user(of_user_id)
         to_user, _ = get_or_create_user(to_user_id)
 
-        try:
-            contact = create_contact(
-                of_user=of_user,
-                to_user=to_user,
-                private_name=private_name,
-                public_name=public_name,
-            )
-        except ContactAlreadyExistsError:
-            raise create_api_error(
-                error='CONTACT_ALREADY_EXISTS',
-                status_code=status.HTTP_409_CONFLICT,
-            )
+        contact = create_contact(
+            of_user=of_user,
+            to_user=to_user,
+            private_name=private_name,
+            public_name=public_name,
+        )
 
         serializer = ContactSerializer(contact)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

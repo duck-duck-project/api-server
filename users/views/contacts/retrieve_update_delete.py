@@ -3,8 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.exceptions import create_api_error
-from users.exceptions import ContactDoesNotExistError
+from users.exceptions import ContactNotFoundError
 from users.selectors.contacts import get_user_contact_by_id
 from users.serializers import ContactSerializer, UserPartialWithThemeSerializer
 from users.services.contacts import delete_contact_by_id, update_contact
@@ -23,17 +22,9 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         contact = ContactSerializer()
 
     def get(self, request: Request, contact_id: int):
-        try:
-            user_contact = get_user_contact_by_id(contact_id)
-        except ContactDoesNotExistError:
-            raise create_api_error(
-                error='CONTACT_DOES_NOT_EXIST',
-                status_code=status.HTTP_404_NOT_FOUND,
-            )
-
+        user_contact = get_user_contact_by_id(contact_id)
         serializer = self.OutputSerializer(user_contact)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data)
+        return Response(serializer.data)
 
     def put(self, request: Request, contact_id: int):
         serializer = self.InputSerializer(data=request.data)
@@ -52,17 +43,13 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         )
 
         if not is_updated:
-            raise create_api_error(
-                error='CONTACT_DOES_NOT_EXIST',
-                status_code=status.HTTP_404_NOT_FOUND,
-            )
-        return Response({'ok': True}, status=status.HTTP_200_OK)
+            raise ContactNotFoundError
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def delete(self, request: Request, contact_id: int):
         is_deleted = delete_contact_by_id(contact_id)
         if not is_deleted:
-            raise create_api_error(
-                error='CONTACT_DOES_NOT_EXIST',
-                status_code=status.HTTP_404_NOT_FOUND,
-            )
-        return Response({'ok': True}, status=status.HTTP_200_OK)
+            raise ContactNotFoundError
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

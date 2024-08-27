@@ -9,6 +9,7 @@ __all__ = (
     'ContactSerializer',
     'UserPartialWithThemeSerializer',
     'UserPartialWithProfilePhotoSerializer',
+    'UserPartialWithCanReceiveNotificationsSerializer',
 )
 
 
@@ -37,6 +38,10 @@ class UserPartialWithProfilePhotoSerializer(UserPartialSerializer):
 
 class UserPartialWithThemeSerializer(UserPartialSerializer):
     theme = ThemeSerializer(allow_null=True)
+
+
+class UserPartialWithCanReceiveNotificationsSerializer(UserPartialSerializer):
+    can_receive_notifications = serializers.BooleanField()
 
 
 class UserSerializer(serializers.Serializer):

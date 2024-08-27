@@ -13,8 +13,8 @@ class ApplicationError(Exception):
 def validate_error_code(error: str) -> None:
     if ' ' in error:
         raise ApplicationError('Error code must not contain spaces.')
-    if not error.isupper():
-        raise ApplicationError('Error code must be in upper case.')
+    if not error.islower():
+        raise ApplicationError('Error code must be in lower case.')
 
 
 def create_api_error(
@@ -34,7 +34,7 @@ def create_api_error(
         APIException instance.
     """
     validate_error_code(error)
-    data = {'error': error}
+    data = {'error': error, 'ok': False}
     if extra is not None:
         data['extra'] = extra
     error = APIException(data)

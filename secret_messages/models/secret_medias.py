@@ -20,12 +20,12 @@ class SecretMedia(models.Model):
         STICKER = 8
 
     id = models.UUIDField(primary_key=True, default=uuid4)
-    name = models.CharField(max_length=64, null=True, blank=True)
+    caption = models.CharField(max_length=64, null=True, blank=True)
     contact = models.ForeignKey(
         to=Contact,
         on_delete=models.SET_NULL,
         null=True,
     )
-    file_id = models.CharField(max_length=255, unique=True)
+    file_id = models.CharField(max_length=255)
     media_type = models.PositiveSmallIntegerField(choices=MediaType.choices)
     created_at = models.DateTimeField(auto_now_add=True)

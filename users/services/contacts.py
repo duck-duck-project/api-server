@@ -50,6 +50,9 @@ def create_contact(
 
     Returns:
         Contact instance.
+
+    Raises:
+        ContactAlreadyExistsError: if contact already exists.
     """
     try:
         contact = Contact.objects.get(of_user=of_user, to_user=to_user)

@@ -28,5 +28,5 @@ class UserContactListApi(APIView):
         user, _ = get_or_create_user(user_id)
         user_contacts = get_user_contacts(user)
         serializer = self.OutputSerializer(user_contacts)
-        response_data = {'ok': True, 'result': serializer.data}
+        response_data = {'contacts': serializer.data}
         return Response(response_data)

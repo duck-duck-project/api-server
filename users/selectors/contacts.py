@@ -1,16 +1,22 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
 from django.db.models import QuerySet
 
-from users.exceptions import ContactDoesNotExistError
+from users.exceptions import ContactNotFoundError
 from users.models import Contact, Theme, User
 
 __all__ = (
     'get_user_contact_by_id',
     'get_not_deleted_contacts_by_user_id',
     'get_user_contacts',
+    'get_reversed_user_contact_or_none',
+    'UserWithThemeDTO',
+    'UserContactDTO',
+    'ThemeDTO',
+    'get_contact_ids_from_user_contacts',
 )
 
 CONTACTS_SORTING_STRATEGY_TO_FIELD_NAME = {
@@ -43,7 +49,8 @@ class UserDTO:
 
 
 @dataclass(frozen=True, slots=True)
-class UserWithProfilePhotoUrlDTO(UserDTO):
+class UserWithCanReceiveNotificationsAndProfilePhotoDTO(UserDTO):
+    can_receive_notifications: bool
     profile_photo_url: str | None
 
 
@@ -55,7 +62,7 @@ class UserWithThemeDTO(UserDTO):
 @dataclass(frozen=True, slots=True)
 class ContactDTO:
     id: int
-    user: UserDTO
+    user: UserWithCanReceiveNotificationsAndProfilePhotoDTO
     public_name: str
     private_name: str
     is_hidden: bool
@@ -80,6 +87,16 @@ class UserContactsDTO:
 class UserContactDTO:
     user: UserWithThemeDTO
     contact: ContactDTO
+
+
+def get_contact_ids_from_user_contacts(
+        user_contacts: Iterable[UserContactDTO | None],
+) -> set[int]:
+    return {
+        user_contact.contact.id
+        for user_contact in user_contacts
+        if user_contact is not None
+    }
 
 
 def map_contacts_sorting_to_dto(user: User) -> ContactsSortingDTO:
@@ -113,14 +130,15 @@ def map_theme_to_dto(theme: Theme | None) -> ThemeDTO | None:
     )
 
 
-def map_user_with_profile_photo_url_to_dto(
+def map_user_with_profile_photo_url_and_can_receive_notifications_to_dto(
         user: User,
-) -> UserWithProfilePhotoUrlDTO:
-    return UserWithProfilePhotoUrlDTO(
+) -> UserWithCanReceiveNotificationsAndProfilePhotoDTO:
+    return UserWithCanReceiveNotificationsAndProfilePhotoDTO(
         id=user.id,
         fullname=user.fullname,
         username=user.username,
         profile_photo_url=user.profile_photo_url,
+        can_receive_notifications=user.can_receive_notifications,
     )
 
 
@@ -136,7 +154,7 @@ def map_user_with_theme_to_dto(user: User) -> UserWithThemeDTO:
 def map_contact_to_dto(contact: Contact) -> ContactDTO:
     return ContactDTO(
         id=contact.id,
-        user=map_user_with_profile_photo_url_to_dto(contact.to_user),
+        user=map_user_with_profile_photo_url_and_can_receive_notifications_to_dto(contact.to_user),
         public_name=contact.public_name,
         private_name=contact.private_name,
         is_hidden=contact.is_hidden,
@@ -175,7 +193,7 @@ def get_user_contact_by_id(contact_id: int) -> UserContactDTO:
         Contact instance if exists.
 
     Raises:
-        ContactDoesNotExistError: If contact does not exist.
+        ContactNotFoundError: If contact does not exist.
     """
     try:
         contact = (
@@ -189,7 +207,7 @@ def get_user_contact_by_id(contact_id: int) -> UserContactDTO:
             .get(id=contact_id, is_deleted=False)
         )
     except Contact.DoesNotExist:
-        raise ContactDoesNotExistError
+        raise ContactNotFoundError
 
     return UserContactDTO(
         user=map_user_with_theme_to_dto(contact.of_user),
@@ -225,3 +243,30 @@ def get_not_deleted_contacts_by_user_id(user: User) -> QuerySet[Contact]:
         sorting_field_name = f'-{sorting_field_name}'
 
     return contacts.order_by(sorting_field_name)
+
+
+def get_reversed_user_contact_or_none(
+        user_contact: UserContactDTO
+) -> UserContactDTO | None:
+    try:
+        contact = (
+            Contact.objects
+            .select_related(
+                'of_user',
+                'to_user',
+                'of_user__theme',
+                'to_user__theme',
+            )
+            .get(
+                of_user_id=user_contact.contact.user.id,
+                to_user_id=user_contact.user.id,
+                is_deleted=False,
+            )
+        )
+    except Contact.DoesNotExist:
+        return
+
+    return UserContactDTO(
+        user=map_user_with_theme_to_dto(contact.of_user),
+        contact=map_contact_to_dto(contact),
+    )

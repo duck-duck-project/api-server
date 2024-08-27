@@ -17,4 +17,5 @@ class UserContactBirthdayListApi(APIView):
     def get(self, request: Request, user_id: int) -> Response:
         contact_birthdays = get_user_contact_birthdays(user_id)
         serializer = self.OutputSerializer(contact_birthdays, many=True)
-        return Response({'ok': True, 'result': serializer.data})
+        response_data = {'birthdays': serializer.data}
+        return Response(response_data)
