@@ -1,3 +1,8 @@
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
+
+
 class SportActivityDoesNotExistError(Exception):
 
     def __init__(self, sport_activity_name: str):
@@ -12,11 +17,17 @@ class MedicineDoesNotExistError(Exception):
         self.medicine_name = medicine_name
 
 
-class FoodItemDoesNotExistError(Exception):
+class FoodItemNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Food item was not found.')
+    default_code = 'food_item_not_found'
 
-    def __init__(self, food_item_name: str):
-        super().__init__('Food item does not exist')
-        self.food_item_name = food_item_name
+    def __init__(self, food_item_name: str, food_item_type: int):
+        super().__init__()
+        self.extra = {
+            'food_item_name': food_item_name,
+            'food_item_type': food_item_type,
+        }
 
 
 class SportActivityCooldownError(Exception):

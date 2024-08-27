@@ -1,12 +1,16 @@
 from typing import TypedDict
 
-from user_characteristics.exceptions import FoodItemDoesNotExistError
+from user_characteristics.exceptions import FoodItemNotFoundError
 from user_characteristics.models import FoodItem
 from user_characteristics.selectors.food_item_aliases import (
     get_food_item_alias_by_name,
 )
 
-__all__ = ('FoodItemTypedDict', 'get_food_items', 'get_food_item_by_name')
+__all__ = (
+    'FoodItemTypedDict',
+    'get_food_items',
+    'get_food_item_by_name_and_type',
+)
 
 
 class FoodItemTypedDict(TypedDict):
@@ -32,12 +36,21 @@ def get_food_items() -> tuple[FoodItemTypedDict, ...]:
     )
 
 
-def get_food_item_by_name(food_item_name: str) -> FoodItem:
+def get_food_item_by_name_and_type(
+        food_item_name: str,
+        food_item_type: int,
+) -> FoodItem:
     alias = get_food_item_alias_by_name(food_item_name)
-    if alias is not None:
+    if alias is not None and alias.food_item.type == food_item_type:
         return alias.food_item
 
     try:
-        return FoodItem.objects.get(name__iexact=food_item_name)
+        return FoodItem.objects.get(
+            name__iexact=food_item_name,
+            type=food_item_type,
+        )
     except FoodItem.DoesNotExist:
-        raise FoodItemDoesNotExistError(food_item_name)
+        raise FoodItemNotFoundError(
+            food_item_name=food_item_name,
+            food_item_type=food_item_type,
+        )
