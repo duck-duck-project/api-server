@@ -10,6 +10,7 @@ class MiningAction(models.Model):
         to=User,
         on_delete=models.CASCADE,
     )
+    chat_id = models.PositiveBigIntegerField(blank=True, null=True)
     resource_name = models.CharField(max_length=64)
     value = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)

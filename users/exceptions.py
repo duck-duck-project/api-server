@@ -11,7 +11,7 @@ __all__ = (
     'UserAlreadyExistsError',
     'NotEnoughEnergyError',
     'NotEnoughHealthError',
-    'UserSportsThrottledError',
+    'SportActionCooldownError',
     'ContactDoesNotExistError',
     'ContactAlreadyExistsError',
 )
@@ -43,21 +43,39 @@ class ContactDoesNotExistError(Exception):
 
 
 class NotEnoughEnergyError(Exception):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'not_enough_energy'
 
-    def __init__(self, cost: int):
-        super().__init__('Not enough energy')
-        self.cost = cost
+    def __init__(self, required_health_value: int):
+        super().__init__(
+            f'User need {required_health_value} energy to perform this action.'
+        )
+        self.extra = {
+            'required_energy_value': required_health_value,
+        }
 
 
-class NotEnoughHealthError(Exception):
+class NotEnoughHealthError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'not_enough_health'
 
-    def __init__(self, cost: int):
-        super().__init__('Not enough health')
-        self.cost = cost
+    def __init__(self, required_health_value: int):
+        super().__init__(
+            f'User need {required_health_value} health to perform this action.'
+        )
+        self.extra = {
+            'required_health_value': required_health_value,
+        }
 
 
-class UserSportsThrottledError(Exception):
+class SportActionCooldownError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_code = 'sport_action_cooldown'
 
     def __init__(self, next_sports_in_seconds: int):
-        super().__init__(f'Next sports in {next_sports_in_seconds} seconds')
-        self.next_sports_in_seconds = next_sports_in_seconds
+        super().__init__(
+            f'Wait {next_sports_in_seconds} seconds to perform this action.'
+        )
+        self.extra = {
+            next_sports_in_seconds: next_sports_in_seconds,
+        }

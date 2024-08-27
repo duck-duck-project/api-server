@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.utils import timezone
 
-from mining.exceptions import MiningActionThrottledError
+from mining.exceptions import MiningCooldownError
 
 __all__ = ('validate_mining_time',)
 
@@ -26,4 +26,4 @@ def validate_mining_time(last_mining_at: datetime, is_premium: bool) -> None:
 
     next_mining_in_seconds = int(time_before_next_mining.total_seconds())
     if next_mining_in_seconds > 0:
-        raise MiningActionThrottledError(next_mining_in_seconds)
+        raise MiningCooldownError(next_mining_in_seconds)

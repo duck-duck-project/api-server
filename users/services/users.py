@@ -8,7 +8,7 @@ from django.utils import timezone
 from users.exceptions import (
     NotEnoughEnergyError,
     NotEnoughHealthError,
-    UserSportsThrottledError,
+    SportActionCooldownError,
 )
 from users.models import USER_MAX_ENERGY, USER_MAX_HEALTH, User
 
@@ -95,7 +95,7 @@ def validate_last_sports_time(last_sports_time: datetime | None) -> None:
     next_sports_time = compute_next_sports_time(last_sports_time)
     if next_sports_time > now:
         next_sports_in_seconds = int((next_sports_time - now).total_seconds())
-        raise UserSportsThrottledError(next_sports_in_seconds)
+        raise SportActionCooldownError(next_sports_in_seconds)
 
 
 @transaction.atomic

@@ -18,6 +18,7 @@ __all__ = ('create_mining_action',)
 @dataclass(frozen=True, slots=True)
 class MiningActionResult:
     user_id: int
+    chat_id: int | None
     resource_name: str
     value_per_gram: int
     weight_in_grams: int
@@ -27,7 +28,11 @@ class MiningActionResult:
 
 
 @transaction.atomic
-def create_mining_action(*, user: User) -> MiningActionResult:
+def create_mining_action(
+        *,
+        user: User,
+        chat_id: int | None,
+) -> MiningActionResult:
     mined_resource = get_random_mined_resource(user.is_premium)
 
     last_mining_action = get_last_mining_action(user_id=user.id)
@@ -46,6 +51,7 @@ def create_mining_action(*, user: User) -> MiningActionResult:
         user_id=user.id,
         resource_name=mined_resource.name,
         value=mined_resource.value,
+        chat_id=chat_id,
     )
     create_system_deposit(
         user=user,
@@ -54,6 +60,7 @@ def create_mining_action(*, user: User) -> MiningActionResult:
     )
     return MiningActionResult(
         user_id=user.id,
+        chat_id=chat_id,
         resource_name=mined_resource.name,
         value=mined_resource.value,
         spent_energy=energy_cost,

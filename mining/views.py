@@ -4,10 +4,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from mining.exceptions import MiningActionThrottledError
 from mining.services.mining_actions import create_mining_action
 from mining.services.statistics import get_mining_statistics
-from users.exceptions import NotEnoughEnergyError, NotEnoughHealthError
 from users.services.users import get_or_create_user
 
 __all__ = ('MiningActionCreateApi', 'MiningUserStatisticsApi')
@@ -16,9 +14,11 @@ __all__ = ('MiningActionCreateApi', 'MiningUserStatisticsApi')
 class MiningActionCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
+        chat_id = serializers.IntegerField(default=None)
 
     class OutputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
+        chat_id = serializers.IntegerField()
         resource_name = serializers.CharField()
         value = serializers.IntegerField()
         value_per_gram = serializers.FloatField()
@@ -30,36 +30,15 @@ class MiningActionCreateApi(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
+
         user_id: int = serialized_data['user_id']
+        chat_id: int | None = serialized_data['chat_id']
 
         user, _ = get_or_create_user(user_id=user_id)
-        try:
-            mining_action = create_mining_action(user=user)
-        except MiningActionThrottledError as error:
-            error = APIException({
-                'detail': str(error),
-                'next_mining_in_seconds': error.next_mining_in_seconds,
-            })
-            error.status_code = status.HTTP_400_BAD_REQUEST
-            raise error
-        except NotEnoughHealthError as error:
-            error = APIException({
-                'detail': str(error),
-                'required_health': error.cost,
-            })
-            error.status_code = status.HTTP_400_BAD_REQUEST
-            raise error
-        except NotEnoughEnergyError as error:
-            error = APIException({
-                'detail': str(error),
-                'required_energy': error.cost,
-            })
-            error.status_code = status.HTTP_400_BAD_REQUEST
-            raise error
+        mining_action = create_mining_action(user=user, chat_id=chat_id)
 
         serializer = self.OutputSerializer(mining_action)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class MiningUserStatisticsApi(APIView):
@@ -85,5 +64,4 @@ class MiningUserStatisticsApi(APIView):
         mining_statistics = get_mining_statistics(user_id=user_id)
 
         serializer = self.OutputSerializer(mining_statistics)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data)
+        return Response(serializer.data)

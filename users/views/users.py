@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from users.exceptions import (
     NotEnoughEnergyError, NotEnoughHealthError, UserDoesNotExistsError,
-    UserSportsThrottledError,
+    SportActionCooldownError,
 )
 from users.models import User
 from users.selectors.users import get_user_by_id
@@ -174,7 +174,7 @@ class UserDoSportsApi(APIView):
             })
             error.status_code = status.HTTP_400_BAD_REQUEST
             raise error
-        except UserSportsThrottledError as error:
+        except SportActionCooldownError as error:
             error = APIException(
                 detail={
                     'detail': str(error),
