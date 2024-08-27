@@ -14,9 +14,11 @@ __all__ = ('MiningActionCreateApi', 'MiningUserStatisticsApi')
 class MiningActionCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
+        chat_id = serializers.IntegerField(default=None)
 
     class OutputSerializer(serializers.Serializer):
         user_id = serializers.IntegerField()
+        chat_id = serializers.IntegerField()
         resource_name = serializers.CharField()
         value = serializers.IntegerField()
         value_per_gram = serializers.FloatField()
@@ -28,10 +30,12 @@ class MiningActionCreateApi(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
+
         user_id: int = serialized_data['user_id']
+        chat_id: int | None = serialized_data['chat_id']
 
         user, _ = get_or_create_user(user_id=user_id)
-        mining_action = create_mining_action(user=user)
+        mining_action = create_mining_action(user=user, chat_id=chat_id)
 
         serializer = self.OutputSerializer(mining_action)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
