@@ -1,14 +1,20 @@
 from rest_framework import serializers, status
-from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from mining.services.mining_actions import create_mining_action
-from mining.services.statistics import get_mining_statistics
+from mining.services.statistics import (
+    get_mining_chat_statistics,
+    get_mining_user_statistics,
+)
 from users.services.users import get_or_create_user
 
-__all__ = ('MiningActionCreateApi', 'MiningUserStatisticsApi')
+__all__ = (
+    'MiningActionCreateApi',
+    'MiningUserStatisticsApi',
+    'MiningChatStatisticsApi',
+)
 
 
 class MiningActionCreateApi(APIView):
@@ -42,8 +48,6 @@ class MiningActionCreateApi(APIView):
 
 
 class MiningUserStatisticsApi(APIView):
-    class InputSerializer(serializers.Serializer):
-        user_id = serializers.IntegerField()
 
     class OutputSerializer(serializers.Serializer):
         class ResourceSerializer(serializers.Serializer):
@@ -54,14 +58,25 @@ class MiningUserStatisticsApi(APIView):
         user_id = serializers.IntegerField()
         resources = ResourceSerializer(many=True)
 
-    def get(self, request: Request) -> Response:
-        serializer = self.InputSerializer(data=request.query_params)
-        serializer.is_valid(raise_exception=True)
-        serialized_data = serializer.data
+    def get(self, request: Request, user_id: int) -> Response:
+        mining_statistics = get_mining_user_statistics(user_id=user_id)
 
-        user_id: int = serialized_data['user_id']
+        serializer = self.OutputSerializer(mining_statistics)
+        return Response(serializer.data)
 
-        mining_statistics = get_mining_statistics(user_id=user_id)
+
+class MiningChatStatisticsApi(APIView):
+    class OutputSerializer(serializers.Serializer):
+        class ResourceSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            total_value = serializers.IntegerField()
+            total_count = serializers.IntegerField()
+
+        chat_id = serializers.IntegerField()
+        resources = ResourceSerializer(many=True)
+
+    def get(self, request: Request, chat_id: int) -> Response:
+        mining_statistics = get_mining_chat_statistics(chat_id=chat_id)
 
         serializer = self.OutputSerializer(mining_statistics)
         return Response(serializer.data)
