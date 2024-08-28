@@ -18,5 +18,5 @@ class MedicineListApi(APIView):
     def get(self, request: Request) -> Response:
         medicines = get_medicines()
         serializer = self.OutputSerializer(medicines, many=True)
-        response_data = {'ok': True, 'result': serializer.data}
+        response_data = {'medicines': serializer.data}
         return Response(response_data)

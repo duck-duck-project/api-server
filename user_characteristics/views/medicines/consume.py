@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from economics.exceptions import InsufficientFundsForSystemWithdrawalError
-from user_characteristics.exceptions import MedicineDoesNotExistError
+from user_characteristics.exceptions import MedicineNotFoundError
 from user_characteristics.selectors.medicines import get_medicine_by_name
 from user_characteristics.services.medicines import consume_medicine
 from users.services.users import get_or_create_user
@@ -35,26 +35,9 @@ class MedicineConsumeApi(APIView):
 
         user, _ = get_or_create_user(user_id)
 
-        try:
-            medicine = get_medicine_by_name(medicine_name)
-        except MedicineDoesNotExistError as error:
-            api_error = APIException({
-                'detail': 'Medicine does not exist',
-                'medicine_name': error.medicine_name,
-            })
-            api_error.status_code = status.HTTP_404_NOT_FOUND
-            raise api_error
+        medicine = get_medicine_by_name(medicine_name)
 
-        try:
-            consumption_result = consume_medicine(user=user, medicine=medicine)
-        except InsufficientFundsForSystemWithdrawalError as error:
-            api_error = APIException({
-                'detail': 'Not enough balance to buy medicine',
-                'price': error.amount,
-                'medicine_name': medicine_name,
-            })
-            raise api_error
+        consumption_result = consume_medicine(user=user, medicine=medicine)
 
         serializer = self.OutputSerializer(consumption_result)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data)
+        return Response(serializer.data)
