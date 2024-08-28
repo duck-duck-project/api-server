@@ -4,8 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user_characteristics.models import FoodItem
-from user_characteristics.selectors.food_items import \
-    get_food_item_by_name_and_type
+from user_characteristics.selectors.food_items import (
+    get_food_item_by_name_and_type,
+)
 from user_characteristics.services.food_items import feed_user
 from users.services.users import get_or_create_user
 
@@ -56,5 +57,4 @@ class FoodItemFeedApi(APIView):
         )
 
         serializer = self.OutputSerializer(user_feed_result)
-        response_data = {'ok': True, 'result': serializer.data}
-        return Response(response_data)
+        return Response(serializer.data)
