@@ -1,2 +1,0 @@
-class TransactionDoesNotExistError(Exception):
-    pass

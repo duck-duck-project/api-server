@@ -62,6 +62,4 @@ def get_transaction_by_id(transaction_id: UUID) -> Transaction:
             .get(id=transaction_id)
         )
     except Transaction.DoesNotExist:
-        raise TransactionDoesNotExistError(
-            f'Transaction with id {transaction_id} does not exist',
-        )
+        raise TransactionDoesNotExistError
