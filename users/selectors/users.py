@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 from django.db.models import QuerySet
 
-from users.exceptions import UserDoesNotExistsError
+from users.exceptions import UserNotFoundError
 from users.models import User
 
 __all__ = (
@@ -31,7 +31,7 @@ def get_user_by_id(user_id: int) -> User:
             .get(id=user_id)
         )
     except User.DoesNotExist:
-        raise UserDoesNotExistsError(user_id=user_id)
+        raise UserNotFoundError
 
 
 def iter_users_with_birthdays(

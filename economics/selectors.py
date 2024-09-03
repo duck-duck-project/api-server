@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from django.db.models import QuerySet, Q
+from django.db.models import Q, QuerySet
 
 from economics.exceptions import TransactionDoesNotExistError
 from economics.models import Transaction

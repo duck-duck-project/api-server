@@ -11,7 +11,7 @@ from economics.exceptions import (
 )
 from economics.selectors import get_transaction_by_id
 from economics.services import create_transfer, rollback_transfer
-from users.exceptions import UserDoesNotExistsError
+from users.exceptions import UserNotFoundError
 from users.selectors.users import get_user_by_id
 from users.serializers import UserPartialSerializer
 
@@ -56,7 +56,7 @@ class TransferCreateDeleteApi(APIView):
         try:
             sender = get_user_by_id(sender_id)
             recipient = get_user_by_id(recipient_id)
-        except UserDoesNotExistsError:
+        except UserNotFoundError:
             raise NotFound('User does not exists')
 
         try:

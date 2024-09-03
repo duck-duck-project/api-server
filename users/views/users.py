@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.exceptions import (
-    NotEnoughEnergyError, NotEnoughHealthError, UserDoesNotExistsError,
+    NotEnoughEnergyError, NotEnoughHealthError, UserNotFoundError,
     SportActionCooldownError,
 )
 from users.models import User
@@ -32,7 +32,7 @@ class UserRetrieveApi(APIView):
     def get(self, request: Request, user_id: int):
         try:
             user = get_user_by_id(user_id)
-        except UserDoesNotExistsError:
+        except UserNotFoundError:
             raise NotFound('User does not exist')
         serializer = self.OutputSerializer(user)
         return Response(serializer.data)

@@ -1,13 +1,8 @@
 from django.urls import path
 
 from economics.views import (
-    TransactionListApi,
-    TransferCreateDeleteApi,
-    BalanceRetrieveApi,
-    SystemDepositCreateApi,
-    SystemWithdrawalCreateApi,
-    RichestUsersStatisticsApi,
-    RichestUsersStatisticsView,
+    BalanceRetrieveApi, RichestUsersStatisticsView, SystemDepositCreateApi,
+    SystemWithdrawalCreateApi, TransactionListApi, TransferCreateDeleteApi,
 )
 
 app_name = 'economics'
@@ -31,11 +26,6 @@ urlpatterns = [
         r'balance/users/<int:user_id>/',
         BalanceRetrieveApi.as_view(),
         name='balance-retrieve',
-    ),
-    path(
-        r'richest-users-statistics/',
-        RichestUsersStatisticsApi.as_view(),
-        name='richest-users-statistics',
     ),
     path(
         r'deposit/',
