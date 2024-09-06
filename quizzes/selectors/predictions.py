@@ -1,18 +1,26 @@
 import random
 
-from rest_framework.exceptions import NotFound
-
+from quizzes.exceptions import PredictionNotFoundError
 from quizzes.models import Prediction
 
-__all__ = ('get_random_prediction',)
+__all__ = ('get_random_prediction_text',)
 
 
-def get_random_prediction() -> Prediction:
+def get_random_prediction_text() -> str:
+    """
+    Get random prediction text.
+
+    Returns:
+        Random prediction text.
+
+    Raises:
+        PredictionNotFoundError - if there are no predictions.
+    """
     prediction_ids = Prediction.objects.values_list('id', flat=True)
     if not prediction_ids:
-        raise NotFound('No predictions found')
+        raise PredictionNotFoundError
 
     try:
-        return Prediction.objects.get(id=random.choice(prediction_ids))
+        return Prediction.objects.get(id=random.choice(prediction_ids)).text
     except Prediction.DoesNotExist:
-        raise NotFound('No predictions found')
+        raise PredictionNotFoundError

@@ -13,7 +13,7 @@ def get_food_menu_html() -> HTML:
     url = 'https://beslenme.manas.edu.kg/menu'
     response = httpx.get(url)
     if response.is_error:
-        raise FoodMenuApiRequestError('Error while getting food menu html')
+        raise FoodMenuApiRequestError
     return HTML(response.text)
 
 

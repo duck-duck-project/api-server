@@ -5,9 +5,9 @@ from rest_framework.views import APIView
 
 from quizzes.models import TruthOrDareQuestion
 from quizzes.selectors import (
-    get_random_prediction,
+    get_random_prediction_text,
     get_random_truth_or_dare_question,
-    get_random_wish,
+    get_random_wish_text,
 )
 
 __all__ = (
@@ -18,13 +18,10 @@ __all__ = (
 
 
 class RandomPredictionApi(APIView):
-    class OutputSerializer(serializers.Serializer):
-        text = serializers.CharField()
 
     def get(self, request: Request) -> Response:
-        prediction = get_random_prediction()
-        serializer = self.OutputSerializer(prediction)
-        return Response(serializer.data)
+        prediction = get_random_prediction_text()
+        return Response({'text': prediction})
 
 
 class RandomWishApi(APIView):
@@ -32,9 +29,8 @@ class RandomWishApi(APIView):
         text = serializers.CharField()
 
     def get(self, request: Request) -> Response:
-        wish = get_random_wish()
-        serializer = self.OutputSerializer(wish)
-        return Response(serializer.data)
+        wish = get_random_wish_text()
+        return Response({'text': wish})
 
 
 class RandomTruthOrDareQuestionApi(APIView):
