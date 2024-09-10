@@ -42,16 +42,65 @@ class UserTagsDTO:
     tags: list[UserTagDTO]
 
 
+def get_tag_by_number(tag_number: int) -> TagDTO:
+    tag = (
+        Tag.objects
+        .select_related('of_user', 'to_user')
+        .only(
+            'id',
+            'of_user__id',
+            'of_user__fullname',
+            'of_user__username',
+            'to_user__id',
+            'to_user__fullname',
+            'to_user__username',
+            'text',
+            'weight',
+            'created_at',
+        )
+        .order_by('weight', '-created_at')
+        [tag_number - 1:tag_number]
+        .first()
+    )
+    if tag is None:
+        raise TagNotFoundError
+
+    return TagDTO(
+        id=tag.id,
+        of_user=map_user_to_partial_dto(tag.of_user),
+        to_user=map_user_to_partial_dto(tag.to_user),
+        text=tag.text,
+        weight=tag.weight,
+        created_at=tag.created_at,
+    )
+
+
 def get_tag_by_id(tag_id: int) -> TagDTO:
     try:
-        tag = Tag.objects.select_related('of_user', 'to_user').get(id=tag_id)
+        tag = (
+            Tag.objects
+            .select_related('of_user', 'to_user')
+            .only(
+                'id',
+                'of_user__id',
+                'of_user__fullname',
+                'of_user__username',
+                'to_user__id',
+                'to_user__fullname',
+                'to_user__username',
+                'text',
+                'weight',
+                'created_at',
+            )
+            .get(id=tag_id)
+        )
     except Tag.DoesNotExist:
         raise TagNotFoundError
 
     return TagDTO(
         id=tag.id,
         of_user=map_user_to_partial_dto(tag.of_user),
-        to_user=map_user_to_partial_dto(tag.to_user_id),
+        to_user=map_user_to_partial_dto(tag.to_user),
         text=tag.text,
         weight=tag.weight,
         created_at=tag.created_at,
@@ -76,6 +125,18 @@ def get_tags_by_user_id(user_id: int) -> UserTagsDTO:
     tags = (
         Tag.objects.select_related('of_user')
         .filter(to_user_id=user_id)
+        .only(
+            'id',
+            'of_user__id',
+            'of_user__fullname',
+            'of_user__username',
+            'to_user__id',
+            'to_user__fullname',
+            'to_user__username',
+            'text',
+            'weight',
+            'created_at',
+        )
         .order_by('weight', '-created_at')
         .only(
             'id',

@@ -1,15 +1,9 @@
 from django.urls import include, path
 
 from users.views import (
-    ContactCreateApi,
-    ContactRetrieveUpdateDeleteApi,
-    TagListCreateApi,
-    TagDeleteApi,
-    ThemeListApi,
-    ThemeRetrieveApi,
-    UserContactBirthdayListApi,
-    UserContactListApi,
-    UserCreateApi,
+    ContactCreateApi, ContactRetrieveUpdateDeleteApi, TagCreateApi,
+    TagDeleteApi, TagListApi, ThemeListApi, ThemeRetrieveApi,
+    UserContactBirthdayListApi, UserContactListApi, UserCreateApi,
     UserRetrieveUpdateApi,
 )
 
@@ -61,7 +55,7 @@ themes_urlpatterns = [
 tags_urlpatterns = [
     path(
         r'',
-        TagListCreateApi.as_view(),
+        TagCreateApi.as_view(),
         name='tags-create',
     ),
     path(
@@ -69,8 +63,12 @@ tags_urlpatterns = [
         TagDeleteApi.as_view(),
         name='tags-delete',
     ),
+    path(
+        r'users/<int:user_id>/',
+        TagListApi.as_view(),
+        name='tags-list',
+    ),
 ]
-
 
 app_name = 'users'
 urlpatterns = [
