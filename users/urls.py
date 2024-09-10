@@ -3,18 +3,28 @@ from django.urls import include, path
 from users.views import (
     ContactCreateApi,
     ContactRetrieveUpdateDeleteApi,
-    TagCreateApi,
+    TagListCreateApi,
     TagDeleteApi,
-    TagListApi,
     ThemeListApi,
     ThemeRetrieveApi,
     UserContactBirthdayListApi,
     UserContactListApi,
-    UserCreateUpdateApi,
-    UserFoodConsumeApi,
-    UserRetrieveApi,
+    UserCreateApi,
+    UserRetrieveUpdateApi,
 )
-from users.views.users import UserDoSportsApi
+
+users_urlpatterns = [
+    path(
+        r'<int:user_id>/',
+        UserRetrieveUpdateApi.as_view(),
+        name='user-retrieve-update',
+    ),
+    path(
+        r'',
+        UserCreateApi.as_view(),
+        name='user-create',
+    ),
+]
 
 contacts_urlpatterns = [
     path(r'', ContactCreateApi.as_view(), name='contact-create'),
@@ -26,61 +36,46 @@ contacts_urlpatterns = [
     path(
         r'users/<int:user_id>/birthdays/',
         UserContactBirthdayListApi.as_view(),
-        name='contacts-birthdays-list',
+        name='contact-birthdays-list',
     ),
     path(
         r'users/<int:user_id>/',
         UserContactListApi.as_view(),
-        name='contacts-list',
+        name='contact-list',
     ),
 ]
 
-app_name = 'users'
-urlpatterns = [
-    path(r'contacts/', include(contacts_urlpatterns)),
+themes_urlpatterns = [
     path(
-        r'users/tags/',
-        TagCreateApi.as_view(),
+        r'',
+        ThemeListApi.as_view(),
+        name='theme-list',
+    ),
+    path(
+        r'<uuid:theme_id>/',
+        ThemeRetrieveApi.as_view(),
+        name='theme-retrieve',
+    ),
+]
+
+tags_urlpatterns = [
+    path(
+        r'',
+        TagListCreateApi.as_view(),
         name='tags-create',
     ),
     path(
-        r'users/<int:user_id>/tags/<int:tag_id>/',
+        r'<int:tag_id>/',
         TagDeleteApi.as_view(),
         name='tags-delete',
     ),
-    path(
-        r'users/<int:user_id>/tags/',
-        TagListApi.as_view(),
-        name='tags-list',
-    ),
-    path(
-        r'users/<int:user_id>/',
-        UserRetrieveApi.as_view(),
-        name='retrieve',
-    ),
-    path(
-        'users/consume-food/',
-        UserFoodConsumeApi.as_view(),
-        name='consume-food',
-    ),
-    path(
-        r'users/sports/',
-        UserDoSportsApi.as_view(),
-        name='do-sports',
-    ),
-    path(
-        r'users/',
-        UserCreateUpdateApi.as_view(),
-        name='create-update',
-    ),
-    path(
-        r'themes/',
-        ThemeListApi.as_view(),
-        name='themes-list',
-    ),
-    path(
-        r'themes/<uuid:theme_id>/',
-        ThemeRetrieveApi.as_view(),
-        name='themes-retrieve',
-    ),
+]
+
+
+app_name = 'users'
+urlpatterns = [
+    path(r'users/', include(users_urlpatterns)),
+    path(r'contacts/', include(contacts_urlpatterns)),
+    path(r'tags/', include(tags_urlpatterns)),
+    path(r'themes/', include(themes_urlpatterns))
 ]

@@ -6,12 +6,11 @@ __all__ = (
     'ContactNotFoundError',
     'ContactAlreadyExistsError',
     'UserNotFoundError',
-    'UserAlreadyExistsError',
     'NotEnoughEnergyError',
     'NotEnoughHealthError',
     'SportActionCooldownError',
-    'ContactDoesNotExistError',
     'ContactAlreadyExistsError',
+    'TagNotFoundError',
 )
 
 
@@ -33,12 +32,10 @@ class UserNotFoundError(APIException):
     default_code = 'user_not_found'
 
 
-class UserAlreadyExistsError(Exception):
-    pass
-
-
-class ContactDoesNotExistError(Exception):
-    pass
+class TagNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Tag was not found')
+    default_code = 'tag_not_found'
 
 
 class NotEnoughEnergyError(APIException):
