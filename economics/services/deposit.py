@@ -1,12 +1,18 @@
+from typing import Protocol
+
 from economics.models import Transaction
 from users.models import User
 
 __all__ = ('create_system_deposit',)
 
 
+class HasId(Protocol):
+    id: int
+
+
 def create_system_deposit(
         *,
-        user: User,
+        user: User | HasId,
         amount: int,
         description: str | None = None,
 ) -> Transaction:
@@ -21,7 +27,7 @@ def create_system_deposit(
         The created deposit.
     """
     transaction = Transaction(
-        recipient=user,
+        recipient_id=user.id,
         amount=amount,
         description=description,
     )

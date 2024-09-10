@@ -4,22 +4,27 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import Tag
+from users.selectors.tags import get_tag_by_id
 from users.serializers import UserPartialSerializer
-from users.services.tags import create_tag
+from users.services.tags import create_tag, delete_tag
 from users.services.users import get_or_create_user
 
-__all__ = ('TagCreateApi',)
+__all__ = ('TagCreateDeleteApi',)
 
 
-class TagCreateApi(APIView):
+class TagCreateDeleteApi(APIView):
 
-    class InputSerializer(serializers.Serializer):
+    class InputDeleteSerializer(serializers.Serializer):
+        user_id = serializers.IntegerField()
+        tag_id = serializers.IntegerField()
+
+    class InputCreateSerializer(serializers.Serializer):
         to_user_id = serializers.IntegerField()
         of_user_id = serializers.IntegerField()
         text = serializers.CharField(max_length=32)
         weight = serializers.ChoiceField(choices=Tag.Weight.choices)
 
-    class OutputSerializer(serializers.Serializer):
+    class OutputCreateSerializer(serializers.Serializer):
         id = serializers.IntegerField()
         of_user = UserPartialSerializer()
         to_user = UserPartialSerializer()
@@ -28,7 +33,7 @@ class TagCreateApi(APIView):
         created_at = serializers.DateTimeField()
 
     def post(self, request: Request) -> Response:
-        serializer = self.InputSerializer(data=request.data)
+        serializer = self.InputCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serialized_data = serializer.data
 
@@ -47,5 +52,19 @@ class TagCreateApi(APIView):
             weight=weight
         )
 
-        serializer = self.OutputSerializer(tag)
+        serializer = self.OutputCreateSerializer(tag)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request: Request) -> Response:
+        serializer = self.InputDeleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serialized_data = serializer.data
+
+        user_id: int = serialized_data['user_id']
+        tag_id: int = serialized_data['tag_id']
+
+        tag = get_tag_by_id(tag_id)
+
+        delete_tag(tag=tag, user_id=user_id)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
