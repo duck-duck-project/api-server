@@ -4,8 +4,8 @@ from datetime import datetime
 from users.exceptions import TagNotFoundError
 from users.models.tags import Tag
 from users.selectors.users import (
-    UserPartialDTO, get_user_partial_by_id,
-    map_user_to_partial_dto,
+    UserPartialDTO, UserWithIsPremiumDTO, get_user_partial_by_id,
+    map_user_to_partial_dto, map_user_to_with_is_premium_dto,
 )
 
 __all__ = (
@@ -20,10 +20,10 @@ __all__ = (
 @dataclass(frozen=True, slots=True)
 class TagDTO:
     id: int
-    of_user: UserPartialDTO
-    to_user: UserPartialDTO
+    of_user: UserWithIsPremiumDTO
+    to_user: UserWithIsPremiumDTO
     text: str
-    weight: int
+    weight: Tag.Weight
     created_at: datetime
 
 
@@ -67,8 +67,8 @@ def get_tag_by_number(tag_number: int) -> TagDTO:
 
     return TagDTO(
         id=tag.id,
-        of_user=map_user_to_partial_dto(tag.of_user),
-        to_user=map_user_to_partial_dto(tag.to_user),
+        of_user=map_user_to_with_is_premium_dto(tag.of_user),
+        to_user=map_user_to_with_is_premium_dto(tag.to_user),
         text=tag.text,
         weight=tag.weight,
         created_at=tag.created_at,
@@ -99,10 +99,10 @@ def get_tag_by_id(tag_id: int) -> TagDTO:
 
     return TagDTO(
         id=tag.id,
-        of_user=map_user_to_partial_dto(tag.of_user),
-        to_user=map_user_to_partial_dto(tag.to_user),
+        of_user=map_user_to_with_is_premium_dto(tag.of_user),
+        to_user=map_user_to_with_is_premium_dto(tag.to_user),
         text=tag.text,
-        weight=tag.weight,
+        weight=Tag.Weight(tag.weight),
         created_at=tag.created_at,
     )
 

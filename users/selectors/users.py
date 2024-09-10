@@ -12,8 +12,12 @@ __all__ = (
     'get_user_by_id',
     'iter_users_with_birthdays',
     'HasIdAndFullnameAndUsername',
+    'HasIdAndFullnameAndUsernameAndIsPremium',
     'UserPartialDTO',
+    'get_user_partial_by_id',
     'map_user_to_partial_dto',
+    'UserWithIsPremiumDTO',
+    'map_user_to_with_is_premium_dto',
 )
 
 
@@ -23,11 +27,23 @@ class HasIdAndFullnameAndUsername(Protocol):
     username: str | None
 
 
+class HasIdAndFullnameAndUsernameAndIsPremium(Protocol):
+    id: int
+    fullname: str
+    username: str | None
+    is_premium: bool
+
+
 @dataclass(frozen=True, slots=True)
 class UserPartialDTO:
     id: int
     fullname: str
     username: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class UserWithIsPremiumDTO(UserPartialDTO):
+    is_premium: bool
 
 
 def map_user_to_partial_dto(
@@ -37,6 +53,17 @@ def map_user_to_partial_dto(
         id=user.id,
         fullname=user.fullname,
         username=user.username,
+    )
+
+
+def map_user_to_with_is_premium_dto(
+        user: HasIdAndFullnameAndUsernameAndIsPremium,
+) -> UserWithIsPremiumDTO:
+    return UserWithIsPremiumDTO(
+        id=user.id,
+        fullname=user.fullname,
+        username=user.username,
+        is_premium=user.is_premium,
     )
 
 

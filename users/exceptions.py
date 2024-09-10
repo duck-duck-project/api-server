@@ -11,6 +11,7 @@ __all__ = (
     'SportActionCooldownError',
     'ContactAlreadyExistsError',
     'TagNotFoundError',
+    'TagNotBelongsToUserError',
 )
 
 
@@ -36,6 +37,12 @@ class TagNotFoundError(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_detail = _('Tag was not found')
     default_code = 'tag_not_found'
+
+
+class TagNotBelongsToUserError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = _('Tag does not belong to user.')
+    default_code = 'tag_not_belongs_to_user'
 
 
 class NotEnoughEnergyError(APIException):
