@@ -3,7 +3,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from economics.models import Transaction
 from economics.selectors import get_latest_user_transactions
 from users.serializers import UserPartialSerializer
 

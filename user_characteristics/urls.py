@@ -8,9 +8,7 @@ from user_characteristics.views.medicines import (
     MedicineConsumeApi,
     MedicineListApi,
 )
-from user_characteristics.views.sport_activities import SportActivityListApi
-from user_characteristics.views.sport_activity_actions.create import \
-    SportActivityActionCreateApi
+from user_characteristics.views import SportActivityListCreateApi
 
 urlpatterns = [
     path(r'food-items/', FoodItemListApi.as_view(), name='food-items'),
@@ -21,13 +19,8 @@ urlpatterns = [
     ),
     path(
         r'sport-activities/',
-        SportActivityListApi.as_view(),
-        name='sport-activities',
-    ),
-    path(
-        r'sport-activity-actions/',
-        SportActivityActionCreateApi.as_view(),
-        name='sport-activity-actions',
+        SportActivityListCreateApi.as_view(),
+        name='sport-activity-list-create',
     ),
     path(r'medicines/', MedicineListApi.as_view(), name='medicines'),
     path(

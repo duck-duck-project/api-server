@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -7,13 +5,12 @@ from rest_framework.exceptions import APIException
 __all__ = (
     'ContactNotFoundError',
     'ContactAlreadyExistsError',
-    'UserDoesNotExistsError',
-    'UserAlreadyExistsError',
+    'UserNotFoundError',
     'NotEnoughEnergyError',
     'NotEnoughHealthError',
     'SportActionCooldownError',
-    'ContactDoesNotExistError',
     'ContactAlreadyExistsError',
+    'TagNotFoundError',
 )
 
 
@@ -29,17 +26,16 @@ class ContactNotFoundError(APIException):
     default_code = 'contact_not_found'
 
 
-@dataclass(frozen=True, slots=True)
-class UserDoesNotExistsError(Exception):
-    user_id: int
+class UserNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Requested user was not found.')
+    default_code = 'user_not_found'
 
 
-class UserAlreadyExistsError(Exception):
-    pass
-
-
-class ContactDoesNotExistError(Exception):
-    pass
+class TagNotFoundError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('Tag was not found')
+    default_code = 'tag_not_found'
 
 
 class NotEnoughEnergyError(APIException):

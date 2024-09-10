@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
+from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -22,11 +23,48 @@ __all__ = (
     'do_sport_activity',
     'validate_last_sports_time',
     'consume_food',
+    'update_user',
 )
 
 
 def upsert_user(*, user_id: int, defaults: dict[str, Any]) -> tuple[User, bool]:
     return User.objects.update_or_create(id=user_id, defaults=defaults)
+
+
+def update_user(
+        *,
+        user_id: int,
+        can_be_added_to_contacts: bool,
+        theme_id: UUID | None,
+        can_receive_notifications: bool,
+        profile_photo_url: str | None,
+        born_on: date | None,
+        personality_type_prefix: str | None,
+        personality_type_suffix: str | None,
+        real_first_name: str | None,
+        real_last_name: str | None,
+        patronymic: str | None,
+        gender: int,
+        is_from_private_chat: bool,
+):
+    user = User.objects.filter(id=user_id)
+    kwargs = {
+        'can_be_added_to_contacts': can_be_added_to_contacts,
+        'theme_id': theme_id,
+        'can_receive_notifications': can_receive_notifications,
+        'profile_photo_url': profile_photo_url,
+        'born_on': born_on,
+        'personality_type_prefix': personality_type_prefix,
+        'personality_type_suffix': personality_type_suffix,
+        'real_first_name': real_first_name,
+        'real_last_name': real_last_name,
+        'patronymic': patronymic,
+        'gender': gender,
+    }
+    if is_from_private_chat:
+        kwargs['is_blocked_bot'] = False
+    updated = user.update(**kwargs)
+    print(updated)
 
 
 def get_or_create_user(user_id: int) -> tuple[User, bool]:
@@ -35,7 +73,8 @@ def get_or_create_user(user_id: int) -> tuple[User, bool]:
 
 def increase_user_energy(user: User, increase: int) -> User:
     """
-    Increase the energy of a user by N, ensuring it doesn't exceed the max limit.
+    Increase the energy of a user by N, ensuring it doesn't exceed the max
+    limit.
     """
     user.energy = min(user.energy + increase, USER_MAX_ENERGY)
     user.full_clean()
@@ -60,7 +99,8 @@ def decrease_user_energy(user: User, decrease: int) -> User:
 
 def increase_user_health(user: User, increase: int) -> User:
     """
-    Increase the health of a user by N, ensuring it doesn't exceed the max limit.
+    Increase the health of a user by N, ensuring it doesn't exceed the max
+    limit.
     """
     user.health = min(user.health + increase, USER_MAX_HEALTH)
     user.full_clean()

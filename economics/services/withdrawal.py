@@ -25,12 +25,7 @@ def create_system_withdrawal(
     balance = compute_user_balance(user)
 
     if balance < amount:
-        raise InsufficientFundsForSystemWithdrawalError(
-            user_id=user.id,
-            balance=balance,
-            amount=amount,
-            description=description,
-        )
+        raise InsufficientFundsForSystemWithdrawalError(amount=amount)
 
     transaction = Transaction(
         sender=user,

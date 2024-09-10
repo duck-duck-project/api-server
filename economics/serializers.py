@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from economics.models import Transaction
 from users.serializers import UserPartialSerializer
 
 __all__ = (

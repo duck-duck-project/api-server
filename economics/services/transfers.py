@@ -35,12 +35,7 @@ def create_transfer(
     sender_balance = compute_user_balance(sender)
 
     if sender_balance < amount:
-        raise InsufficientFundsForTransferError(
-            sender_id=sender.id,
-            sender_balance=sender_balance,
-            transfer_amount=amount,
-            recipient_id=recipient.id,
-        )
+        raise InsufficientFundsForTransferError(amount=amount)
 
     transaction = Transaction(
         sender=sender,
@@ -66,9 +61,7 @@ def validate_transfer_sender_matches_user(
         user_id: int,
 ) -> None:
     if transaction.sender_id != user_id:
-        raise TransferSenderDoesNotMatchError(
-            'Transaction does not belong to user',
-        )
+        raise TransferSenderDoesNotMatchError
 
 
 def validate_transfer_rollback_time_expired(transaction: Transaction) -> None:
@@ -77,9 +70,7 @@ def validate_transfer_rollback_time_expired(transaction: Transaction) -> None:
             now - transaction.created_at > timezone.timedelta(minutes=10)
     )
     if is_transfer_rollback_time_expired:
-        raise TransferRollbackTimeExpiredError(
-            'Transfer rollback time expired',
-        )
+        raise TransferRollbackTimeExpiredError
 
 
 def validate_user_balance_for_transfer_rollback(
@@ -87,9 +78,7 @@ def validate_user_balance_for_transfer_rollback(
 ) -> None:
     user_balance = compute_user_balance(user=transaction.sender)
     if user_balance < transaction.amount:
-        raise InsufficientFundsForTransferRollbackError(
-            'Insufficient funds for transfer rollback'
-        )
+        raise InsufficientFundsForTransferRollbackError
 
 
 def rollback_transfer(*, transaction: Transaction, user_id: int) -> None:

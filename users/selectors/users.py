@@ -1,14 +1,51 @@
 from collections.abc import Generator
+from dataclasses import dataclass
+from typing import Protocol
 
 from django.db.models import QuerySet
 
-from users.exceptions import UserDoesNotExistsError
+from users.exceptions import UserNotFoundError
 from users.models import User
+from users.selectors.birthdays import UserPartialDTO
 
 __all__ = (
     'get_user_by_id',
     'iter_users_with_birthdays',
+    'HasIdAndFullnameAndUsername',
+    'UserPartialDTO',
+    'map_user_to_partial_dto',
 )
+
+
+class HasIdAndFullnameAndUsername(Protocol):
+    id: int
+    fullname: str
+    username: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class UserPartialDTO:
+    id: int
+    fullname: str
+    username: str | None
+
+
+def map_user_to_partial_dto(
+        user: HasIdAndFullnameAndUsername,
+) -> UserPartialDTO:
+    return UserPartialDTO(
+        id=user.id,
+        fullname=user.fullname,
+        username=user.username,
+    )
+
+
+def get_user_partial_by_id(user_id: int) -> UserPartialDTO:
+    try:
+        user = User.objects.only('id', 'fullname', 'username').get(id=user_id)
+    except User.DoesNotExist:
+        raise UserNotFoundError
+    return map_user_to_partial_dto(user)
 
 
 def get_user_by_id(user_id: int) -> User:
@@ -31,7 +68,7 @@ def get_user_by_id(user_id: int) -> User:
             .get(id=user_id)
         )
     except User.DoesNotExist:
-        raise UserDoesNotExistsError(user_id=user_id)
+        raise UserNotFoundError
 
 
 def iter_users_with_birthdays(

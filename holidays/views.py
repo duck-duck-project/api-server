@@ -28,4 +28,4 @@ class HolidaysApi(APIView):
 
         date_holidays = get_date_holidays(month=month, day=day)
         serializer = self.OutputSerializer(date_holidays)
-        return Response({'ok': True, 'result': serializer.data})
+        return Response(serializer.data)

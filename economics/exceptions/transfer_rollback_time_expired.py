@@ -1,2 +1,0 @@
-class TransferRollbackTimeExpiredError(Exception):
-    pass

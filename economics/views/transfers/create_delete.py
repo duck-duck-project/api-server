@@ -8,14 +8,10 @@ from rest_framework.views import APIView
 
 from economics.exceptions import (
     InsufficientFundsForTransferError,
-    TransactionDoesNotExistError,
-    TransactionIsNotTransferError,
-    TransferSenderDoesNotMatchError, TransferRollbackTimeExpiredError,
-    InsufficientFundsForTransferRollbackError,
 )
 from economics.selectors import get_transaction_by_id
 from economics.services import create_transfer, rollback_transfer
-from users.exceptions import UserDoesNotExistsError
+from users.exceptions import UserNotFoundError
 from users.selectors.users import get_user_by_id
 from users.serializers import UserPartialSerializer
 
@@ -60,7 +56,7 @@ class TransferCreateDeleteApi(APIView):
         try:
             sender = get_user_by_id(sender_id)
             recipient = get_user_by_id(recipient_id)
-        except UserDoesNotExistsError:
+        except UserNotFoundError:
             raise NotFound('User does not exists')
 
         try:
@@ -88,22 +84,8 @@ class TransferCreateDeleteApi(APIView):
         user_id: int = serialized_data['user_id']
         transaction_id: UUID = serialized_data['transaction_id']
 
-        try:
-            transaction = get_transaction_by_id(transaction_id)
-        except TransactionDoesNotExistError:
-            raise NotFound(detail='Transaction does not exist')
+        transaction = get_transaction_by_id(transaction_id)
 
-        try:
-            rollback_transfer(
-                transaction=transaction,
-                user_id=user_id,
-            )
-        except (
-                TransferSenderDoesNotMatchError,
-                TransactionIsNotTransferError,
-                TransferRollbackTimeExpiredError,
-                InsufficientFundsForTransferRollbackError,
-        ) as error:
-            raise ValidationError(detail=str(error))
+        rollback_transfer(transaction=transaction, user_id=user_id)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
