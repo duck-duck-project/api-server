@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from uuid import UUID
 
 from django.db import transaction
 
@@ -91,6 +92,7 @@ def update_contact(
         private_name: str,
         public_name: str,
         is_hidden: bool,
+        theme_id: UUID | None = None,
 ) -> bool:
     """Update contact.
 
@@ -99,11 +101,13 @@ def update_contact(
         private_name: name of contact that is visible only to user.
         public_name: name of contact that is visible to all users.
         is_hidden: whether contact is hidden from user.
+        theme_id: id of theme to set.
     """
     updated_count = Contact.objects.filter(id=contact_id).update(
         private_name=private_name,
         public_name=public_name,
         is_hidden=is_hidden,
+        theme_id=theme_id,
     )
     return bool(updated_count)
 
