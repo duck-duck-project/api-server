@@ -14,26 +14,27 @@ __all__ = ('UserRetrieveUpdateApi',)
 class UserRetrieveUpdateApi(APIView):
 
     class InputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        can_be_added_to_contacts = serializers.BooleanField()
         theme_id = serializers.UUIDField(allow_null=True)
-        can_receive_notifications = serializers.BooleanField()
-        profile_photo_url = serializers.URLField()
-        born_on = serializers.DateField()
+        can_receive_notifications = serializers.BooleanField(required=False)
+        profile_photo_url = serializers.URLField(allow_null=True)
+        born_on = serializers.DateField(allow_null=True)
         personality_type_prefix = serializers.ChoiceField(
             choices=User.PersonalityTypePrefix.choices,
+            allow_null=True,
+            required=False,
         )
         personality_type_suffix = serializers.ChoiceField(
             choices=User.PersonalityTypeSuffix.choices,
-        )
-        real_first_name = serializers.CharField(max_length=64, required=False)
-        real_last_name = serializers.CharField(max_length=64, required=False)
-        patronymic = serializers.CharField(max_length=64, required=False)
-        gender = serializers.ChoiceField(
-            choices=User.Gender.choices,
+            allow_null=True,
             required=False,
         )
-        is_from_private_chat = serializers.BooleanField(default=False)
+        real_first_name = serializers.CharField(max_length=64, allow_null=True)
+        real_last_name = serializers.CharField(max_length=64, allow_null=True)
+        patronymic = serializers.CharField(max_length=64, allow_null=True)
+        gender = serializers.ChoiceField(
+            choices=User.Gender.choices,
+            allow_null=True,
+        )
 
     def get(self, request: Request, user_id: int) -> Response:
         user = get_user_by_id(user_id)

@@ -9,7 +9,7 @@ from django.utils import timezone
 from users.exceptions import (
     NotEnoughEnergyError,
     NotEnoughHealthError,
-    SportActionCooldownError,
+    SportActionCooldownError, UserNotFoundError,
 )
 from users.models import USER_MAX_ENERGY, USER_MAX_HEALTH, User
 
@@ -34,37 +34,11 @@ def upsert_user(*, user_id: int, defaults: dict[str, Any]) -> tuple[User, bool]:
 def update_user(
         *,
         user_id: int,
-        can_be_added_to_contacts: bool,
-        theme_id: UUID | None,
-        can_receive_notifications: bool,
-        profile_photo_url: str | None,
-        born_on: date | None,
-        personality_type_prefix: str | None,
-        personality_type_suffix: str | None,
-        real_first_name: str | None,
-        real_last_name: str | None,
-        patronymic: str | None,
-        gender: int,
-        is_from_private_chat: bool,
-):
-    user = User.objects.filter(id=user_id)
-    kwargs = {
-        'can_be_added_to_contacts': can_be_added_to_contacts,
-        'theme_id': theme_id,
-        'can_receive_notifications': can_receive_notifications,
-        'profile_photo_url': profile_photo_url,
-        'born_on': born_on,
-        'personality_type_prefix': personality_type_prefix,
-        'personality_type_suffix': personality_type_suffix,
-        'real_first_name': real_first_name,
-        'real_last_name': real_last_name,
-        'patronymic': patronymic,
-        'gender': gender,
-    }
-    if is_from_private_chat:
-        kwargs['is_blocked_bot'] = False
-    updated = user.update(**kwargs)
-    print(updated)
+        **kwargs,
+) -> None:
+    updated_count = User.objects.filter(id=user_id).update(**kwargs)
+    if not updated_count:
+        raise UserNotFoundError
 
 
 def get_or_create_user(user_id: int) -> tuple[User, bool]:
