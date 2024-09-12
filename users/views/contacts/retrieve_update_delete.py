@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from rest_framework import serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -16,6 +18,7 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         private_name = serializers.CharField(max_length=64)
         public_name = serializers.CharField(max_length=64)
         is_hidden = serializers.BooleanField(default=False)
+        theme_id = serializers.UUIDField(allow_null=True)
 
     class OutputSerializer(serializers.Serializer):
         user = UserPartialWithThemeSerializer()
@@ -34,12 +37,14 @@ class ContactRetrieveUpdateDeleteApi(APIView):
         private_name: str = serialized_data['private_name']
         public_name: str = serialized_data['public_name']
         is_hidden: bool = serialized_data['is_hidden']
+        theme_id: UUID = serialized_data['theme_id']
 
         is_updated = update_contact(
             contact_id=contact_id,
             private_name=private_name,
             public_name=public_name,
             is_hidden=is_hidden,
+            theme_id=theme_id,
         )
 
         if not is_updated:
