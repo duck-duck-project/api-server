@@ -16,7 +16,7 @@ class ThemeListApi(APIView):
     def get(self, request: Request):
         themes = get_visible_themes()
         serializer = self.OutputSerializer(themes, many=True)
-        return Response({'ok': True, 'result': serializer.data})
+        return Response(serializer.data)
 
 
 class ThemeRetrieveApi(APIView):
