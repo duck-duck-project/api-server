@@ -25,4 +25,4 @@ class ThemeRetrieveApi(APIView):
     def get(self, request: Request, theme_id: UUID):
         theme = get_theme_by_id(theme_id)
         serializer = self.OutputSerializer(theme)
-        return Response({'ok': True, 'result': serializer.data})
+        return Response(serializer.data)
