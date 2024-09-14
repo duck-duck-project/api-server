@@ -16,6 +16,7 @@ class UserRetrieveUpdateApi(APIView):
     class InputSerializer(serializers.Serializer):
         theme_id = serializers.UUIDField(allow_null=True)
         can_receive_notifications = serializers.BooleanField(required=False)
+        can_be_added_to_contacts = serializers.BooleanField(required=False)
         profile_photo_url = serializers.URLField(allow_null=True)
         born_on = serializers.DateField(allow_null=True)
         personality_type_prefix = serializers.ChoiceField(
