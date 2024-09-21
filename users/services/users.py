@@ -1,6 +1,5 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Any
-from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -24,6 +23,7 @@ __all__ = (
     'validate_last_sports_time',
     'consume_food',
     'update_user',
+    'update_user_profile_photo',
 )
 
 
@@ -137,3 +137,7 @@ def consume_food(
         user = decrease_user_health(user, abs(health_impact_value))
     user = increase_user_energy(user, energy)
     return user
+
+
+def update_user_profile_photo(*, user_id: int, profile_photo_url: str) -> None:
+    update_user(user_id=user_id, profile_photo_url=profile_photo_url)

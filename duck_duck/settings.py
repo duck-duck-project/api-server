@@ -1,5 +1,7 @@
+import contextlib
 from pathlib import Path
 
+import cloudinary.api
 from environ import Env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -141,6 +143,12 @@ REST_FRAMEWORK = {
 DRF_STANDARDIZED_ERRORS = {
     "EXCEPTION_FORMATTER_CLASS": "core.exceptions.CustomFormatter",
 }
+
+cloudinary.config(
+    cloud_name="dnmfftpij",
+    api_key="927196335316159",
+    api_secret="_keb72rs-t6G4_l9Ju1fcJilNtA",
+)
 
 if DEBUG:
     INSTALLED_APPS.append('silk')
