@@ -145,9 +145,9 @@ DRF_STANDARDIZED_ERRORS = {
 }
 
 cloudinary.config(
-    cloud_name="dnmfftpij",
-    api_key="927196335316159",
-    api_secret="_keb72rs-t6G4_l9Ju1fcJilNtA",
+    cloud_name=env.str('CLOUDINARY_CLOUD_NAME'),
+    api_key=env.str('CLOUDINARY_API_KEY'),
+    api_secret=env.str('CLOUDINARY_API_SECRET'),
 )
 
 if DEBUG:
