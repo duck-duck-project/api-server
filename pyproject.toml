@@ -28,6 +28,7 @@ cloudinary = "^1.41.0"
 coverage = "^7.3.0"
 factory-boy = "^3.3.0"
 django-silk = "^5.0.3"
+pytest-django = "^4.9.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -39,3 +40,7 @@ omit = [
     "duck_duck/*",
     "manage.py",
 ]
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "duck_duck.settings"

@@ -24,10 +24,6 @@ ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS = env.bool(
     default=False,
 )
 
-CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,6 +44,7 @@ INSTALLED_APPS = [
     'quizzes',
     'mining',
     'user_characteristics',
+    'relationships',
 ]
 
 MIDDLEWARE = [
