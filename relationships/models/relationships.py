@@ -35,9 +35,9 @@ class Relationship(models.Model):
         return self.level + 1
 
     @property
-    def next_level_experience(self) -> int:
+    def next_level_experience_threshold(self) -> int:
         return 2 ** self.next_level
 
     @property
     def experience_to_next_level(self) -> int:
-        return self.next_level_experience - self.experience
+        return self.next_level_experience_threshold - self.experience

@@ -34,7 +34,7 @@ def test_relationship_next_level(experience, next_level):
 
 
 @pytest.mark.parametrize(
-    'experience, next_level_experience',
+    'experience, next_level_required_experience',
     [
         (0, 2),
         (300, 512),
@@ -43,9 +43,15 @@ def test_relationship_next_level(experience, next_level):
         (50000, 65536),
     ]
 )
-def test_relationship_next_level_experience(experience, next_level_experience):
+def test_relationship_next_level_experience(
+        experience,
+        next_level_required_experience,
+):
     relationship = Relationship(experience=experience)
-    assert relationship.next_level_experience == next_level_experience
+    assert (
+            relationship.next_level_required_experience
+            == next_level_required_experience
+    )
 
 
 @pytest.mark.parametrize(

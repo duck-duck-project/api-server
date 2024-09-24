@@ -15,6 +15,9 @@ class RelationshipRetrieveApi(APIView):
         first_user = UserPartialSerializer()
         second_user = UserPartialSerializer()
         created_at = serializers.DateTimeField()
+        level = serializers.IntegerField()
+        experience = serializers.IntegerField()
+        next_level_experience_threshold = serializers.IntegerField()
 
     def get(self, request: Request, user_id: int) -> Response:
         relationship = get_active_relationship(user_id)

@@ -31,7 +31,7 @@ class ActiveRelationshipDTO:
     created_at: datetime
     level: int
     experience: int
-    experience_to_next_level: int
+    next_level_experience_threshold: int
 
 
 def has_active_relationship(user_id: int) -> bool:
@@ -67,10 +67,11 @@ def get_active_relationship(user_id: int) -> ActiveRelationshipDTO:
     return ActiveRelationshipDTO(
         id=relationship.id,
         first_user=map_user_to_partial_dto(relationship.first_user),
-        second_user=UserPartialDTO(
-            id=relationship.second_user_id,
-            fullname=relationship.second_user_fullname,
-            username=relationship.second_user_username,
-        ),
+        second_user=map_user_to_partial_dto(relationship.second_user),
         created_at=relationship.created_at,
+        level=relationship.level,
+        experience=relationship.experience,
+        next_level_experience_threshold=(
+            relationship.next_level_experience_threshold
+        ),
     )

@@ -7,10 +7,10 @@ from relationships.services import create_relationship
 from users.serializers import UserPartialSerializer
 from users.services.users import get_or_create_user
 
-__all__ = ('RelationCreateApi',)
+__all__ = ('RelationshipCreateApi',)
 
 
-class RelationCreateApi(APIView):
+class RelationshipCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         first_user_id = serializers.IntegerField()
         second_user_id = serializers.IntegerField()
