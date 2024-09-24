@@ -28,7 +28,7 @@ def validate_user_has_no_active_relationship(
         user_id: int,
 ) -> None:
     if has_active_relationship(user_id):
-        raise UserHasActiveRelationshipError
+        raise UserHasActiveRelationshipError(user_id)
 
 
 def create_relationship(

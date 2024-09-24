@@ -18,3 +18,7 @@ class UserHasActiveRelationshipError(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('User already has an active relationship')
     default_code = 'user_has_active_relationship'
+
+    def __init__(self, user_id: int):
+        super().__init__()
+        self.extra = {'user_id': user_id}

@@ -13,6 +13,7 @@ urlpatterns = [
     path(f'{ROOT_PATH}holidays/', include('holidays.urls')),
     path(f'{ROOT_PATH}quizzes/', include('quizzes.urls')),
     path(f'{ROOT_PATH}mining/', include('mining.urls')),
+    path(f'{ROOT_PATH}relationships/', include('relationships.urls')),
     path(f'{ROOT_PATH}', include('user_characteristics.urls')),
 ]
 
