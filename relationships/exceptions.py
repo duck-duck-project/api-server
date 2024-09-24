@@ -1,12 +1,20 @@
-from relationships.services.relationships import UserInRelationship
+from django.utils.translation import gettext_lazy as _
+from rest_framework import status
+from rest_framework.exceptions import APIException
 
-__all__ = ('UserHasNoRelationshipError',)
+__all__ = (
+    'UserHasNoRelationshipError',
+    'UserHasActiveRelationshipError',
+)
 
 
-class UserHasNoRelationshipError(Exception):
+class UserHasNoRelationshipError(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = _('User has no active relationship')
+    default_code = 'user_has_no_relationship'
 
-    def __init__(self, user_in_relationship: UserInRelationship):
-        self.user_in_relationship = user_in_relationship
-        super().__init__(
-            f'User ID{user_in_relationship.id} has no active relationship',
-        )
+
+class UserHasActiveRelationshipError(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('User already has an active relationship')
+    default_code = 'user_has_active_relationship'

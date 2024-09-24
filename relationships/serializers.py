@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
-__all__ = ('UserInRelationshipSerializer',)
+from users.serializers import UserPartialSerializer
 
 
-class UserInRelationshipSerializer(serializers.ModelSerializer):
+class RelationshipOutputSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    fullname = serializers.CharField()
-    username = serializers.CharField(allow_null=True)
+    first_user = UserPartialSerializer()
+    second_user = UserPartialSerializer()
+    created_at = serializers.DateTimeField()
