@@ -2,12 +2,17 @@ from django.urls import include, path
 
 from users.views import (
     ContactCreateApi, ContactRetrieveUpdateDeleteApi, TagCreateDeleteApi,
-    TagListApi, ThemeListApi, ThemeRetrieveApi,
-    UserContactBirthdayListApi, UserContactListApi, UserCreateApi,
+    TagListApi, ThemeListApi, ThemeRetrieveApi, UserContactBirthdayListApi,
+    UserContactListApi, UserCreateApi, user_profile_photo_upload_view,
     UserRetrieveUpdateApi,
 )
 
 users_urlpatterns = [
+    path(
+        r'<int:user_id>/profile-photos/',
+        user_profile_photo_upload_view,
+        name='user-profile-photo-upload',
+    ),
     path(
         r'<int:user_id>/',
         UserRetrieveUpdateApi.as_view(),
