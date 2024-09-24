@@ -1,6 +1,10 @@
 from django.urls import path
 
-from relationships.views import RelationshipCreateApi, RelationshipRetrieveApi
+from relationships.views import (
+    RelationshipCreateApi,
+    RelationshipRetrieveApi,
+    RelationshipBreakUpApi,
+)
 
 urlpatterns = [
     path(
@@ -12,5 +16,10 @@ urlpatterns = [
         r'users/<int:user_id>/',
         RelationshipRetrieveApi.as_view(),
         name='relationship-retrieve',
+    ),
+    path(
+        r'users/<int:user_id>/break-up/',
+        RelationshipBreakUpApi.as_view(),
+        name='relationship-break-up',
     ),
 ]
